@@ -36,6 +36,7 @@ class AchievementDef {
   final Stat stat;
   final List<int> tiers;
   final List<int> rewards;
+
   /// Key of the description, e.g. "Clear {n} levels".
   final String descKey;
   const AchievementDef(

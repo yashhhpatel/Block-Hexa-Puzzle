@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'l10n/l10n.dart';
 import 'services/services.dart';
+import 'ui/achievement_toast.dart';
 import 'ui/home_screen.dart';
 import 'ui/theme.dart';
 
@@ -92,6 +93,12 @@ class _HexaAppState extends State<HexaApp> with WidgetsBindingObserver {
         colorSchemeSeed: AppColors.accent,
         scaffoldBackgroundColor: AppColors.bgBottom,
         useMaterial3: true,
+      ),
+      // Achievement unlocks pop up over every screen.
+      builder: (context, child) => AchievementToaster(
+        progress: widget.services.progress,
+        sfx: widget.services.sfx,
+        child: child!,
       ),
       home: HomeScreen(services: widget.services),
     );

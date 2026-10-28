@@ -35,6 +35,7 @@ enum BillingNotice {
 ///   missing has expired, been refunded or revoked, and ads come back.
 class BillingService {
   final Progress progress;
+
   /// False in tests/previews: no Google Play connection is ever opened.
   final bool enabled;
   final InAppPurchase? _iapOverride;

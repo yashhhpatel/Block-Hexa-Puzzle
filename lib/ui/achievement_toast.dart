@@ -87,14 +87,14 @@ class _AchievementToasterState extends State<AchievementToaster>
             right: 12,
             top: MediaQuery.paddingOf(context).top + 8,
             child: SlideTransition(
-              position: Tween(
-                begin: const Offset(0, -1.6),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(
-                parent: _slide,
-                curve: Curves.easeOutBack,
-                reverseCurve: Curves.easeIn,
-              )),
+              position: Tween(begin: const Offset(0, -1.6), end: Offset.zero)
+                  .animate(
+                    CurvedAnimation(
+                      parent: _slide,
+                      curve: Curves.easeOutBack,
+                      reverseCurve: Curves.easeIn,
+                    ),
+                  ),
               child: GestureDetector(
                 onTap: _dismiss,
                 child: _ToastCard(unlock: u),

@@ -228,11 +228,9 @@ class Progress {
       seen[a.id] = reached;
       changed = true;
       if (!_unlocks.isClosed) {
-        _unlocks.add(AchievementUnlock(
-          a,
-          a.tiers[reached - 1],
-          a.rewards[reached - 1],
-        ));
+        _unlocks.add(
+          AchievementUnlock(a, a.tiers[reached - 1], a.rewards[reached - 1]),
+        );
       }
     }
     if (changed) await _putMap('achSeen', seen);

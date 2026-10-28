@@ -8,6 +8,7 @@ import '../meta/quests.dart';
 import '../services/progress.dart';
 import '../services/services.dart';
 import '../services/sfx.dart';
+import 'achievement_toast.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -39,6 +40,14 @@ class _QuestsScreenState extends State<QuestsScreen> {
   void dispose() {
     _clock?.cancel();
     super.dispose();
+  }
+
+  Future<void> _claimAchievement(AchievementStatus a) async {
+    final got = await p.claimAchievement(a.def.id);
+    if (got <= 0 || !mounted) return;
+    widget.services.sfx.play(Sound.coin);
+    setState(() {});
+    await showRewardBurst(context, title: a.def.name, coins: got);
   }
 
   Future<void> _claim(Future<int> Function() claim) async {
@@ -179,7 +188,8 @@ class _QuestsScreenState extends State<QuestsScreen> {
         for (final a in list)
           _Card(
             icon: _iconFor(a.def.stat),
-            title: a.maxed
+            title: a.def.name,
+            subtitle: a.maxed
                 ? '${a.def.title(a.def.tiers.last)} ✓'
                 : a.def.title(a.target),
             progress: a.value,
@@ -188,9 +198,7 @@ class _QuestsScreenState extends State<QuestsScreen> {
             claimed: a.maxed,
             tiers: a.def.tiers.length,
             tiersDone: a.claimedTiers,
-            onClaim: a.claimable
-                ? () => _claim(() => p.claimAchievement(a.def.id))
-                : null,
+            onClaim: a.claimable ? () => _claimAchievement(a) : null,
           ),
       ],
     );
@@ -206,12 +214,18 @@ class _QuestsScreenState extends State<QuestsScreen> {
     Stat.blocksPlaced => Icons.hexagon_rounded,
     Stat.chaptersCompleted => Icons.emoji_events_rounded,
     Stat.bestStreak => Icons.local_fire_department_rounded,
+    Stat.questsCompleted => Icons.task_alt_rounded,
+    Stat.loginDays => Icons.event_available_rounded,
+    Stat.chestsOpened => Icons.inventory_2_rounded,
+    Stat.itemsUnlocked => Icons.palette_rounded,
+    Stat.dailyPerfect => Icons.wb_sunny_rounded,
   };
 }
 
 class _Card extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subtitle;
   final int progress;
   final int target;
   final int reward;
@@ -224,6 +238,7 @@ class _Card extends StatelessWidget {
   const _Card({
     required this.icon,
     required this.title,
+    this.subtitle,
     required this.progress,
     required this.target,
     required this.reward,
@@ -279,6 +294,14 @@ class _Card extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                   ),
                 ),
+                if (subtitle != null)
+                  Text(
+                    subtitle!,
+                    style: TextStyle(
+                      color: claimed ? Colors.white38 : Colors.white70,
+                      fontSize: 12.5,
+                    ),
+                  ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
