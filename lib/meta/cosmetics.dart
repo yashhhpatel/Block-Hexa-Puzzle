@@ -43,6 +43,11 @@ class BoardTheme implements ShopItem {
   final Color bgTop, bgMid, bgBottom;
   final Color cell, line, tray;
 
+  /// Colour of the background light flares and drifting hexagons. Defaults
+  /// to [line]; a second colour gives two-tone themes like Aurora.
+  final Color? flareColor;
+  Color get flare => flareColor ?? line;
+
   const BoardTheme(
     this.id, {
     required this.bgTop,
@@ -51,6 +56,7 @@ class BoardTheme implements ShopItem {
     required this.cell,
     required this.line,
     required this.tray,
+    this.flareColor,
     this.price = 0,
     this.starsRequired = 0,
   });
@@ -114,6 +120,66 @@ class Cosmetics {
       cell: Color(0xFF0B0D12),
       line: Color(0xFFE8EEF8),
       tray: Color(0xFF0D0F15),
+    ),
+    // Northern lights: mint board lines over a teal night, violet glow.
+    BoardTheme(
+      'aurora',
+      price: 400,
+      bgTop: Color(0xFF0B4A55),
+      bgMid: Color(0xFF0A2440),
+      bgBottom: Color(0xFF050C1C),
+      cell: Color(0xFF061A2C),
+      line: Color(0xFF5CFFC8),
+      tray: Color(0xFF071B2E),
+      flareColor: Color(0xFFB57BFF),
+    ),
+    // Cherry blossom: rose dusk with petal-white lines.
+    BoardTheme(
+      'sakura',
+      price: 450,
+      bgTop: Color(0xFFB8577F),
+      bgMid: Color(0xFF6A2752),
+      bgBottom: Color(0xFF2A0F26),
+      cell: Color(0xFF3A1230),
+      line: Color(0xFFFFD1E6),
+      tray: Color(0xFF331029),
+      flareColor: Color(0xFFFFE3F0),
+    ),
+    // Glacier: icy blues with frost-white lines.
+    BoardTheme(
+      'glacier',
+      price: 300,
+      bgTop: Color(0xFF2A6A8C),
+      bgMid: Color(0xFF14425E),
+      bgBottom: Color(0xFF07202F),
+      cell: Color(0xFF0A2A3C),
+      line: Color(0xFFDFF6FF),
+      tray: Color(0xFF0B2B3D),
+      flareColor: Color(0xFF9FE8FF),
+    ),
+    // Lava: black rock, ember glow, molten-orange lines. Earned with stars.
+    BoardTheme(
+      'lava',
+      starsRequired: 120,
+      bgTop: Color(0xFF5A0F05),
+      bgMid: Color(0xFF2E0704),
+      bgBottom: Color(0xFF0E0202),
+      cell: Color(0xFF1A0503),
+      line: Color(0xFFFF6A1F),
+      tray: Color(0xFF1C0604),
+      flareColor: Color(0xFFFFC24A),
+    ),
+    // Royal: deep indigo velvet with gold trim.
+    BoardTheme(
+      'royal',
+      price: 600,
+      bgTop: Color(0xFF1F1658),
+      bgMid: Color(0xFF120C36),
+      bgBottom: Color(0xFF07051A),
+      cell: Color(0xFF0E0A2A),
+      line: Color(0xFFFFD36B),
+      tray: Color(0xFF100B2E),
+      flareColor: Color(0xFFFFE9A8),
     ),
   ];
 

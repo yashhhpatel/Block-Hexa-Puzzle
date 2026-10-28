@@ -68,7 +68,7 @@ class _GameBackgroundState extends State<GameBackground>
             child: AnimatedBuilder(
               animation: _c,
               builder: (_, _) =>
-                  CustomPaint(painter: _BgPainter(_c.value, t.line)),
+                  CustomPaint(painter: _BgPainter(_c.value, t.flare)),
             ),
           ),
           widget.child,

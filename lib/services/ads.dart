@@ -254,7 +254,7 @@ class AdsService {
       );
       ad.show();
     });
-    _loadInterstitial();
+    _reloadSoon(_loadInterstitial);
     return shown;
   }
 
@@ -310,9 +310,15 @@ class AdsService {
       );
       ad.show(onUserEarnedReward: (_, _) => earned = true);
     });
-    _loadRewarded();
+    _reloadSoon(_loadRewarded);
     return earned;
   }
+
+  /// Loading an ad does noticeable work on the main thread inside the ads
+  /// SDK. Right after an ad closes the player is tapping again, so the
+  /// next one loads a few seconds later instead of immediately.
+  void _reloadSoon(void Function() load) =>
+      Future.delayed(const Duration(seconds: 6), load);
 
   /// Runs a full-screen ad: pauses music, blocks other ads, and completes
   /// when the ad ends (with a safety timeout so the game never hangs).

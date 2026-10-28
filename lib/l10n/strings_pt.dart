@@ -293,4 +293,11 @@ const Map<String, String> stringsPt = {
   "daily_milestones": "Prêmios de sequência",
   "daily_blocks": "{n} blocos · {c} células",
   "days_n": "{n} dias",
+
+  // Themes added later
+  "theme_aurora": "Aurora",
+  "theme_sakura": "Flor de cerejeira",
+  "theme_glacier": "Geleira",
+  "theme_lava": "Lava",
+  "theme_royal": "Real",
 };

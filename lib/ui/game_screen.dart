@@ -102,13 +102,20 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
   // ---- loading ------------------------------------------------------------
 
+  // Static so the closures sent to the isolate capture only their argument,
+  // never the State (which holds timers and can't cross isolates).
+  static Future<Level> _generateLevel(int n) =>
+      Isolate.run(() => LevelGenerator.generate(n));
+  static Future<Level> _generateDaily(DateTime day) =>
+      Isolate.run(() => LevelGenerator.generateDaily(day));
+
   Future<void> _loadLevel(int n, {bool restore = false}) async {
     final token = ++_loadToken;
     _detach();
     // Small levels are instant; bigger ones are built off the UI thread.
     final level = n < LevelGenerator.uniqueFromLevel
         ? LevelGenerator.generate(n)
-        : await Isolate.run(() => LevelGenerator.generate(n));
+        : await _generateLevel(n);
     if (!mounted || token != _loadToken) return;
     final game = GameState(level);
     if (restore) {
@@ -130,7 +137,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   Future<void> _loadDaily(DateTime day) async {
     final token = ++_loadToken;
     _detach();
-    final level = await Isolate.run(() => LevelGenerator.generateDaily(day));
+    final level = await _generateDaily(day);
     if (!mounted || token != _loadToken) return;
     _attach(GameState(level));
     setState(() {});

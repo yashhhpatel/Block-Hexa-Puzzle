@@ -295,4 +295,11 @@ const Map<String, String> stringsDe = {
   "daily_milestones": "Serienbelohnungen",
   "daily_blocks": "{n} Blöcke · {c} Felder",
   "days_n": "{n} Tage",
+
+  // Themes added later
+  "theme_aurora": "Polarlicht",
+  "theme_sakura": "Kirschblüte",
+  "theme_glacier": "Gletscher",
+  "theme_lava": "Lava",
+  "theme_royal": "Königlich",
 };

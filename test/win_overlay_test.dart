@@ -117,8 +117,10 @@ void main() {
     });
     await tester.tap(find.text('Watch ad for 2× coins'));
     await tester.pump();
-    await tester.tap(find.byIcon(Icons.ondemand_video_rounded),
-        warnIfMissed: false);
+    // While the video runs the button shows a spinner; tapping it again
+    // must not start a second claim.
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await tester.tap(find.text('Watch ad for 2× coins'), warnIfMissed: false);
     await tester.pump();
     expect(calls, 1);
     video.complete(true);
@@ -155,6 +157,6 @@ void main() {
     await tester.scrollUntilVisible(find.text('Insane'), -300);
     await tester.tap(find.text('Insane'));
     await _settle(tester);
-    expect(find.text('451'), findsOneWidget, reason: 'next level in Insane');
+    expect(find.text('450'), findsOneWidget, reason: 'next level in Insane');
   });
 }

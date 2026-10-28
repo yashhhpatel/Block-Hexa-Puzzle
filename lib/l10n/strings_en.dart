@@ -304,4 +304,11 @@ const Map<String, String> stringsEn = {
   "daily_milestones": "Streak rewards",
   "daily_blocks": "{n} blocks · {c} cells",
   "days_n": "{n} days",
+
+  // Themes added later
+  "theme_aurora": "Aurora",
+  "theme_sakura": "Cherry Blossom",
+  "theme_glacier": "Glacier",
+  "theme_lava": "Lava",
+  "theme_royal": "Royal",
 };

@@ -58,10 +58,16 @@ class _DailyScreenState extends State<DailyScreen>
     });
     final now = p.now();
     final day = DateTime(now.year, now.month, now.day);
-    Isolate.run(() => LevelGenerator.generateDaily(day)).then((l) {
+    _generateOffThread(day).then((l) {
       if (mounted) setState(() => _todayLevel = l);
     });
   }
+
+  /// Static so the closure sent to the isolate captures only [day]; a
+  /// closure built inside the State would drag the State (and its timer)
+  /// along, which can't be sent to another isolate.
+  static Future<Level> _generateOffThread(DateTime day) =>
+      Isolate.run(() => LevelGenerator.generateDaily(day));
 
   @override
   void dispose() {

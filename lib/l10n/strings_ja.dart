@@ -275,4 +275,11 @@ const Map<String, String> stringsJa = {
   "daily_milestones": "連続記録の報酬",
   "daily_blocks": "ブロック {n} 個・{c} マス",
   "days_n": "{n}日",
+
+  // Themes added later
+  "theme_aurora": "オーロラ",
+  "theme_sakura": "桜",
+  "theme_glacier": "氷河",
+  "theme_lava": "溶岩",
+  "theme_royal": "ロイヤル",
 };

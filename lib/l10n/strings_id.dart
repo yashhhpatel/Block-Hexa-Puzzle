@@ -294,4 +294,11 @@ const Map<String, String> stringsId = {
   "daily_milestones": "Hadiah beruntun",
   "daily_blocks": "{n} balok · {c} sel",
   "days_n": "{n} hari",
+
+  // Themes added later
+  "theme_aurora": "Aurora",
+  "theme_sakura": "Bunga Sakura",
+  "theme_glacier": "Gletser",
+  "theme_lava": "Lava",
+  "theme_royal": "Kerajaan",
 };

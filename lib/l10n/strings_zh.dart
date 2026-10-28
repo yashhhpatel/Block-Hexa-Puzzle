@@ -274,4 +274,11 @@ const Map<String, String> stringsZh = {
   "daily_milestones": "连续奖励",
   "daily_blocks": "{n} 个方块 · {c} 格",
   "days_n": "{n} 天",
+
+  // Themes added later
+  "theme_aurora": "极光",
+  "theme_sakura": "樱花",
+  "theme_glacier": "冰川",
+  "theme_lava": "熔岩",
+  "theme_royal": "皇家",
 };

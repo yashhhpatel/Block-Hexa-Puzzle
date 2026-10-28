@@ -178,8 +178,8 @@ class Quests {
     AchievementDef(
       'collector',
       Stat.itemsUnlocked,
-      [1, 3, 5, 8],
-      [20, 50, 100, 250],
+      [1, 3, 5, 8, 13],
+      [20, 50, 100, 250, 400],
       'a_items',
     ),
     AchievementDef(

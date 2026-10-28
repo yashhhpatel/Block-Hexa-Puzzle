@@ -293,4 +293,11 @@ const Map<String, String> stringsHi = {
   "daily_milestones": "स्ट्रीक इनाम",
   "daily_blocks": "{n} ब्लॉक · {c} सेल",
   "days_n": "{n} दिन",
+
+  // Themes added later
+  "theme_aurora": "ध्रुवीय ज्योति",
+  "theme_sakura": "चेरी ब्लॉसम",
+  "theme_glacier": "हिमनद",
+  "theme_lava": "लावा",
+  "theme_royal": "राजसी",
 };
