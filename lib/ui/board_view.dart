@@ -191,6 +191,9 @@ class BoardViewState extends State<BoardView>
 
   /// 0..1 progress of the celebration wave once the board is completed.
   double _winT = 0;
+
+  /// 0..1 level-start animation: cells pop in, then the tray fills.
+  double _intro = 1;
   bool _celebrating = false;
 
   GameState get game => widget.game;
@@ -218,6 +221,7 @@ class BoardViewState extends State<BoardView>
       _drag = null;
       _celebrating = false;
       _winT = 0;
+      _intro = 1;
     }
   }
 
@@ -289,7 +293,10 @@ class BoardViewState extends State<BoardView>
     var moving = false;
     for (var i = 0; i < _visuals.length; i++) {
       final v = _visuals[i]!;
-      final tc = i == _drag ? _finger + _dragGrab : _targetCenter(i);
+      var tc = i == _drag ? _finger + _dragGrab : _targetCenter(i);
+      if (_intro < 1 && i != _drag && !game.isPlaced(i)) {
+        tc = tc.translate(0, layout.trayRect.height * (1 - _trayRise));
+      }
       final ts = i == _drag ? layout.cell : _targetScale(i);
       final k = 1 - math.exp(-dt * (i == _drag ? 40 : 16));
       v.center = Offset.lerp(v.center, tc, k)!;
@@ -312,6 +319,10 @@ class BoardViewState extends State<BoardView>
       _winT = math.min(1, _winT + dt / 1.1);
       moving = true;
     }
+    if (_intro < 1) {
+      _intro = math.min(1, _intro + dt / 1.0);
+      moving = true;
+    }
     if (_almost) moving = true;
     setState(() {});
     if (!moving && _drag == null) {
@@ -324,6 +335,8 @@ class BoardViewState extends State<BoardView>
     if (_layout != null && _layout!.size == size) return;
     _layout = BoardLayout.compute(size, level);
     final fresh = _visuals.isEmpty;
+    // Respect the system "remove animations" setting.
+    if (fresh && !MediaQuery.of(context).disableAnimations) _intro = 0;
     _visuals
       ..clear()
       ..addAll(
@@ -338,6 +351,10 @@ class BoardViewState extends State<BoardView>
       );
     if (!_ticker.isActive) _ticker.start();
   }
+
+  /// How far the tray blocks have risen (0 = hidden below, 1 = in place).
+  double get _trayRise =>
+      Curves.easeOutCubic.transform(((_intro - 0.35) / 0.55).clamp(0.0, 1.0));
 
   // ---- input -------------------------------------------------------------
 
@@ -457,6 +474,7 @@ class BoardViewState extends State<BoardView>
               drag: _drag,
               preview: _preview,
               winT: _celebrating ? _winT : 0,
+              intro: _intro,
               almostPulse: _almost ? (math.sin(_time * 5) + 1) / 2 : -1,
             ),
           ),
@@ -476,6 +494,7 @@ class _BoardPainter extends CustomPainter {
   final int? drag;
   final Hex? preview;
   final double winT;
+  final double intro; // 0..1 level-start pop-in
   final double almostPulse; // <0 = off
 
   _BoardPainter({
@@ -488,6 +507,7 @@ class _BoardPainter extends CustomPainter {
     required this.drag,
     required this.preview,
     required this.winT,
+    required this.intro,
     required this.almostPulse,
   });
 
@@ -560,6 +580,16 @@ class _BoardPainter extends CustomPainter {
     }
   }
 
+  /// Pop-in scale of a board cell at [center] during the level intro: a
+  /// ripple from the middle outwards, overshooting slightly.
+  double _introScale(Offset center) {
+    if (intro >= 1) return 1;
+    final d =
+        (center - _boardCenter).distance / (layout.boardRect.longestSide * 0.5);
+    final local = ((intro * 1.8 - d * 0.9) / 0.45).clamp(0.0, 1.0);
+    return Curves.easeOutBack.transform(local);
+  }
+
   void _paintBoard(Canvas canvas) {
     final s = layout.cell;
     final fill = Paint()..color = theme.cell.withValues(alpha: 0.85);
@@ -575,10 +605,10 @@ class _BoardPainter extends CustomPainter {
 
     final outline = Path();
     for (final h in level.board) {
-      outline.addPath(
-        hexPath(layout.boardOrigin + h.toPixel(s), s, roundness: 0.1),
-        Offset.zero,
-      );
+      final center = layout.boardOrigin + h.toPixel(s);
+      final k = _introScale(center);
+      if (k <= 0) continue;
+      outline.addPath(hexPath(center, s * k, roundness: 0.1), Offset.zero);
     }
     canvas.drawPath(outline, glow);
     canvas.drawPath(outline, fill);
@@ -629,6 +659,10 @@ class _BoardPainter extends CustomPainter {
       final center = origin + c.toPixel(v.scale);
       var size = v.scale;
       var flash = 0.0;
+      if (intro < 1 && game.isPlaced(i)) {
+        size *= _introScale(center);
+        if (size <= 0) continue;
+      }
       if (winT > 0 && game.isPlaced(i)) {
         // A wave ripples out from the middle: each cell pops and flashes.
         final d = (center - _boardCenter).distance / maxDist;
