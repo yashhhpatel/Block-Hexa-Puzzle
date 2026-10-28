@@ -298,13 +298,17 @@ class _SettingsPanelState extends State<_SettingsPanel> {
                   ),
                 ),
                 if (trailing != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Text(
-                      trailing,
-                      style: const TextStyle(
-                        color: Colors.white60,
-                        fontSize: 13,
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Text(
+                        trailing,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white60,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ),

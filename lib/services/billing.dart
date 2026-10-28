@@ -35,7 +35,10 @@ enum BillingNotice {
 ///   missing has expired, been refunded or revoked, and ads come back.
 class BillingService {
   final Progress progress;
-  final InAppPurchase _iap;
+  /// False in tests/previews: no Google Play connection is ever opened.
+  final bool enabled;
+  final InAppPurchase? _iapOverride;
+  late final InAppPurchase _iap = _iapOverride ?? InAppPurchase.instance;
 
   /// True while ads should be hidden.
   final ValueNotifier<bool> premium;
@@ -51,14 +54,17 @@ class BillingService {
   StreamSubscription<List<PurchaseDetails>>? _sub;
   bool _buying = false;
 
-  BillingService(this.progress, {InAppPurchase? iap})
-    : _iap = iap ?? InAppPurchase.instance,
+  BillingService(this.progress, {this.enabled = true, InAppPurchase? iap})
+    : _iapOverride = iap,
       premium = ValueNotifier(progress.premiumCached);
+
+  bool get _active =>
+      enabled && defaultTargetPlatform == TargetPlatform.android;
 
   String get priceLabel => product?.price ?? kRemoveAdsFallbackPrice;
 
   Future<void> init() async {
-    if (defaultTargetPlatform != TargetPlatform.android) return;
+    if (!_active) return;
     _sub = _iap.purchaseStream.listen(_onPurchases, onError: (_) {});
     try {
       available = await _iap.isAvailable();
@@ -76,6 +82,7 @@ class BillingService {
   }
 
   Future<void> loadProduct() async {
+    if (!_active) return;
     try {
       final r = await _iap.queryProductDetails({kRemoveAdsProductId});
       // A subscription comes back once per offer; prefer the plain base plan.
@@ -97,6 +104,7 @@ class BillingService {
   }
 
   Future<void> buy() async {
+    if (!_active) return _notify(BillingNotice.storeUnavailable);
     if (!available) {
       available = await _safeAvailable();
       if (!available) return _notify(BillingNotice.storeUnavailable);
@@ -129,7 +137,10 @@ class BillingService {
   /// Asks Google Play for active subscriptions and updates ad status.
   /// With [silent] false the player is told what was found.
   Future<void> recheck({bool silent = false}) async {
-    if (defaultTargetPlatform != TargetPlatform.android) return;
+    if (!_active) {
+      if (!silent) _notify(BillingNotice.storeUnavailable);
+      return;
+    }
     if (!available) available = await _safeAvailable();
     if (!available) {
       if (!silent) _notify(BillingNotice.storeUnavailable);

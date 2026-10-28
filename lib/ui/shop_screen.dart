@@ -286,23 +286,26 @@ class _Tag extends StatelessWidget {
         width: 1.5,
       ),
     ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (coin) ...[const CoinIcon(size: 18), const SizedBox(width: 5)],
-        if (icon != null) ...[
-          Icon(icon, color: Colors.white, size: 18),
-          const SizedBox(width: 4),
-        ],
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-            fontSize: 15,
+    child: FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (coin) ...[const CoinIcon(size: 18), const SizedBox(width: 5)],
+          if (icon != null) ...[
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+              fontSize: 15,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }

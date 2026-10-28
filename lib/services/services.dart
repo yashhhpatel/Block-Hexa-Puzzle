@@ -16,7 +16,7 @@ class Services {
   /// Offline, ad-free services for tests and previews.
   factory Services.offline(Progress progress) {
     final sfx = Sfx(progress);
-    final billing = BillingService(progress);
+    final billing = BillingService(progress, enabled: false);
     return Services(
       progress,
       sfx,
