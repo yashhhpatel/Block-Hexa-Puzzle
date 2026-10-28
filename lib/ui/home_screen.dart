@@ -17,6 +17,7 @@ import 'quests_screen.dart';
 import 'settings_dialog.dart';
 import 'shop_screen.dart';
 import 'theme.dart';
+import 'time_attack_screen.dart';
 import 'widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -192,6 +193,16 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               const SizedBox(height: 12),
               _chestBar(),
+              const SizedBox(height: 12),
+              PillButton(
+                label: tr('time_attack'),
+                icon: Icons.timer_rounded,
+                width: 190,
+                color: const Color(0xFF7A55F0),
+                dark: const Color(0xFF4A2BB0),
+                onTap: () =>
+                    _open(TimeAttackScreen(services: widget.services)),
+              ),
               const Spacer(flex: 2),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
