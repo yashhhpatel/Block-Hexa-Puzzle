@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'hex.dart';
 import 'level.dart';
 
+/// Bump when level generation changes, so old saved boards are discarded.
+const int kSaveVersion = 2;
+
 /// Rules for one level: which pieces sit where, and whether the board is full.
 class GameState extends ChangeNotifier {
   final Level level;
@@ -15,9 +18,61 @@ class GameState extends ChangeNotifier {
 
   final Map<Hex, int> _occupant = {};
 
+  /// Snapshots for Undo; each entry is the board before one player move.
+  final List<_Snapshot> _history = [];
+  _Snapshot? _moveStart;
+
+  /// Hints spent on this attempt (affects the "no hints" star).
+  int hintsUsed = 0;
+
+  /// Blocks the player has put on the board this attempt.
+  int blocksPlaced = 0;
+
   GameState(this.level) : placements = List.filled(level.pieces.length, null);
 
   bool get isComplete => _occupant.length == level.board.length;
+
+  int get emptyCells => level.board.length - _occupant.length;
+
+  bool get canUndo => _history.isNotEmpty;
+
+  /// Call when the player starts dragging; pairs with [endMove].
+  void beginMove() => _moveStart = _snapshot();
+
+  /// Records the move for Undo if the board actually changed.
+  void endMove() {
+    final start = _moveStart;
+    _moveStart = null;
+    if (start == null) return;
+    if (!start.sameAs(_snapshot())) {
+      _history.add(start);
+      if (_history.length > 200) _history.removeAt(0);
+      notifyListeners();
+    }
+  }
+
+  void undo() {
+    if (_history.isEmpty) return;
+    _apply(_history.removeLast());
+    notifyListeners();
+  }
+
+  _Snapshot _snapshot() => _Snapshot([...placements], {...hinted});
+
+  void _apply(_Snapshot s) {
+    _occupant.clear();
+    hinted
+      ..clear()
+      ..addAll(s.hinted);
+    for (var i = 0; i < placements.length; i++) {
+      placements[i] = s.placements[i];
+      final a = placements[i];
+      if (a == null) continue;
+      for (final c in level.pieces[i].cellsAt(a)) {
+        _occupant[c] = i;
+      }
+    }
+  }
 
   int? occupantAt(Hex h) => _occupant[h];
 
@@ -34,6 +89,7 @@ class GameState extends ChangeNotifier {
 
   bool place(int piece, Hex anchor) {
     if (!canPlace(piece, anchor)) return false;
+    if (_moveStart != null) blocksPlaced++;
     _lift(piece);
     placements[piece] = anchor;
     for (final c in level.pieces[piece].cellsAt(anchor)) {
@@ -60,6 +116,7 @@ class GameState extends ChangeNotifier {
   }
 
   void reset() {
+    if (_occupant.isNotEmpty) _history.add(_snapshot());
     for (var i = 0; i < placements.length; i++) {
       placements[i] = null;
     }
@@ -88,6 +145,9 @@ class GameState extends ChangeNotifier {
       return null;
     }
     final target = level.solution[pick]!;
+    // A paid hint can't be undone, so earlier moves are no longer undoable.
+    _history.clear();
+    hintsUsed++;
     _lift(pick);
     for (final c in level.pieces[pick].cellsAt(target)) {
       final o = _occupant[c];
@@ -106,11 +166,15 @@ class GameState extends ChangeNotifier {
         'level': level.number,
         'placements': [for (final p in placements) p?.toJson()],
         'hinted': hinted.toList(),
+        'hintsUsed': hintsUsed,
+        'version': kSaveVersion,
       };
 
   /// Restores a saved in-progress board for the same level.
   void restore(Map<String, dynamic> json) {
     if (json['level'] != level.number) return;
+    if (json['version'] != kSaveVersion) return;
+    hintsUsed = (json['hintsUsed'] as int?) ?? 0;
     final saved = json['placements'] as List<dynamic>;
     if (saved.length != placements.length) return;
     final hints = (json['hinted'] as List<dynamic>).cast<int>().toSet();
@@ -120,5 +184,18 @@ class GameState extends ChangeNotifier {
     }
     hinted.addAll(hints.where((i) => placements[i] == level.solution[i]));
     notifyListeners();
+  }
+}
+
+class _Snapshot {
+  final List<Hex?> placements;
+  final Set<int> hinted;
+  _Snapshot(this.placements, this.hinted);
+
+  bool sameAs(_Snapshot o) {
+    for (var i = 0; i < placements.length; i++) {
+      if (placements[i] != o.placements[i]) return false;
+    }
+    return hinted.length == o.hinted.length && hinted.containsAll(o.hinted);
   }
 }
