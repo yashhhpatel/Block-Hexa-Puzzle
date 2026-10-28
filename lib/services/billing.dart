@@ -80,15 +80,17 @@ class BillingService {
       final r = await _iap.queryProductDetails({kRemoveAdsProductId});
       // A subscription comes back once per offer; prefer the plain base plan.
       final offers = r.productDetails.whereType<GooglePlayProductDetails>().toList();
+      if (offers.isEmpty) {
+        product = r.productDetails.isEmpty ? null : r.productDetails.first;
+        return;
+      }
       product = offers.firstWhere(
         (p) {
           final i = p.subscriptionIndex;
           final details = p.productDetails.subscriptionOfferDetails;
           return i != null && details != null && details[i].offerId == null;
         },
-        orElse: () => offers.isNotEmpty
-            ? offers.first
-            : (r.productDetails.isNotEmpty ? r.productDetails.first as GooglePlayProductDetails : throw StateError('none')),
+        orElse: () => offers.first,
       );
     } catch (_) {
       product = null;
