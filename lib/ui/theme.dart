@@ -291,3 +291,87 @@ class HexBorder extends ShapeBorder {
   @override
   ShapeBorder scale(double t) => this;
 }
+
+/// Colour-blind aid: a small white symbol per block colour, so colours can
+/// be told apart by shape too.
+void drawPattern(Canvas canvas, Offset c, double size, int colorIndex) {
+  final r = size * 0.28;
+  final paint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.8)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = math.max(1.2, size * 0.09)
+    ..strokeCap = StrokeCap.round;
+  final fill = Paint()..color = Colors.white.withValues(alpha: 0.8);
+  Path poly(int n, double rot) {
+    final path = Path();
+    for (var i = 0; i < n; i++) {
+      final a = rot + 2 * math.pi * i / n;
+      final p = c + Offset(math.cos(a), math.sin(a)) * r;
+      i == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
+    }
+    return path..close();
+  }
+
+  switch (colorIndex % 14) {
+    case 0: // circle
+      canvas.drawCircle(c, r, paint);
+    case 1: // square
+      canvas.drawRect(
+        Rect.fromCenter(center: c, width: r * 1.6, height: r * 1.6),
+        paint,
+      );
+    case 2: // triangle
+      canvas.drawPath(poly(3, -math.pi / 2), paint);
+    case 3: // diamond
+      canvas.drawPath(poly(4, 0), paint);
+    case 4: // plus
+      canvas.drawLine(c.translate(-r, 0), c.translate(r, 0), paint);
+      canvas.drawLine(c.translate(0, -r), c.translate(0, r), paint);
+    case 5: // cross
+      canvas.drawLine(
+        c.translate(-r * 0.75, -r * 0.75),
+        c.translate(r * 0.75, r * 0.75),
+        paint,
+      );
+      canvas.drawLine(
+        c.translate(r * 0.75, -r * 0.75),
+        c.translate(-r * 0.75, r * 0.75),
+        paint,
+      );
+    case 6: // filled dot
+      canvas.drawCircle(c, r * 0.5, fill);
+    case 7: // horizontal bars
+      canvas.drawLine(
+        c.translate(-r, -r * 0.45),
+        c.translate(r, -r * 0.45),
+        paint,
+      );
+      canvas.drawLine(
+        c.translate(-r, r * 0.45),
+        c.translate(r, r * 0.45),
+        paint,
+      );
+    case 8: // filled triangle (down)
+      canvas.drawPath(poly(3, math.pi / 2), fill);
+    case 9: // vertical bar
+      canvas.drawLine(c.translate(0, -r), c.translate(0, r), paint);
+    case 10: // filled square
+      canvas.drawRect(
+        Rect.fromCenter(center: c, width: r * 1.2, height: r * 1.2),
+        fill,
+      );
+    case 11: // two dots
+      canvas.drawCircle(c.translate(-r * 0.55, 0), r * 0.32, fill);
+      canvas.drawCircle(c.translate(r * 0.55, 0), r * 0.32, fill);
+    case 12: // chevron
+      canvas.drawPath(
+        Path()
+          ..moveTo(c.dx - r, c.dy - r * 0.4)
+          ..lineTo(c.dx, c.dy + r * 0.5)
+          ..lineTo(c.dx + r, c.dy - r * 0.4),
+        paint,
+      );
+    default: // hexagon ring
+      canvas.drawPath(poly(6, 0), paint);
+  }
+}

@@ -19,6 +19,11 @@ class BoardLayout {
   final double trayCell;
   final List<Offset> traySlots; // centre of each piece's tray bounding box
 
+  /// Tray page of each piece. Busy levels whose blocks would get too small
+  /// to grab are split over several pages instead of shrinking further.
+  final List<int> pageOf;
+  final int pageCount;
+
   BoardLayout._(
     this.size,
     this.boardRect,
@@ -27,7 +32,12 @@ class BoardLayout {
     this.boardOrigin,
     this.trayCell,
     this.traySlots,
+    this.pageOf,
+    this.pageCount,
   );
+
+  /// Smallest comfortable tray block (hex radius) before paging kicks in.
+  static double minTrayCell(Size size) => size.width / 34;
 
   factory BoardLayout.compute(Size size, Level level) {
     // Busy levels (Insane and beyond have up to ~22 blocks) get a taller
@@ -58,18 +68,59 @@ class BoardLayout {
         Offset((minX + maxX) / 2 * cell, (minY + maxY) / 2 * cell);
 
     // Tray: pack piece bounding boxes into centred rows, shrinking to fit.
+    final all = List.generate(n, (i) => i);
     var trayCell = math.min(cell * 0.62, size.width / 16);
     late List<Offset> slots;
     for (var i = 0; i < 30; i++) {
-      final packed = _pack(level.pieces, trayCell, trayRect.deflate(10));
+      final packed = _pack(level.pieces, all, trayCell, trayRect.deflate(10));
       if (packed != null) {
         slots = packed;
         break;
       }
       trayCell *= 0.92;
       if (i == 29) {
-        slots = _pack(level.pieces, trayCell, trayRect, force: true)!;
+        slots = _pack(level.pieces, all, trayCell, trayRect, force: true)!;
       }
+    }
+
+    // Too many blocks to show at a grabbable size: use pages instead.
+    final pageOf = List<int>.filled(n, 0);
+    var pageCount = 1;
+    final minTray = minTrayCell(size);
+    if (trayCell < minTray && n > 1) {
+      trayCell = minTray * 1.15;
+      // Room at the sides for the page arrows and below for the dots.
+      final area = Rect.fromLTRB(
+        trayRect.left + 44,
+        trayRect.top + 8,
+        trayRect.right - 44,
+        trayRect.bottom - 24,
+      );
+      final pages = <List<int>>[[]];
+      for (var i = 0; i < n; i++) {
+        final trial = [...pages.last, i];
+        if (pages.last.isNotEmpty &&
+            _pack(level.pieces, trial, trayCell, area) == null) {
+          pages.add([i]);
+        } else {
+          pages.last.add(i);
+        }
+      }
+      slots = List.filled(n, Offset.zero);
+      for (var pg = 0; pg < pages.length; pg++) {
+        final packed = _pack(
+          level.pieces,
+          pages[pg],
+          trayCell,
+          area,
+          force: true,
+        )!;
+        for (var k = 0; k < pages[pg].length; k++) {
+          slots[pages[pg][k]] = packed[k];
+          pageOf[pages[pg][k]] = pg;
+        }
+      }
+      pageCount = pages.length;
     }
     return BoardLayout._(
       size,
@@ -79,11 +130,16 @@ class BoardLayout {
       boardOrigin,
       trayCell,
       slots,
+      pageOf,
+      pageCount,
     );
   }
 
+  /// Packs the pieces listed in [ids] into centred rows. The result is
+  /// aligned with [ids]; null if they don't fit (unless [force]).
   static List<Offset>? _pack(
     List<Piece> pieces,
+    List<int> ids,
     double s,
     Rect area, {
     bool force = false,
@@ -92,7 +148,8 @@ class BoardLayout {
     final rows = <List<int>>[[]];
     final rowW = <double>[0];
     final rowH = <double>[0];
-    for (var i = 0; i < pieces.length; i++) {
+    for (var k = 0; k < ids.length; k++) {
+      final i = ids[k];
       final b = pieces[i].unitBounds;
       final w = b.width * s, h = b.height * s;
       if (rows.last.isNotEmpty && rowW.last + gap + w > area.width) {
@@ -102,21 +159,21 @@ class BoardLayout {
       }
       rowW[rowW.length - 1] += (rows.last.isEmpty ? 0 : gap) + w;
       rowH[rowH.length - 1] = math.max(rowH.last, h);
-      rows.last.add(i);
+      rows.last.add(k);
     }
     final totalH =
         rowH.fold<double>(0, (a, b) => a + b) + gap * 0.6 * (rows.length - 1);
     if (!force && (totalH > area.height || rowW.any((w) => w > area.width))) {
       return null;
     }
-    final slots = List<Offset>.filled(pieces.length, Offset.zero);
+    final slots = List<Offset>.filled(ids.length, Offset.zero);
     var y = area.center.dy - totalH / 2;
     for (var r = 0; r < rows.length; r++) {
       var x = area.center.dx - rowW[r] / 2;
-      for (final i in rows[r]) {
-        final b = pieces[i].unitBounds;
+      for (final k in rows[r]) {
+        final b = pieces[ids[k]].unitBounds;
         final w = b.width * s;
-        slots[i] = Offset(x + w / 2, y + rowH[r] / 2);
+        slots[k] = Offset(x + w / 2, y + rowH[r] / 2);
         x += w + gap;
       }
       y += rowH[r] + gap * 0.6;
@@ -124,11 +181,15 @@ class BoardLayout {
     return slots;
   }
 
-  /// Centroid position of [piece] when resting in the tray.
-  Offset trayCentroid(Level level, int piece) {
+  /// Centroid position of [piece] when resting in the tray, while tray
+  /// [page] is showing (pieces of other pages sit off to the side).
+  Offset trayCentroid(Level level, int piece, {int page = 0}) {
     final p = level.pieces[piece];
     final b = p.unitBounds;
-    return traySlots[piece] - b.center * trayCell + p.unitCentroid * trayCell;
+    return traySlots[piece] -
+        b.center * trayCell +
+        p.unitCentroid * trayCell +
+        Offset((pageOf[piece] - page) * size.width, 0);
   }
 
   /// Centroid position of [piece] when placed at [anchor].
@@ -163,6 +224,12 @@ class BoardView extends StatefulWidget {
   final VoidCallback onPlace;
   final VoidCallback onFail;
 
+  /// Shows an animated hand dragging the first block (level 1).
+  final bool tutorial;
+
+  /// Colour-blind mode: a small symbol on each block colour.
+  final bool patterns;
+
   const BoardView({
     super.key,
     required this.game,
@@ -171,6 +238,8 @@ class BoardView extends StatefulWidget {
     required this.onPick,
     required this.onPlace,
     required this.onFail,
+    this.tutorial = false,
+    this.patterns = false,
   });
 
   @override
@@ -199,6 +268,23 @@ class BoardViewState extends State<BoardView>
   double _intro = 1;
   bool _celebrating = false;
 
+  /// Tray page on show (busy levels only).
+  int _page = 0;
+
+  /// Landing bounce progress (0..1) per freshly placed block.
+  final Map<int, double> _land = {};
+
+  /// System or in-game "reduce motion": no sparks, bounces or waves.
+  bool _calm = false;
+
+  /// Tutorial hand loop time, -1 when hidden.
+  bool get _showTutorial =>
+      widget.tutorial &&
+      _intro >= 1 &&
+      _drag == null &&
+      !game.isComplete &&
+      game.placements.every((p) => p == null);
+
   GameState get game => widget.game;
   Level get level => game.level;
 
@@ -225,6 +311,8 @@ class BoardViewState extends State<BoardView>
       _celebrating = false;
       _winT = 0;
       _intro = 1;
+      _page = 0;
+      _land.clear();
     }
   }
 
@@ -240,6 +328,35 @@ class BoardViewState extends State<BoardView>
       _celebrating = false;
       _winT = 0;
     }
+    _autoTurnPage();
+    if (!_ticker.isActive) _ticker.start();
+  }
+
+  /// When every block on the shown tray page is used, show the next page
+  /// that still has blocks.
+  void _autoTurnPage() {
+    final l = _layout;
+    if (l == null || l.pageCount < 2 || _drag != null) return;
+    bool waiting(int i) => !game.isPlaced(i);
+    final here = [
+      for (var i = 0; i < level.pieces.length; i++)
+        if (l.pageOf[i] == _page && waiting(i)) i,
+    ];
+    if (here.isNotEmpty) return;
+    for (var i = 0; i < level.pieces.length; i++) {
+      if (waiting(i)) {
+        _page = l.pageOf[i];
+        return;
+      }
+    }
+  }
+
+  void _turnPage(int delta) {
+    final l = _layout;
+    if (l == null) return;
+    final next = (_page + delta).clamp(0, l.pageCount - 1);
+    if (next == _page) return;
+    setState(() => _page = next);
     if (!_ticker.isActive) _ticker.start();
   }
 
@@ -261,6 +378,7 @@ class BoardViewState extends State<BoardView>
   }
 
   void _burst(Offset at, Color color, int n, double speed) {
+    if (_calm) return;
     for (var k = 0; k < n; k++) {
       final a = _rng.nextDouble() * 2 * math.pi;
       final v = speed * (2 + _rng.nextDouble() * 3);
@@ -278,7 +396,7 @@ class BoardViewState extends State<BoardView>
   Offset _targetCenter(int i) {
     final a = game.placements[i];
     return a == null
-        ? _layout!.trayCentroid(level, i)
+        ? _layout!.trayCentroid(level, i, page: _page)
         : _layout!.boardCentroid(level, i, a);
   }
 
@@ -297,6 +415,14 @@ class BoardViewState extends State<BoardView>
     for (var i = 0; i < _visuals.length; i++) {
       final v = _visuals[i]!;
       var tc = i == _drag ? _finger + _dragGrab : _targetCenter(i);
+      final pv = _preview;
+      if (i == _drag && pv != null) {
+        // Magnet: near a valid spot the block leans into it.
+        final snap = layout.boardCentroid(level, i, pv);
+        final d = (snap - tc).distance;
+        final r = layout.cell * 1.3;
+        if (d < r) tc = Offset.lerp(tc, snap, 0.4 * (1 - d / r))!;
+      }
       if (_intro < 1 && i != _drag && !game.isPlaced(i)) {
         tc = tc.translate(0, layout.trayRect.height * (1 - _trayRise));
       }
@@ -326,7 +452,12 @@ class BoardViewState extends State<BoardView>
       _intro = math.min(1, _intro + dt / 1.0);
       moving = true;
     }
-    if (_almost) moving = true;
+    if (_land.isNotEmpty) {
+      _land.updateAll((_, p) => p + dt / 0.32);
+      _land.removeWhere((_, p) => p >= 1);
+      moving = true;
+    }
+    if (_almost || _showTutorial) moving = true;
     setState(() {});
     if (!moving && _drag == null) {
       _ticker.stop();
@@ -370,7 +501,7 @@ class BoardViewState extends State<BoardView>
     int? best;
     var bestD = l.trayCell * 1.9;
     for (var i = 0; i < level.pieces.length; i++) {
-      if (game.isPlaced(i)) continue;
+      if (game.isPlaced(i) || l.pageOf[i] != _page) continue;
       final v = _visuals[i]!;
       final origin = v.center - level.pieces[i].unitCentroid * v.scale;
       for (final c in level.pieces[i].cells) {
@@ -426,6 +557,7 @@ class BoardViewState extends State<BoardView>
       for (final c in level.pieces[i].cellsAt(anchor)) {
         _burst(l.boardOrigin + c.toPixel(l.cell), color, 2, l.cell * 0.35);
       }
+      if (!_calm) _land[i] = 0;
       widget.onPlace();
     } else {
       widget.onFail();
@@ -456,10 +588,12 @@ class BoardViewState extends State<BoardView>
 
   @override
   Widget build(BuildContext context) {
+    _calm = MediaQuery.of(context).disableAnimations;
     return LayoutBuilder(
       builder: (context, constraints) {
         _ensureLayout(constraints.biggest);
-        return Listener(
+        final l = _layout!;
+        final board = Listener(
           behavior: HitTestBehavior.opaque,
           onPointerDown: _onDown,
           onPointerMove: _onMove,
@@ -479,14 +613,102 @@ class BoardViewState extends State<BoardView>
                 theme: widget.theme,
                 drag: _drag,
                 preview: _preview,
-                winT: _celebrating ? _winT : 0,
+                winT: _celebrating && !_calm ? _winT : 0,
                 intro: _intro,
-                almostPulse: _almost ? (math.sin(_time * 5) + 1) / 2 : -1,
+                almostPulse: !_almost
+                    ? -1
+                    : (_calm ? 0.5 : (math.sin(_time * 5) + 1) / 2),
+                page: _page,
+                land: _land,
+                patterns: widget.patterns,
+                tutorialT: _showTutorial ? (_time / 2.6) % 1.0 : -1,
               ),
             ),
           ),
         );
+        if (l.pageCount < 2) return board;
+        return Stack(
+          children: [
+            board,
+            Positioned(
+              left: 2,
+              top: l.trayRect.center.dy - 22,
+              child: _PageArrow(
+                icon: Icons.chevron_left_rounded,
+                enabled: _page > 0,
+                onTap: () => _turnPage(-1),
+              ),
+            ),
+            Positioned(
+              right: 2,
+              top: l.trayRect.center.dy - 22,
+              child: _PageArrow(
+                icon: Icons.chevron_right_rounded,
+                enabled: _page < l.pageCount - 1,
+                onTap: () => _turnPage(1),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 6,
+              child: IgnorePointer(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (var i = 0; i < l.pageCount; i++)
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: i == _page ? 16 : 7,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          color: i == _page
+                              ? widget.theme.line
+                              : Colors.white.withValues(alpha: 0.25),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
       },
+    );
+  }
+}
+
+class _PageArrow extends StatelessWidget {
+  final IconData icon;
+  final bool enabled;
+  final VoidCallback onTap;
+  const _PageArrow({
+    required this.icon,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: enabled ? onTap : null,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: enabled ? 1 : 0.25,
+        child: Container(
+          width: 38,
+          height: 44,
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.35),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+          ),
+          child: Icon(icon, color: Colors.white, size: 30),
+        ),
+      ),
     );
   }
 }
@@ -503,6 +725,10 @@ class _BoardPainter extends CustomPainter {
   final double winT;
   final double intro; // 0..1 level-start pop-in
   final double almostPulse; // <0 = off
+  final int page;
+  final Map<int, double> land;
+  final bool patterns;
+  final double tutorialT; // <0 = off
 
   _BoardPainter({
     required this.game,
@@ -516,6 +742,10 @@ class _BoardPainter extends CustomPainter {
     required this.winT,
     required this.intro,
     required this.almostPulse,
+    required this.page,
+    required this.land,
+    required this.patterns,
+    required this.tutorialT,
   });
 
   Level get level => game.level;
@@ -545,6 +775,56 @@ class _BoardPainter extends CustomPainter {
         Paint()..color = s.color.withValues(alpha: s.life.clamp(0.0, 1.0)),
       );
     }
+    if (tutorialT >= 0) _paintTutorial(canvas);
+  }
+
+  /// A ghost of the first block glides from the tray to its spot on the
+  /// board with a hand "dragging" it, on a loop until the player moves one.
+  void _paintTutorial(Canvas canvas) {
+    var i = -1;
+    for (var k = 0; k < level.pieces.length; k++) {
+      if (level.solution[k] != null && layout.pageOf[k] == page) {
+        i = k;
+        break;
+      }
+    }
+    if (i < 0) return;
+    final p = level.pieces[i];
+    final from = layout.trayCentroid(level, i, page: page);
+    final to = layout.boardCentroid(level, i, level.solution[i]!);
+    final t = tutorialT;
+    final move = Curves.easeInOutCubic.transform(
+      ((t - 0.15) / 0.6).clamp(0, 1),
+    );
+    final fade = t < 0.1 ? t / 0.1 : (t > 0.85 ? (1 - (t - 0.85) / 0.15) : 1.0);
+    final centre = Offset.lerp(from, to, move)!;
+    final scale = layout.trayCell + (layout.cell - layout.trayCell) * move;
+    final origin = centre - p.unitCentroid * scale;
+    final color = kBlockColors[p.colorIndex % kBlockColors.length];
+    for (final c in p.cells) {
+      drawBlock(
+        canvas,
+        origin + c.toPixel(scale),
+        scale,
+        color,
+        skin,
+        opacity: 0.55 * fade,
+      );
+    }
+    final hand = TextPainter(
+      text: TextSpan(
+        text: String.fromCharCode(Icons.touch_app_rounded.codePoint),
+        style: TextStyle(
+          fontSize: layout.cell * 1.6,
+          fontFamily: Icons.touch_app_rounded.fontFamily,
+          package: Icons.touch_app_rounded.fontPackage,
+          color: Colors.white.withValues(alpha: fade),
+          shadows: const [Shadow(color: Colors.black54, blurRadius: 6)],
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    hand.paint(canvas, centre + Offset(-hand.width * 0.3, scale * 0.6));
   }
 
   void _paintTray(Canvas canvas) {
@@ -577,7 +857,8 @@ class _BoardPainter extends CustomPainter {
       if (!game.isPlaced(i) && i != drag) continue;
       final p = level.pieces[i];
       final origin =
-          layout.trayCentroid(level, i) - p.unitCentroid * layout.trayCell;
+          layout.trayCentroid(level, i, page: page) -
+          p.unitCentroid * layout.trayCell;
       for (final c in p.cells) {
         canvas.drawPath(
           hexPath(origin + c.toPixel(layout.trayCell), layout.trayCell * 0.92),
@@ -670,6 +951,11 @@ class _BoardPainter extends CustomPainter {
         size *= _introScale(center);
         if (size <= 0) continue;
       }
+      final lp = land[i];
+      if (lp != null) {
+        // Landing squash-and-bounce: dips, overshoots slightly, settles.
+        size *= 1 - 0.13 * math.sin(math.pi * 2 * lp) * (1 - lp);
+      }
       if (winT > 0 && game.isPlaced(i)) {
         // A wave ripples out from the middle: each cell pops and flashes.
         final d = (center - _boardCenter).distance / maxDist;
@@ -679,6 +965,7 @@ class _BoardPainter extends CustomPainter {
         flash = 0.6 * bump;
       }
       drawBlock(canvas, center, size, color, skin);
+      if (patterns) drawPattern(canvas, center, size, p.colorIndex);
       if (flash > 0) {
         canvas.drawPath(
           hexPath(center, size * 0.95),
