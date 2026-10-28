@@ -194,8 +194,9 @@ class LevelGenerator {
   /// Splits [cells] into [k] connected regions sized within [minS]..[maxS].
   static List<Set<Hex>>? _partition(
       math.Random rng, Set<Hex> cells, int k, int minS, int maxS) {
+    k = math.min(k, cells.length ~/ minS);
     if (k <= 0) return null;
-    if (cells.length < k * minS || cells.length > k * (maxS + 1)) {
+    if (cells.length > k * maxS) {
       // Allow slightly larger blocks rather than failing on big boards.
       maxS = (cells.length / k).ceil() + 1;
     }
