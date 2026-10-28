@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../meta/chapters.dart';
+import '../services/progress.dart';
 import '../services/services.dart';
 import '../services/sfx.dart';
+import 'chapters_screen.dart';
+import 'daily_screen.dart';
 import 'game_screen.dart';
-import 'level_select_screen.dart';
+import 'login_bonus_dialog.dart';
+import 'quests_screen.dart';
 import 'settings_dialog.dart';
+import 'shop_screen.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -22,6 +28,18 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this, duration: const Duration(milliseconds: 1400))
     ..repeat(reverse: true);
 
+  Progress get p => widget.services.progress;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await maybeShowLoginBonus(context, widget.services);
+      if (mounted) setState(() {});
+    });
+  }
+
   @override
   void dispose() {
     _pulse.dispose();
@@ -32,20 +50,24 @@ class _HomeScreenState extends State<HomeScreen>
     widget.services.sfx.play(Sound.button);
     await Navigator.of(context).push(PageRouteBuilder(
       pageBuilder: (_, _, _) => screen,
-      transitionDuration: const Duration(milliseconds: 300),
-      transitionsBuilder: (_, a, _, child) =>
-          FadeTransition(opacity: a, child: child),
+      transitionDuration: const Duration(milliseconds: 280),
+      transitionsBuilder: (_, a, _, child) => FadeTransition(opacity: a, child: child),
     ));
+    if (!mounted) return;
+    // A new day may have started while the player was in another screen.
+    await maybeShowLoginBonus(context, widget.services);
     if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final p = widget.services.progress;
     final level = p.currentLevel;
+    final chapter = Chapters.forLevel(level);
+    final dailyDone = p.isDailySolved(p.today);
     return Scaffold(
       body: GameBackground(
         animate: p.backgroundFx,
+        theme: p.theme,
         child: SafeArea(
           child: Column(children: [
             Padding(
@@ -62,23 +84,36 @@ class _HomeScreenState extends State<HomeScreen>
                   },
                 ),
                 const Spacer(),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(6, 4, 12, 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(children: [
+                    const Icon(Icons.star_rounded, color: AppColors.gold, size: 24),
+                    const SizedBox(width: 4),
+                    Text('${p.totalStars}',
+                        style: const TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w800, fontSize: 17)),
+                  ]),
+                ),
+                const SizedBox(width: 8),
                 CoinPill(coins: p.coins),
               ]),
             ),
             const Spacer(flex: 2),
             const _Logo(),
-            const Spacer(flex: 3),
+            const Spacer(flex: 2),
             AnimatedBuilder(
               animation: _pulse,
               builder: (_, child) => Transform.scale(
-                  scale: 1 + 0.05 * Curves.easeInOut.transform(_pulse.value),
-                  child: child),
+                  scale: 1 + 0.05 * Curves.easeInOut.transform(_pulse.value), child: child),
               child: GestureDetector(
-                onTap: () => _open(
-                    GameScreen(services: widget.services, level: level)),
+                onTap: () => _open(GameScreen(services: widget.services, level: level)),
                 child: Container(
-                  width: 150,
-                  height: 150,
+                  width: 140,
+                  height: 140,
                   decoration: const ShapeDecoration(
                     shape: HexBorder(),
                     gradient: LinearGradient(
@@ -86,29 +121,143 @@ class _HomeScreenState extends State<HomeScreen>
                       end: Alignment.bottomCenter,
                       colors: [Color(0xFFFF8DB5), AppColors.accent, AppColors.accentDark],
                     ),
-                    shadows: [
-                      BoxShadow(color: Color(0x99FF4F8B), blurRadius: 30),
-                    ],
+                    shadows: [BoxShadow(color: Color(0x99FF4F8B), blurRadius: 30)],
                   ),
-                  child: const Icon(Icons.play_arrow_rounded,
-                      color: Colors.white, size: 86),
+                  child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 80),
                 ),
               ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             OutlinedTitle('Level $level', size: 26),
+            Text('${chapter.name} · ${chapter.positionOf(level)}/${chapter.count}',
+                style: TextStyle(
+                    color: chapter.color, fontWeight: FontWeight.w800, fontSize: 14)),
+            const SizedBox(height: 12),
+            _chestBar(),
             const Spacer(flex: 2),
-            PillButton(
-              label: 'Levels',
-              icon: Icons.grid_view_rounded,
-              color: AppColors.button,
-              dark: AppColors.buttonDark,
-              onTap: () => _open(LevelSelectScreen(services: widget.services)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                _MenuTile(
+                  icon: Icons.calendar_month_rounded,
+                  label: 'Daily',
+                  color: const Color(0xFFFF8A2B),
+                  badge: dailyDone ? 0 : 1,
+                  sub: p.streak > 0 ? '🔥 ${p.streak}' : null,
+                  onTap: () => _open(DailyScreen(services: widget.services)),
+                ),
+                _MenuTile(
+                  icon: Icons.task_alt_rounded,
+                  label: 'Quests',
+                  color: const Color(0xFF8E5CFF),
+                  badge: p.claimableRewards,
+                  onTap: () => _open(QuestsScreen(services: widget.services)),
+                ),
+                _MenuTile(
+                  icon: Icons.storefront_rounded,
+                  label: 'Shop',
+                  color: const Color(0xFF2FB58A),
+                  onTap: () => _open(ShopScreen(services: widget.services)),
+                ),
+                _MenuTile(
+                  icon: Icons.grid_view_rounded,
+                  label: 'Levels',
+                  color: AppColors.button,
+                  onTap: () => _open(ChaptersScreen(services: widget.services)),
+                ),
+              ]),
             ),
-            const Spacer(flex: 2),
           ]),
         ),
       ),
+    );
+  }
+
+  Widget _chestBar() {
+    final c = p.chestProgress;
+    return SizedBox(
+      width: 220,
+      child: Row(children: [
+        const Icon(Icons.inventory_2_rounded, color: Color(0xFF6CF0B8), size: 24),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Next chest: $c/${Progress.chestSize} levels',
+                style: const TextStyle(
+                    color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 3),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: c / Progress.chestSize,
+                minHeight: 8,
+                backgroundColor: Colors.white12,
+                color: const Color(0xFF6CF0B8),
+              ),
+            ),
+          ]),
+        ),
+      ]),
+    );
+  }
+}
+
+class _MenuTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final int badge;
+  final String? sub;
+  final VoidCallback onTap;
+
+  const _MenuTile({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+    this.badge = 0,
+    this.sub,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        NotifyDot(
+          count: badge,
+          child: Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color.lerp(color, Colors.white, 0.3)!, color,
+                  Color.lerp(color, Colors.black, 0.3)!],
+              ),
+              border: Border.all(color: Colors.white, width: 2.5),
+              boxShadow: const [
+                BoxShadow(color: Colors.black38, offset: Offset(0, 3), blurRadius: 5)
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 32),
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(label,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14)),
+        SizedBox(
+          height: 16,
+          child: sub == null
+              ? null
+              : Text(sub!,
+                  style: const TextStyle(
+                      color: Color(0xFFFFB070), fontWeight: FontWeight.w800, fontSize: 12)),
+        ),
+      ]),
     );
   }
 }
@@ -131,8 +280,8 @@ class _Logo extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 3),
             child: Container(
-              width: 64,
-              height: 64,
+              width: 60,
+              height: 60,
               decoration: ShapeDecoration(
                 shape: const HexBorder(),
                 gradient: LinearGradient(
@@ -146,14 +295,14 @@ class _Logo extends StatelessWidget {
               child: Text(letters[i],
                   style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 34,
+                      fontSize: 32,
                       fontWeight: FontWeight.w900,
                       shadows: [Shadow(color: Colors.black38, offset: Offset(0, 2), blurRadius: 3)])),
             ),
           ),
       ]),
-      const SizedBox(height: 10),
-      const OutlinedTitle('FILL PUZZLE', size: 34),
+      const SizedBox(height: 8),
+      const OutlinedTitle('FILL PUZZLE', size: 32),
     ]);
   }
 }
