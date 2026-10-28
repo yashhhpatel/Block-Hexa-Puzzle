@@ -52,6 +52,7 @@ class Sfx {
     final m = _music;
     if (m == null) return;
     if (progress.musicOn && _appVisible && !_adShowing) {
+      m.setVolume(0.35 * progress.musicVolume).catchError((_) {});
       m.resume().catchError((_) {});
     } else {
       m.pause().catchError((_) {});
@@ -73,7 +74,11 @@ class Sfx {
     if (progress.soundOn) {
       final p = _players[s];
       if (p != null) {
-        p.stop().then((_) => p.resume()).catchError((_) {});
+        p
+            .stop()
+            .then((_) => p.setVolume(progress.soundVolume))
+            .then((_) => p.resume())
+            .catchError((_) {});
       }
     }
     if (progress.vibrationOn) {

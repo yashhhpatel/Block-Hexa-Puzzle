@@ -85,6 +85,9 @@ class AchievementStatus {
 /// Local, offline save data and the rules for earning and spending it.
 class Progress {
   static const firstClearReward = 5;
+
+  /// Price of a hint after the level's free one (or watch a video).
+  static const hintCoinCost = 50;
   static const coinsPerNewStar = 3;
   static const startingCoins = 100;
   static const chestSize = 10;
@@ -132,15 +135,39 @@ class Progress {
 
   // ---- settings -----------------------------------------------------------
 
-  bool get soundOn => _prefs.getBool('sound') ?? true;
-  bool get musicOn => _prefs.getBool('music') ?? true;
+  /// Sound and music volume, 0..1 (0 = off). Older saves only had on/off
+  /// switches, which map to full volume or silence.
+  double get soundVolume =>
+      _prefs.getDouble('soundVol') ??
+      ((_prefs.getBool('sound') ?? true) ? 1 : 0);
+  double get musicVolume =>
+      _prefs.getDouble('musicVol') ??
+      ((_prefs.getBool('music') ?? true) ? 1 : 0);
+  bool get soundOn => soundVolume > 0;
+  bool get musicOn => musicVolume > 0;
+
+  /// Colour-blind aid: symbols on blocks.
+  bool get colorBlind => _prefs.getBool('colorBlind') ?? false;
+
+  /// Calmer visuals: no particles, bounces, waves, transitions or drifting.
+  bool get reduceMotion => _prefs.getBool('reduceMotion') ?? false;
+
+  /// Daily Puzzle streak reminder notification.
+  bool get remindersOn => _prefs.getBool('reminders') ?? true;
   bool get vibrationOn => _prefs.getBool('vibration') ?? true;
   bool get backgroundFx => _prefs.getBool('bgfx') ?? true;
   bool get tutorialSeen => _prefs.getBool('tutorial') ?? false;
   bool get decoyTipSeen => _prefs.getBool('decoyTip') ?? false;
 
-  Future<void> setSound(bool v) => _prefs.setBool('sound', v);
-  Future<void> setMusic(bool v) => _prefs.setBool('music', v);
+  Future<void> setSound(bool v) => setSoundVolume(v ? 1 : 0);
+  Future<void> setMusic(bool v) => setMusicVolume(v ? 1 : 0);
+  Future<void> setSoundVolume(double v) =>
+      _prefs.setDouble('soundVol', v.clamp(0.0, 1.0));
+  Future<void> setMusicVolume(double v) =>
+      _prefs.setDouble('musicVol', v.clamp(0.0, 1.0));
+  Future<void> setColorBlind(bool v) => _prefs.setBool('colorBlind', v);
+  Future<void> setReduceMotion(bool v) => _prefs.setBool('reduceMotion', v);
+  Future<void> setReminders(bool v) => _prefs.setBool('reminders', v);
   Future<void> setVibration(bool v) => _prefs.setBool('vibration', v);
   Future<void> setBackgroundFx(bool v) => _prefs.setBool('bgfx', v);
   Future<void> setTutorialSeen() => _prefs.setBool('tutorial', true);
@@ -584,4 +611,43 @@ class Progress {
 
   Future<void> saveBoard(Map<String, dynamic> json) => _putMap('board', json);
   Future<void> clearBoard() => _prefs.remove('board');
+
+  // ---- time attack ----------------------------------------------------------
+
+  int get timeAttackBest => _prefs.getInt('taBest') ?? 0;
+
+  /// Records a Time Attack score; returns true if it is a new best.
+  Future<bool> recordTimeAttack(int solved) async {
+    if (solved <= timeAttackBest) return false;
+    await _prefs.setInt('taBest', solved);
+    return true;
+  }
+
+  // ---- reset --------------------------------------------------------------
+
+  /// Settings, language and the Remove Ads status survive a progress reset.
+  static const _keptOnReset = {
+    'soundVol',
+    'musicVol',
+    'sound',
+    'music',
+    'vibration',
+    'bgfx',
+    'lang',
+    'colorBlind',
+    'reduceMotion',
+    'reminders',
+    'premium',
+    'premiumChecked',
+  };
+
+  /// Wipes levels, stars, coins, streaks, quests, achievements, statistics
+  /// and shop items. Settings, language and purchases are kept.
+  Future<void> resetProgress() async {
+    for (final key in _prefs.getKeys().toList()) {
+      if (!_keptOnReset.contains(key)) await _prefs.remove(key);
+    }
+    // Start the achievement baseline afresh.
+    await _seedAchievements();
+  }
 }

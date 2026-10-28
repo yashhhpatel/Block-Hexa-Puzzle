@@ -20,6 +20,8 @@ import 'theme.dart';
 import 'widgets.dart';
 
 /// Plays either a main level ([level]) or a Daily Puzzle ([dailyDate]).
+enum _HintPay { video, coins }
+
 class GameScreen extends StatefulWidget {
   final Services services;
   final int? level;
@@ -327,12 +329,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   bool _hintBusy = false;
 
   /// One free hint per level; after that, one rewarded video = one hint.
+  /// One free hint per level; after that each hint costs either one
+  /// rewarded video or [Progress.hintCoinCost] coins, the player's choice.
   Future<void> _hint() async {
     final g = _game;
     if (g == null || g.isComplete || _hintBusy) return;
     if (g.freeHintAvailable) {
       _giveHint(g);
-      // The next hint will need a video: get one ready now.
+      // The next hint may need a video: get one ready now.
       widget.services.ads.preloadRewarded();
       return;
     }
@@ -340,31 +344,39 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     // Neither the question nor the video counts against the target time.
     _hintBusy = true;
     _clock.stop();
-    final watch = await _confirmVideo();
+    final choice = await _askHowToPay();
     final ads = widget.services.ads;
-    var earned = false;
-    var unavailable = false;
-    if (watch == true && mounted && _game == g && !g.isComplete) {
-      if (ads.rewardedReady) {
-        earned = await ads.showRewarded();
-      } else {
-        ads.preloadRewarded();
-        unavailable = true;
+    var give = false;
+    String? problem;
+    if (mounted && _game == g && !g.isComplete) {
+      switch (choice) {
+        case _HintPay.coins:
+          if (progress.spendCoins(Progress.hintCoinCost)) {
+            give = true;
+          } else {
+            problem = tr('shop_no_coins');
+          }
+        case _HintPay.video:
+          if (!ads.rewardedReady) {
+            ads.preloadRewarded();
+            problem = tr('hint_ad_unavailable');
+          } else if (await ads.showRewarded()) {
+            give = true;
+          } else {
+            problem = tr('hint_ad_incomplete');
+          }
+        case null:
+          break;
       }
     }
     _hintBusy = false;
     if (!mounted || _game != g) return;
     if (!g.isComplete) _clock.start();
-    if (watch != true) return;
-    if (unavailable) {
-      _snack(tr('hint_ad_unavailable'));
-      return;
-    }
-    if (earned) {
+    if (give) {
       _giveHint(g);
-    } else {
+    } else if (problem != null) {
       sfx.play(Sound.fail);
-      _snack(tr('hint_ad_incomplete'));
+      _snack(problem);
     }
   }
 
@@ -390,13 +402,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       );
   }
 
-  Future<bool?> _confirmVideo() {
-    return showDialog<bool>(
+  Future<_HintPay?> _askHowToPay() {
+    final canPay = progress.coins >= Progress.hintCoinCost;
+    return showDialog<_HintPay>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF15276A),
         icon: const Icon(
-          Icons.ondemand_video_rounded,
+          Icons.lightbulb_rounded,
           color: AppColors.gold,
           size: 40,
         ),
@@ -409,20 +422,32 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           ),
         ),
         content: Text(
-          tr('hint_watch_body'),
+          tr('hint_more_body', {'n': Progress.hintCoinCost}),
           textAlign: TextAlign.center,
           style: const TextStyle(color: Colors.white70, fontSize: 15),
         ),
         actionsAlignment: MainAxisAlignment.center,
+        actionsOverflowAlignment: OverflowBarAlignment.center,
+        actionsOverflowDirection: VerticalDirection.down,
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(tr('cancel')),
+          FilledButton.icon(
+            onPressed: () => Navigator.pop(context, _HintPay.video),
+            icon: const Icon(Icons.ondemand_video_rounded),
+            label: Text(tr('hint_watch_btn')),
           ),
           FilledButton.icon(
-            onPressed: () => Navigator.pop(context, true),
-            icon: const Icon(Icons.play_arrow_rounded),
-            label: Text(tr('hint_watch_btn')),
+            style: FilledButton.styleFrom(
+              backgroundColor: canPay ? AppColors.gold : Colors.white24,
+              foregroundColor: canPay ? const Color(0xFF3A2300) : Colors.white70,
+            ),
+            // Still tappable when short of coins, to explain why not.
+            onPressed: () => Navigator.pop(context, _HintPay.coins),
+            icon: const CoinIcon(size: 18),
+            label: Text(tr('hint_use_coins', {'n': Progress.hintCoinCost})),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(tr('cancel')),
           ),
         ],
       ),
@@ -459,6 +484,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                             onPick: () => sfx.play(Sound.pick),
                             onPlace: () => sfx.play(Sound.place),
                             onFail: () => sfx.play(Sound.fail),
+                            tutorial:
+                                g.level.number == 1 && !progress.tutorialSeen,
+                            patterns: progress.colorBlind,
                           ),
                   ),
                   _bottomBar(g),

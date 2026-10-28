@@ -110,6 +110,14 @@ class LevelGenerator {
     );
   }
 
+  /// A one-off puzzle for Time Attack: random [seed], difficulty as if it
+  /// were level [difficultyLevel]. Not part of the level progression.
+  static Level generateFree(int seed, int difficultyLevel) => _generate(
+    seed: _seedFor(seed),
+    difficultyLevel: difficultyLevel,
+    number: 0,
+  );
+
   /// From level 15 on, boards are re-rolled (deterministically) until one has
   /// a single solution, so harder levels can't be brute-forced by accident.
   static const uniqueFromLevel = 15;
