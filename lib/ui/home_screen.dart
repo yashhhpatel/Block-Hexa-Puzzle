@@ -74,14 +74,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<void> _open(Widget screen) async {
     widget.services.sfx.play(Sound.button);
-    await Navigator.of(context).push(
-      PageRouteBuilder(
-        pageBuilder: (_, _, _) => screen,
-        transitionDuration: const Duration(milliseconds: 280),
-        transitionsBuilder: (_, a, _, child) =>
-            FadeTransition(opacity: a, child: child),
-      ),
-    );
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
     if (!mounted) return;
     // A new day may have started while the player was in another screen.
     await maybeShowLoginBonus(context, widget.services);

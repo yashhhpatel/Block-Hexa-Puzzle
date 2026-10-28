@@ -44,10 +44,7 @@ class HexPageTransitionsBuilder extends PageTransitionsBuilder {
           );
         }
         if (reveal.value >= 1) return page;
-        return ClipPath(
-          clipper: _HexReveal(reveal.value),
-          child: page,
-        );
+        return ClipPath(clipper: _HexReveal(reveal.value), child: page);
       },
     );
   }

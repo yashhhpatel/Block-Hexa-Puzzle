@@ -7,6 +7,7 @@ import 'services/services.dart';
 import 'ui/achievement_toast.dart';
 import 'ui/home_screen.dart';
 import 'ui/theme.dart';
+import 'ui/transitions.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -93,6 +94,13 @@ class _HexaAppState extends State<HexaApp> with WidgetsBindingObserver {
         colorSchemeSeed: AppColors.accent,
         scaffoldBackgroundColor: AppColors.bgBottom,
         useMaterial3: true,
+        // Hexagon reveal for every screen change (see transitions.dart).
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: HexPageTransitionsBuilder(),
+            TargetPlatform.iOS: HexPageTransitionsBuilder(),
+          },
+        ),
       ),
       // Achievement unlocks pop up over every screen.
       builder: (context, child) => AchievementToaster(
