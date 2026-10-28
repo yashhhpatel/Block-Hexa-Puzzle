@@ -32,7 +32,13 @@ class AchievementDef {
   final List<int> tiers;
   final List<int> rewards;
   final String titleKey;
-  const AchievementDef(this.id, this.stat, this.tiers, this.rewards, this.titleKey);
+  const AchievementDef(
+    this.id,
+    this.stat,
+    this.tiers,
+    this.rewards,
+    this.titleKey,
+  );
 
   String title(int target) => tr(titleKey, {'n': target});
 }
@@ -69,21 +75,61 @@ class Quests {
   }
 
   static const achievements = <AchievementDef>[
-    AchievementDef('levels', Stat.levelsCleared, [10, 50, 100, 250, 500, 1000],
-        [20, 50, 100, 200, 400, 800], 'a_levels'),
-    AchievementDef('stars', Stat.starsEarned, [30, 150, 500, 1500, 3000],
-        [25, 75, 150, 300, 600], 'a_stars'),
-    AchievementDef('streak', Stat.bestStreak, [3, 7, 30, 100, 365],
-        [30, 75, 300, 800, 2000], 'a_streak'),
-    AchievementDef('daily', Stat.dailyPlayed, [5, 20, 50, 100, 365],
-        [25, 75, 150, 300, 800], 'a_daily'),
-    AchievementDef('nohint', Stat.noHintClears, [10, 50, 200, 500],
-        [30, 100, 250, 500], 'q_nohint'),
-    AchievementDef('perfect', Stat.threeStarLevels, [10, 50, 150, 400],
-        [30, 100, 250, 500], 'q_three'),
-    AchievementDef('blocks', Stat.blocksPlaced, [100, 1000, 5000, 20000],
-        [20, 80, 200, 500], 'q_blocks'),
-    AchievementDef('chapters', Stat.chaptersCompleted, [1, 3, 6, 10],
-        [50, 150, 300, 600], 'a_chapters'),
+    AchievementDef(
+      'levels',
+      Stat.levelsCleared,
+      [10, 50, 100, 250, 500, 1000],
+      [20, 50, 100, 200, 400, 800],
+      'a_levels',
+    ),
+    AchievementDef(
+      'stars',
+      Stat.starsEarned,
+      [30, 150, 500, 1500, 3000],
+      [25, 75, 150, 300, 600],
+      'a_stars',
+    ),
+    AchievementDef(
+      'streak',
+      Stat.bestStreak,
+      [3, 7, 30, 100, 365],
+      [30, 75, 300, 800, 2000],
+      'a_streak',
+    ),
+    AchievementDef(
+      'daily',
+      Stat.dailyPlayed,
+      [5, 20, 50, 100, 365],
+      [25, 75, 150, 300, 800],
+      'a_daily',
+    ),
+    AchievementDef(
+      'nohint',
+      Stat.noHintClears,
+      [10, 50, 200, 500],
+      [30, 100, 250, 500],
+      'q_nohint',
+    ),
+    AchievementDef(
+      'perfect',
+      Stat.threeStarLevels,
+      [10, 50, 150, 400],
+      [30, 100, 250, 500],
+      'q_three',
+    ),
+    AchievementDef(
+      'blocks',
+      Stat.blocksPlaced,
+      [100, 1000, 5000, 20000],
+      [20, 80, 200, 500],
+      'q_blocks',
+    ),
+    AchievementDef(
+      'chapters',
+      Stat.chaptersCompleted,
+      [1, 3, 6, 10],
+      [50, 150, 300, 600],
+      'a_chapters',
+    ),
   ];
 }

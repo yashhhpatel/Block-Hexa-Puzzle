@@ -40,14 +40,18 @@ const List<Color> kBlockColors = [
 
 Color _shade(Color c, double amount) {
   final hsl = HSLColor.fromColor(c);
-  return hsl
-      .withLightness((hsl.lightness + amount).clamp(0.0, 1.0))
-      .toColor();
+  return hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0)).toColor();
 }
 
 /// Draws one block cell in the chosen skin. [size] is the hex circumradius.
-void drawBlock(Canvas canvas, Offset c, double size, Color color, SkinStyle style,
-    {double opacity = 1}) {
+void drawBlock(
+  Canvas canvas,
+  Offset c,
+  double size,
+  Color color,
+  SkinStyle style, {
+  double opacity = 1,
+}) {
   switch (style) {
     case SkinStyle.gem:
       drawGem(canvas, c, size, color, opacity: opacity);
@@ -63,10 +67,14 @@ void drawBlock(Canvas canvas, Offset c, double size, Color color, SkinStyle styl
 }
 
 void _drawFlat(Canvas canvas, Offset c, double size, Color color, double o) {
-  canvas.drawPath(hexPath(c, size * 0.93, roundness: 0.22),
-      Paint()..color = _shade(color, -0.12).withValues(alpha: o));
-  canvas.drawPath(hexPath(c.translate(0, -size * 0.05), size * 0.84, roundness: 0.22),
-      Paint()..color = color.withValues(alpha: o));
+  canvas.drawPath(
+    hexPath(c, size * 0.93, roundness: 0.22),
+    Paint()..color = _shade(color, -0.12).withValues(alpha: o),
+  );
+  canvas.drawPath(
+    hexPath(c.translate(0, -size * 0.05), size * 0.84, roundness: 0.22),
+    Paint()..color = color.withValues(alpha: o),
+  );
   canvas.drawPath(
     hexPath(c.translate(0, -size * 0.05), size * 0.6, roundness: 0.22),
     Paint()
@@ -98,7 +106,11 @@ void _drawCandy(Canvas canvas, Offset c, double size, Color color, double o) {
   final stripe = Paint()
     ..color = Colors.white.withValues(alpha: 0.18 * o)
     ..strokeWidth = size * 0.22;
-  canvas.drawLine(c.translate(-size, size * 0.2), c.translate(size * 0.2, -size), stripe);
+  canvas.drawLine(
+    c.translate(-size, size * 0.2),
+    c.translate(size * 0.2, -size),
+    stripe,
+  );
   canvas.restore();
   canvas.drawArc(
     Rect.fromCircle(center: c, radius: size * 0.62),
@@ -115,7 +127,15 @@ void _drawCandy(Canvas canvas, Offset c, double size, Color color, double o) {
 
 void _drawNeon(Canvas canvas, Offset c, double size, Color color, double o) {
   final path = hexPath(c, size * 0.86, roundness: 0.2);
-  canvas.drawPath(path, Paint()..color = Color.lerp(Colors.black, color, 0.18)!.withValues(alpha: 0.9 * o));
+  canvas.drawPath(
+    path,
+    Paint()
+      ..color = Color.lerp(
+        Colors.black,
+        color,
+        0.18,
+      )!.withValues(alpha: 0.9 * o),
+  );
   canvas.drawPath(
     path,
     Paint()
@@ -142,7 +162,10 @@ void _drawNeon(Canvas canvas, Offset c, double size, Color color, double o) {
 
 void _drawCrystal(Canvas canvas, Offset c, double size, Color color, double o) {
   final pts = hexCorners(c, size * 0.93);
-  final inner = hexCorners(c.translate(-size * 0.06, -size * 0.08), size * 0.42);
+  final inner = hexCorners(
+    c.translate(-size * 0.06, -size * 0.08),
+    size * 0.42,
+  );
   const shades = [0.05, -0.12, -0.24, -0.08, 0.22, 0.3];
   for (var i = 0; i < 6; i++) {
     final j = (i + 1) % 6;
@@ -152,10 +175,16 @@ void _drawCrystal(Canvas canvas, Offset c, double size, Color color, double o) {
       ..lineTo(inner[j].dx, inner[j].dy)
       ..lineTo(inner[i].dx, inner[i].dy)
       ..close();
-    canvas.drawPath(facet, Paint()..color = _shade(color, shades[i]).withValues(alpha: o));
+    canvas.drawPath(
+      facet,
+      Paint()..color = _shade(color, shades[i]).withValues(alpha: o),
+    );
   }
   final table = Path()..addPolygon(inner, true);
-  canvas.drawPath(table, Paint()..color = _shade(color, 0.14).withValues(alpha: o));
+  canvas.drawPath(
+    table,
+    Paint()..color = _shade(color, 0.14).withValues(alpha: o),
+  );
   canvas.drawPath(
     Path()..addPolygon(pts, true),
     Paint()
@@ -163,13 +192,21 @@ void _drawCrystal(Canvas canvas, Offset c, double size, Color color, double o) {
       ..strokeWidth = size * 0.05
       ..color = Colors.white.withValues(alpha: 0.55 * o),
   );
-  canvas.drawCircle(inner[4].translate(size * 0.05, size * 0.05), size * 0.07,
-      Paint()..color = Colors.white.withValues(alpha: 0.85 * o));
+  canvas.drawCircle(
+    inner[4].translate(size * 0.05, size * 0.05),
+    size * 0.07,
+    Paint()..color = Colors.white.withValues(alpha: 0.85 * o),
+  );
 }
 
 /// Draws one glossy gem cell. [size] is the hex circumradius.
-void drawGem(Canvas canvas, Offset c, double size, Color color,
-    {double opacity = 1}) {
+void drawGem(
+  Canvas canvas,
+  Offset c,
+  double size,
+  Color color, {
+  double opacity = 1,
+}) {
   final outer = hexPath(c, size * 0.95, roundness: 0.18);
   final top = c.translate(0, -size);
   final bottom = c.translate(0, size);
@@ -189,7 +226,11 @@ void drawGem(Canvas canvas, Offset c, double size, Color color,
   );
 
   // Raised inner face.
-  final face = hexPath(c.translate(0, -size * 0.04), size * 0.7, roundness: 0.2);
+  final face = hexPath(
+    c.translate(0, -size * 0.04),
+    size * 0.7,
+    roundness: 0.2,
+  );
   canvas.drawPath(
     face,
     Paint()
@@ -206,9 +247,10 @@ void drawGem(Canvas canvas, Offset c, double size, Color color,
   // Specular glint.
   canvas.drawOval(
     Rect.fromCenter(
-        center: c.translate(-size * 0.22, -size * 0.42),
-        width: size * 0.62,
-        height: size * 0.2),
+      center: c.translate(-size * 0.22, -size * 0.42),
+      width: size * 0.62,
+      height: size * 0.2,
+    ),
     Paint()..color = Colors.white.withValues(alpha: 0.45 * opacity),
   );
 

@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 
 import '../game/game_state.dart';
 import '../game/generator.dart';
+import '../config.dart';
 import '../game/level.dart';
+import '../l10n/l10n.dart';
 import '../meta/chapters.dart';
+import '../services/ads.dart';
 import '../services/progress.dart';
 import '../services/services.dart';
 import '../services/sfx.dart';
@@ -103,9 +106,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _attach(game);
 
     if (n == 1 && !progress.tutorialSeen) {
-      _tip = 'Drag the blocks to fill up the board.';
+      _tip = tr('tip_drag');
     } else if (level.hasDecoys && !progress.decoyTipSeen) {
-      _showTip("Tricky level!\nYou won't need all of the blocks.");
+      _showTip(tr('tip_tricky'));
       progress.setDecoyTipSeen();
     }
     setState(() {});
@@ -192,7 +195,26 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _boardKey.currentState?.celebrate();
     sfx.play(Sound.win);
     await Future.delayed(const Duration(milliseconds: 1100));
+    if (!mounted || _game != g) return;
+    await _maybeInterstitial(g.level);
     if (mounted && _game == g) setState(() => _showWin = true);
+  }
+
+  /// Interstitial before the win screen: after every Daily Puzzle, and after
+  /// every [kInterstitialEveryLevels] completed levels.
+  Future<void> _maybeInterstitial(Level level) async {
+    final ads = widget.services.ads;
+    if (level.isDaily) {
+      await ads.showInterstitial();
+      return;
+    }
+    final count = progress.levelsSinceAd + 1;
+    if (count >= kInterstitialEveryLevels && await ads.showInterstitial()) {
+      await progress.setLevelsSinceAd(0);
+    } else {
+      // Not shown (none loaded, offline, subscriber): try again next win.
+      await progress.setLevelsSinceAd(count);
+    }
   }
 
   void _next() {
@@ -235,11 +257,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Not enough coins. Clear levels and quests to earn more!',
-            ),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(tr('hint_no_coins')),
+            duration: const Duration(seconds: 2),
           ),
         );
       return;
@@ -285,6 +305,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                           ),
                   ),
                   _bottomBar(g),
+                  AdBanner(ads: widget.services.ads),
                 ],
               ),
               if (_tip != null) _tipBanner(_tip!),
@@ -307,8 +328,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   Widget _header(GameState? g) {
     final level = g?.level;
     final title = _isDaily
-        ? 'Daily ${_shortDate(widget.dailyDate!)}'
-        : 'Level ${level?.number ?? widget.level}';
+        ? tr('daily_title', {'date': shortDate(widget.dailyDate!)})
+        : tr('level_n', {'n': level?.number ?? widget.level!});
     final secs = _clock.elapsed.inSeconds;
     final par = level?.parSeconds;
     final chapter = level != null && !level.isDaily
@@ -364,24 +385,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     );
   }
 
-  static String _shortDate(DateTime d) {
-    const m = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${m[d.month - 1]} ${d.day}';
-  }
-
   Widget _bottomBar(GameState? g) {
     const size = 48.0;
     return Container(
@@ -393,7 +396,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           RoundButton(
             icon: Icons.arrow_back_rounded,
             size: size,
-            semanticLabel: 'Back',
+            semanticLabel: tr('back'),
             onTap: () {
               sfx.play(Sound.button);
               Navigator.of(context).pop();
@@ -402,7 +405,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           RoundButton(
             icon: Icons.settings_rounded,
             size: size,
-            semanticLabel: 'Settings',
+            semanticLabel: tr('settings'),
             onTap: () async {
               sfx.play(Sound.button);
               _clock.stop();
@@ -418,20 +421,20 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             child: RoundButton(
               icon: Icons.undo_rounded,
               size: size,
-              semanticLabel: 'Undo',
+              semanticLabel: tr('undo'),
               onTap: _undo,
             ),
           ),
           RoundButton(
             icon: Icons.refresh_rounded,
             size: size,
-            semanticLabel: 'Restart',
+            semanticLabel: tr('restart'),
             onTap: _restart,
           ),
           RoundButton(
             icon: Icons.lightbulb_rounded,
             size: size,
-            semanticLabel: 'Hint',
+            semanticLabel: tr('hint'),
             color: AppColors.gold,
             dark: const Color(0xFFC67F00),
             onTap: _hint,
@@ -575,13 +578,6 @@ class _WinOverlay extends StatefulWidget {
 }
 
 class _WinOverlayState extends State<_WinOverlay> {
-  static const _cheers = [
-    'Awesome!',
-    'Brilliant!',
-    'Great!',
-    'Superb!',
-    'Perfect!',
-  ];
   int _litStars = 0;
   final List<Timer> _timers = [];
 
@@ -621,8 +617,8 @@ class _WinOverlayState extends State<_WinOverlay> {
     final s = widget.summary;
     final level = widget.level;
     final cheer = s.stars == 3
-        ? 'Perfect!'
-        : _cheers[(level.number + (level.dailyKey ?? 0)) % _cheers.length];
+        ? tr('cheer_perfect')
+        : tr('cheer_${(level.number + (level.dailyKey ?? 0)) % 4}');
     return Positioned.fill(
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: 1),
@@ -664,8 +660,11 @@ class _WinOverlayState extends State<_WinOverlay> {
                 const SizedBox(height: 4),
                 Text(
                   level.isDaily
-                      ? 'Daily Puzzle solved in ${formatTime(widget.seconds)}'
-                      : 'Level ${level.number} cleared in ${formatTime(widget.seconds)}',
+                      ? tr('daily_solved_in', {'t': formatTime(widget.seconds)})
+                      : tr('level_cleared_in', {
+                          'n': level.number,
+                          't': formatTime(widget.seconds),
+                        }),
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.85),
                     fontSize: 15,
@@ -690,11 +689,11 @@ class _WinOverlayState extends State<_WinOverlay> {
                     RoundButton(
                       icon: Icons.refresh_rounded,
                       onTap: widget.onReplay,
-                      semanticLabel: 'Replay',
+                      semanticLabel: tr('replay'),
                     ),
                     const SizedBox(width: 18),
                     PillButton(
-                      label: level.isDaily ? 'Done' : 'Next',
+                      label: level.isDaily ? tr('done') : tr('next'),
                       onTap: widget.onNext,
                     ),
                   ],
@@ -739,9 +738,12 @@ class _WinOverlayState extends State<_WinOverlay> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          row(true, 'Board filled'),
-          row(s.noHints, 'No hints used'),
-          row(s.underPar, 'Under ${formatTime(level.parSeconds)}'),
+          row(true, tr('crit_filled')),
+          row(s.noHints, tr('crit_no_hints')),
+          row(
+            s.underPar,
+            tr('crit_under', {'t': formatTime(level.parSeconds)}),
+          ),
         ],
       ),
     );
@@ -790,7 +792,7 @@ class _WinOverlayState extends State<_WinOverlay> {
       lines.add(
         note(
           Icons.trending_up_rounded,
-          'New best: ${s.stars} stars',
+          tr('new_best', {'n': s.stars}),
           AppColors.gold,
         ),
       );
@@ -799,7 +801,7 @@ class _WinOverlayState extends State<_WinOverlay> {
       lines.add(
         note(
           Icons.local_fire_department_rounded,
-          '${s.dailyStreak}-day streak!',
+          tr('streak_days', {'n': s.dailyStreak!}),
           const Color(0xFFFF8A2B),
         ),
       );
@@ -808,7 +810,7 @@ class _WinOverlayState extends State<_WinOverlay> {
       lines.add(
         note(
           Icons.card_giftcard_rounded,
-          'Streak bonus +${s.streakBonus}',
+          tr('streak_bonus', {'n': s.streakBonus!}),
           const Color(0xFFFF8A2B),
         ),
       );
@@ -817,7 +819,7 @@ class _WinOverlayState extends State<_WinOverlay> {
       lines.add(
         note(
           Icons.inventory_2_rounded,
-          'Chest opened! +${s.chestReward}',
+          tr('chest_opened_reward', {'n': s.chestReward!}),
           const Color(0xFF6CF0B8),
         ),
       );
@@ -827,7 +829,7 @@ class _WinOverlayState extends State<_WinOverlay> {
       lines.add(
         note(
           Icons.emoji_events_rounded,
-          '${ch.name} complete! +${ch.reward}',
+          tr('chapter_complete', {'name': ch.name, 'n': ch.reward}),
           ch.color,
         ),
       );
@@ -901,8 +903,11 @@ class _ChestBar extends StatelessWidget {
               children: [
                 Text(
                   opened
-                      ? 'Chest opened!'
-                      : 'Chest $progress/${Progress.chestSize}',
+                      ? tr('chest_opened')
+                      : tr('chest_progress', {
+                          'n': progress,
+                          'total': Progress.chestSize,
+                        }),
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 12,

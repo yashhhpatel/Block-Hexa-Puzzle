@@ -14,9 +14,11 @@ DateTime dateOfKey(int k) => DateTime(k ~/ 10000, (k ~/ 100) % 100, k % 100);
 /// Whole calendar days from [a] to [b] (DST-safe).
 int daysBetween(int a, int b) {
   final da = dateOfKey(a), db = dateOfKey(b);
-  return DateTime.utc(db.year, db.month, db.day)
-      .difference(DateTime.utc(da.year, da.month, da.day))
-      .inDays;
+  return DateTime.utc(
+    db.year,
+    db.month,
+    db.day,
+  ).difference(DateTime.utc(da.year, da.month, da.day)).inDays;
 }
 
 /// Everything that happened when a level was cleared, for the win screen.
@@ -191,8 +193,11 @@ class Progress {
 
   /// Records a cleared main level. Only first clears and star improvements
   /// count toward quests and rewards, so replaying easy levels can't farm.
-  Future<WinSummary> recordLevelWin(Level level,
-      {required int seconds, required int hintsUsed}) async {
+  Future<WinSummary> recordLevelWin(
+    Level level, {
+    required int seconds,
+    required int hintsUsed,
+  }) async {
     final n = level.number;
     await clearBoard();
     final noHints = hintsUsed == 0;
@@ -279,8 +284,11 @@ class Progress {
 
   /// Records a solved daily. Only today's puzzle extends the streak; older
   /// days of this month can be caught up for coins.
-  Future<WinSummary> recordDailyWin(Level level,
-      {required int seconds, required int hintsUsed}) async {
+  Future<WinSummary> recordDailyWin(
+    Level level, {
+    required int seconds,
+    required int hintsUsed,
+  }) async {
     final key = level.dailyKey!;
     final already = isDailySolved(key);
     var coinsWon = 0;
@@ -289,7 +297,9 @@ class Progress {
     if (!already) {
       final solved = dailySolved..add(key);
       await _prefs.setStringList(
-          'dailySolved', solved.map((k) => '$k').toList());
+        'dailySolved',
+        solved.map((k) => '$k').toList(),
+      );
       coinsWon += key == today ? dailyReward : dailyReward ~/ 2;
       await _bump(Stat.dailyPlayed, 1);
       if (key == today) {
@@ -327,7 +337,11 @@ class Progress {
   Map<String, dynamic> _questState() {
     final q = _map('quests');
     if (q['day'] != today) {
-      return {'day': today, 'progress': <String, dynamic>{}, 'claimed': <dynamic>[]};
+      return {
+        'day': today,
+        'progress': <String, dynamic>{},
+        'claimed': <dynamic>[],
+      };
     }
     return q;
   }
@@ -338,7 +352,11 @@ class Progress {
     final claimed = (q['claimed'] as List<dynamic>).cast<String>();
     return [
       for (final d in Quests.forDay(today))
-        QuestStatus(d, (prog[d.stat.name] as int?) ?? 0, claimed.contains(d.id)),
+        QuestStatus(
+          d,
+          (prog[d.stat.name] as int?) ?? 0,
+          claimed.contains(d.id),
+        ),
     ];
   }
 
@@ -413,8 +431,7 @@ class Progress {
 
   // ---- shop ---------------------------------------------------------------
 
-  Set<String> get owned =>
-      {'gem', 'ocean', ...?_prefs.getStringList('owned')};
+  Set<String> get owned => {'gem', 'ocean', ...?_prefs.getStringList('owned')};
 
   bool isUnlocked(ShopItem item) =>
       owned.contains(item.id) ||

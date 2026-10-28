@@ -142,7 +142,8 @@ const Map<String, String> stringsEn = {
   'tab_blocks': 'Blocks',
   'tab_themes': 'Themes',
   'need_stars': 'Collect {n} stars to unlock {name}.',
-  'shop_no_coins': 'Not enough coins yet. Clear levels and quests to earn more!',
+  'shop_no_coins':
+      'Not enough coins yet. Clear levels and quests to earn more!',
   'skin_gem': 'Gem',
   'skin_flat': 'Matte',
   'skin_candy': 'Candy',
@@ -204,18 +205,22 @@ const Map<String, String> stringsEn = {
   'ra_benefit_appopen': 'No ads when you open the game',
   'ra_plan': 'Monthly plan',
   'ra_per_month': '/ month',
-  'ra_duration': 'Removes all ads for 1 month. Renews automatically every month.',
+  'ra_duration':
+      'Removes all ads for 1 month. Renews automatically every month.',
   'ra_subscribe': 'Subscribe for {price}',
   'ra_terms':
       'Billed {price} every month through Google Play until cancelled. Cancel anytime in Google Play › Payments & subscriptions › Subscriptions.',
   'ra_active': 'Ads removed. Thank you!',
-  'ra_active_detail': 'Your subscription is active and renews monthly unless you cancel it.',
+  'ra_active_detail':
+      'Your subscription is active and renews monthly unless you cancel it.',
   'ra_manage': 'Manage subscription',
   'ra_restore': 'Restore purchases',
-  'ra_pending': 'Payment pending. Ads will be removed as soon as Google Play confirms it.',
+  'ra_pending':
+      'Payment pending. Ads will be removed as soon as Google Play confirms it.',
   'ra_store_unavailable':
       'Google Play is not available right now. Check your connection and try again.',
-  'ra_product_unavailable': 'This subscription is not available right now. Please try again later.',
+  'ra_product_unavailable':
+      'This subscription is not available right now. Please try again later.',
   'ra_canceled': 'Purchase cancelled.',
   'ra_failed': 'Purchase failed. Please try again.',
   'ra_restore_none': 'No active subscription found.',

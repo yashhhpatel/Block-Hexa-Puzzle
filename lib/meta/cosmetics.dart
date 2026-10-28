@@ -23,8 +23,12 @@ class BlockSkin implements ShopItem {
   final int starsRequired;
   final SkinStyle style;
 
-  const BlockSkin(this.id, this.style,
-      {this.price = 0, this.starsRequired = 0});
+  const BlockSkin(
+    this.id,
+    this.style, {
+    this.price = 0,
+    this.starsRequired = 0,
+  });
 }
 
 class BoardTheme implements ShopItem {
@@ -62,45 +66,55 @@ class Cosmetics {
   ];
 
   static const themes = <BoardTheme>[
-    BoardTheme('ocean',
-        bgTop: Color(0xFF14286B),
-        bgMid: Color(0xFF0C1C4D),
-        bgBottom: Color(0xFF060E2B),
-        cell: Color(0xFF071233),
-        line: Color(0xFF5EC8FF),
-        tray: Color(0xFF081638)),
-    BoardTheme('galaxy',
-        price: 200,
-        bgTop: Color(0xFF3A1A78),
-        bgMid: Color(0xFF221050),
-        bgBottom: Color(0xFF0E0628),
-        cell: Color(0xFF150A33),
-        line: Color(0xFFC08CFF),
-        tray: Color(0xFF170A38)),
-    BoardTheme('forest',
-        price: 250,
-        bgTop: Color(0xFF155A4A),
-        bgMid: Color(0xFF0B3B33),
-        bgBottom: Color(0xFF04201C),
-        cell: Color(0xFF052520),
-        line: Color(0xFF6CF0B8),
-        tray: Color(0xFF062A24)),
-    BoardTheme('sunset',
-        price: 350,
-        bgTop: Color(0xFF8A2E5A),
-        bgMid: Color(0xFF4E1A48),
-        bgBottom: Color(0xFF1E0A24),
-        cell: Color(0xFF2A0C2A),
-        line: Color(0xFFFFB070),
-        tray: Color(0xFF2A0B2C)),
-    BoardTheme('midnight',
-        starsRequired: 60,
-        bgTop: Color(0xFF2A2F3A),
-        bgMid: Color(0xFF171A22),
-        bgBottom: Color(0xFF07080C),
-        cell: Color(0xFF0B0D12),
-        line: Color(0xFFE8EEF8),
-        tray: Color(0xFF0D0F15)),
+    BoardTheme(
+      'ocean',
+      bgTop: Color(0xFF14286B),
+      bgMid: Color(0xFF0C1C4D),
+      bgBottom: Color(0xFF060E2B),
+      cell: Color(0xFF071233),
+      line: Color(0xFF5EC8FF),
+      tray: Color(0xFF081638),
+    ),
+    BoardTheme(
+      'galaxy',
+      price: 200,
+      bgTop: Color(0xFF3A1A78),
+      bgMid: Color(0xFF221050),
+      bgBottom: Color(0xFF0E0628),
+      cell: Color(0xFF150A33),
+      line: Color(0xFFC08CFF),
+      tray: Color(0xFF170A38),
+    ),
+    BoardTheme(
+      'forest',
+      price: 250,
+      bgTop: Color(0xFF155A4A),
+      bgMid: Color(0xFF0B3B33),
+      bgBottom: Color(0xFF04201C),
+      cell: Color(0xFF052520),
+      line: Color(0xFF6CF0B8),
+      tray: Color(0xFF062A24),
+    ),
+    BoardTheme(
+      'sunset',
+      price: 350,
+      bgTop: Color(0xFF8A2E5A),
+      bgMid: Color(0xFF4E1A48),
+      bgBottom: Color(0xFF1E0A24),
+      cell: Color(0xFF2A0C2A),
+      line: Color(0xFFFFB070),
+      tray: Color(0xFF2A0B2C),
+    ),
+    BoardTheme(
+      'midnight',
+      starsRequired: 60,
+      bgTop: Color(0xFF2A2F3A),
+      bgMid: Color(0xFF171A22),
+      bgBottom: Color(0xFF07080C),
+      cell: Color(0xFF0B0D12),
+      line: Color(0xFFE8EEF8),
+      tray: Color(0xFF0D0F15),
+    ),
   ];
 
   static BlockSkin skin(String id) =>

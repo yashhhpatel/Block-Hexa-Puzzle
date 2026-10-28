@@ -52,8 +52,8 @@ class BillingService {
   bool _buying = false;
 
   BillingService(this.progress, {InAppPurchase? iap})
-      : _iap = iap ?? InAppPurchase.instance,
-        premium = ValueNotifier(progress.premiumCached);
+    : _iap = iap ?? InAppPurchase.instance,
+      premium = ValueNotifier(progress.premiumCached);
 
   String get priceLabel => product?.price ?? kRemoveAdsFallbackPrice;
 
@@ -79,19 +79,18 @@ class BillingService {
     try {
       final r = await _iap.queryProductDetails({kRemoveAdsProductId});
       // A subscription comes back once per offer; prefer the plain base plan.
-      final offers = r.productDetails.whereType<GooglePlayProductDetails>().toList();
+      final offers = r.productDetails
+          .whereType<GooglePlayProductDetails>()
+          .toList();
       if (offers.isEmpty) {
         product = r.productDetails.isEmpty ? null : r.productDetails.first;
         return;
       }
-      product = offers.firstWhere(
-        (p) {
-          final i = p.subscriptionIndex;
-          final details = p.productDetails.subscriptionOfferDetails;
-          return i != null && details != null && details[i].offerId == null;
-        },
-        orElse: () => offers.first,
-      );
+      product = offers.firstWhere((p) {
+        final i = p.subscriptionIndex;
+        final details = p.productDetails.subscriptionOfferDetails;
+        return i != null && details != null && details[i].offerId == null;
+      }, orElse: () => offers.first);
     } catch (_) {
       product = null;
     }
@@ -136,7 +135,8 @@ class BillingService {
       if (!silent) _notify(BillingNotice.storeUnavailable);
       return; // offline: keep the last known state
     }
-    final addition = _iap.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+    final addition = _iap
+        .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
     final QueryPurchaseDetailsResponse response;
     try {
       response = await addition.queryPastPurchases();
@@ -245,5 +245,6 @@ class BillingService {
 
   /// Play Store page where the player can cancel or change the plan.
   static Uri manageUri() => Uri.parse(
-      'https://play.google.com/store/account/subscriptions?sku=$kRemoveAdsProductId&package=$kAndroidPackage');
+    'https://play.google.com/store/account/subscriptions?sku=$kRemoveAdsProductId&package=$kAndroidPackage',
+  );
 }

@@ -17,8 +17,12 @@ class Services {
   factory Services.offline(Progress progress) {
     final sfx = Sfx(progress);
     final billing = BillingService(progress);
-    return Services(progress, sfx, billing,
-        AdsService(billing: billing, sfx: sfx, enabled: false));
+    return Services(
+      progress,
+      sfx,
+      billing,
+      AdsService(billing: billing, sfx: sfx, enabled: false),
+    );
   }
 
   static Future<Services> create({required AppLang deviceLang}) async {

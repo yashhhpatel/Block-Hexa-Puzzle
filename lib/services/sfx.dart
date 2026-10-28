@@ -33,13 +33,15 @@ class Sfx {
       await m.setVolume(0.35);
       await m.setSource(AssetSource('music/calm.wav'));
       // Don't steal audio focus from the player's own music apps.
-      await m.setAudioContext(AudioContext(
-        android: const AudioContextAndroid(
-          audioFocus: AndroidAudioFocus.none,
-          usageType: AndroidUsageType.game,
-          contentType: AndroidContentType.music,
+      await m.setAudioContext(
+        AudioContext(
+          android: const AudioContextAndroid(
+            audioFocus: AndroidAudioFocus.none,
+            usageType: AndroidUsageType.game,
+            contentType: AndroidContentType.music,
+          ),
         ),
-      ));
+      );
       _music = m;
     } catch (_) {}
     updateMusic();

@@ -39,7 +39,8 @@ const Map<String, String> stringsEs = {
   "daily_title": "Diario {date}",
   "tip_drag": "Arrastra los bloques para llenar el tablero.",
   "tip_tricky": "¡Nivel engañoso!\nNo necesitarás todos los bloques.",
-  "hint_no_coins": "No tienes monedas suficientes. ¡Supera niveles y misiones para ganar más!",
+  "hint_no_coins":
+      "No tienes monedas suficientes. ¡Supera niveles y misiones para ganar más!",
 
   "cheer_0": "¡Increíble!",
   "cheer_1": "¡Brillante!",
@@ -75,7 +76,8 @@ const Map<String, String> stringsEs = {
   "diff_6": "Experto",
   "daily_solved_msg": "¡Resuelto! Vuelve mañana.",
   "daily_reward_msg": "Premio: {n} monedas + racha",
-  "daily_footer": "Resuelve el puzle de hoy para aumentar tu racha. ¿Te saltaste un día este mes? Tócalo para recuperarlo por la mitad de monedas.",
+  "daily_footer":
+      "Resuelve el puzle de hoy para aumentar tu racha. ¿Te saltaste un día este mes? Tócalo para recuperarlo por la mitad de monedas.",
   "date_short": "{d} {m}",
   "month_year": "{m} {y}",
   "month_1": "Enero",
@@ -132,7 +134,8 @@ const Map<String, String> stringsEs = {
   "tab_blocks": "Bloques",
   "tab_themes": "Temas",
   "need_stars": "Reúne {n} estrellas para desbloquear {name}.",
-  "shop_no_coins": "Aún no tienes monedas suficientes. ¡Supera niveles y misiones para ganar más!",
+  "shop_no_coins":
+      "Aún no tienes monedas suficientes. ¡Supera niveles y misiones para ganar más!",
   "skin_gem": "Gema",
   "skin_flat": "Mate",
   "skin_candy": "Caramelo",
@@ -161,20 +164,27 @@ const Map<String, String> stringsEs = {
   "ad_privacy": "Opciones de privacidad de anuncios",
   "contact_subject": "Soporte de Hexa Fill Puzzle",
   "contact_body": "Describe aquí tu pregunta o problema:",
-  "contact_no_email": "No se encontró ninguna app de correo. Escríbenos a {email}",
+  "contact_no_email":
+      "No se encontró ninguna app de correo. Escríbenos a {email}",
 
   "htp_1_title": "Arrastra los bloques",
-  "htp_1_body": "Toma un bloque de la bandeja y suéltalo en el tablero. Encaja en su sitio cuando todas sus celdas caben.",
+  "htp_1_body":
+      "Toma un bloque de la bandeja y suéltalo en el tablero. Encaja en su sitio cuando todas sus celdas caben.",
   "htp_2_title": "Llena cada celda",
-  "htp_2_body": "Cubre todo el tablero para superar el nivel. Los bloques no se pueden girar, así que fíjate bien en sus formas.",
+  "htp_2_body":
+      "Cubre todo el tablero para superar el nivel. Los bloques no se pueden girar, así que fíjate bien en sus formas.",
   "htp_3_title": "Cambia de idea",
-  "htp_3_body": "Arrastra un bloque colocado para moverlo o devolverlo. Deshacer es gratis y Reiniciar vacía el tablero.",
+  "htp_3_body":
+      "Arrastra un bloque colocado para moverlo o devolverlo. Deshacer es gratis y Reiniciar vacía el tablero.",
   "htp_4_title": "Consigue 3 estrellas",
-  "htp_4_body": "Una estrella por superarlo, otra por no usar pistas y otra por batir el tiempo objetivo.",
+  "htp_4_body":
+      "Una estrella por superarlo, otra por no usar pistas y otra por batir el tiempo objetivo.",
   "htp_5_title": "Niveles engañosos",
-  "htp_5_body": "Algunos niveles tienen bloques de sobra que no necesitarás. ¿Atascado? Una pista coloca un bloque por 25 monedas.",
+  "htp_5_body":
+      "Algunos niveles tienen bloques de sobra que no necesitarás. ¿Atascado? Una pista coloca un bloque por 25 monedas.",
   "htp_6_title": "Vuelve cada día",
-  "htp_6_body": "Resuelve el puzle diario para aumentar tu racha, completa misiones y reclama tu premio diario.",
+  "htp_6_body":
+      "Resuelve el puzle diario para aumentar tu racha, completa misiones y reclama tu premio diario.",
   "htp_start": "¡A jugar!",
   "htp_skip": "Saltar",
 
@@ -184,21 +194,28 @@ const Map<String, String> stringsEs = {
   "ra_benefit_appopen": "Sin anuncios al abrir el juego",
   "ra_plan": "Plan mensual",
   "ra_per_month": "/ mes",
-  "ra_duration": "Quita todos los anuncios durante 1 mes. Se renueva automáticamente cada mes.",
+  "ra_duration":
+      "Quita todos los anuncios durante 1 mes. Se renueva automáticamente cada mes.",
   "ra_subscribe": "Suscribirse por {price}",
-  "ra_terms": "Se cobra {price} cada mes a través de Google Play hasta que lo canceles. Cancela cuando quieras en Google Play › Pagos y suscripciones › Suscripciones.",
+  "ra_terms":
+      "Se cobra {price} cada mes a través de Google Play hasta que lo canceles. Cancela cuando quieras en Google Play › Pagos y suscripciones › Suscripciones.",
   "ra_active": "Anuncios eliminados. ¡Gracias!",
-  "ra_active_detail": "Tu suscripción está activa y se renueva cada mes salvo que la canceles.",
+  "ra_active_detail":
+      "Tu suscripción está activa y se renueva cada mes salvo que la canceles.",
   "ra_manage": "Gestionar suscripción",
   "ra_restore": "Restaurar compras",
-  "ra_pending": "Pago pendiente. Los anuncios se quitarán en cuanto Google Play lo confirme.",
-  "ra_store_unavailable": "Google Play no está disponible ahora. Revisa tu conexión e inténtalo de nuevo.",
-  "ra_product_unavailable": "Esta suscripción no está disponible ahora. Inténtalo más tarde.",
+  "ra_pending":
+      "Pago pendiente. Los anuncios se quitarán en cuanto Google Play lo confirme.",
+  "ra_store_unavailable":
+      "Google Play no está disponible ahora. Revisa tu conexión e inténtalo de nuevo.",
+  "ra_product_unavailable":
+      "Esta suscripción no está disponible ahora. Inténtalo más tarde.",
   "ra_canceled": "Compra cancelada.",
   "ra_failed": "La compra ha fallado. Inténtalo de nuevo.",
   "ra_restore_none": "No se encontró ninguna suscripción activa.",
   "ra_restore_ok": "Suscripción restaurada. ¡Anuncios eliminados!",
-  "ra_expired": "Tu suscripción para quitar anuncios ha terminado, así que los anuncios vuelven.",
+  "ra_expired":
+      "Tu suscripción para quitar anuncios ha terminado, así que los anuncios vuelven.",
   "ra_verify_failed": "No pudimos verificar esta compra. Contáctanos.",
   "ra_success": "¡Gracias! Ya no verás anuncios.",
 };

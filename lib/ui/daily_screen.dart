@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 import '../meta/quests.dart';
 import '../services/progress.dart';
 import '../services/services.dart';
@@ -18,21 +20,15 @@ class DailyScreen extends StatefulWidget {
 }
 
 class _DailyScreenState extends State<DailyScreen> {
-  static const _difficulty = [
-    'Easy', 'Easy+', 'Normal', 'Normal+', 'Hard', 'Hard+', 'Expert'
-  ];
-  static const _months = [
-    'January', 'February', 'March', 'April', 'May', 'June', 'July',
-    'August', 'September', 'October', 'November', 'December'
-  ];
-
   Progress get p => widget.services.progress;
 
   Future<void> _play(DateTime day) async {
     widget.services.sfx.play(Sound.button);
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => GameScreen(services: widget.services, dailyDate: day),
-    ));
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => GameScreen(services: widget.services, dailyDate: day),
+      ),
+    );
     if (mounted) setState(() {});
   }
 
@@ -47,26 +43,34 @@ class _DailyScreenState extends State<DailyScreen> {
         animate: p.backgroundFx,
         theme: p.theme,
         child: SafeArea(
-          child: Column(children: [
-            _topBar(context, 'Daily Puzzle'),
-            Expanded(
-              child: ListView(padding: const EdgeInsets.fromLTRB(18, 4, 18, 24), children: [
-                _streakCard(streak),
-                const SizedBox(height: 14),
-                _todayCard(today, solvedToday),
-                const SizedBox(height: 18),
-                OutlinedTitle('${_months[today.month - 1]} ${today.year}', size: 22),
-                const SizedBox(height: 8),
-                _calendar(today),
-                const SizedBox(height: 10),
-                Text(
-                  'Solve today\'s puzzle to grow your streak. Missed a day this month? '
-                  'Tap it to catch up for half the coins.',
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 13),
+          child: Column(
+            children: [
+              _topBar(context, tr('daily_puzzle')),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
+                  children: [
+                    _streakCard(streak),
+                    const SizedBox(height: 14),
+                    _todayCard(today, solvedToday),
+                    const SizedBox(height: 18),
+                    OutlinedTitle(monthYear(today), size: 22),
+                    const SizedBox(height: 8),
+                    _calendar(today),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Solve today\'s puzzle to grow your streak. Missed a day this month? '
+                      'Tap it to catch up for half the coins.',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.6),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
-              ]),
-            ),
-          ]),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -75,21 +79,23 @@ class _DailyScreenState extends State<DailyScreen> {
   Widget _topBar(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 8, 16, 8),
-      child: Row(children: [
-        RoundButton(
-          icon: Icons.arrow_back_rounded,
-          size: 44,
-          semanticLabel: 'Back',
-          onTap: () {
-            widget.services.sfx.play(Sound.button);
-            Navigator.pop(context);
-          },
-        ),
-        const SizedBox(width: 10),
-        OutlinedTitle(title, size: 28),
-        const Spacer(),
-        CoinPill(coins: p.coins),
-      ]),
+      child: Row(
+        children: [
+          RoundButton(
+            icon: Icons.arrow_back_rounded,
+            size: 44,
+            semanticLabel: tr('back'),
+            onTap: () {
+              widget.services.sfx.play(Sound.button);
+              Navigator.pop(context);
+            },
+          ),
+          const SizedBox(width: 10),
+          OutlinedTitle(title, size: 28),
+          const Spacer(),
+          CoinPill(coins: p.coins),
+        ],
+      ),
     );
   }
 
@@ -98,74 +104,122 @@ class _DailyScreenState extends State<DailyScreen> {
     final nextMilestone = streak < 3
         ? 3
         : streak < 7
-            ? 7
-            : streak < 14
-                ? 14
-                : (streak ~/ 30 + 1) * 30;
+        ? 7
+        : streak < 14
+        ? 14
+        : (streak ~/ 30 + 1) * 30;
     return _Panel(
-      child: Row(children: [
-        Container(
-          width: 74,
-          height: 74,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(colors: [Color(0xFFFFC14D), Color(0xFFFF6A1F)]),
-            boxShadow: [BoxShadow(color: Color(0x88FF8A2B), blurRadius: 18)],
+      child: Row(
+        children: [
+          Container(
+            width: 74,
+            height: 74,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [Color(0xFFFFC14D), Color(0xFFFF6A1F)],
+              ),
+              boxShadow: [BoxShadow(color: Color(0x88FF8A2B), blurRadius: 18)],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.local_fire_department_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                Text(
+                  '$streak',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    height: 1,
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Icon(Icons.local_fire_department_rounded, color: Colors.white, size: 30),
-            Text('$streak',
-                style: const TextStyle(
-                    color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900, height: 1)),
-          ]),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(streak == 0 ? 'Start a streak today!' : '$streak-day streak',
-                style: const TextStyle(
-                    color: Colors.white, fontSize: 19, fontWeight: FontWeight.w900)),
-            const SizedBox(height: 4),
-            Text(
-                'Next bonus at $nextMilestone days (+${Progress.streakBonusFor(nextMilestone)})',
-                style: const TextStyle(color: Colors.white70, fontSize: 13)),
-            Text('Best: $best days',
-                style: const TextStyle(color: Colors.white54, fontSize: 13)),
-          ]),
-        ),
-      ]),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  streak == 0
+                      ? tr('start_streak')
+                      : tr('streak_title', {'n': streak}),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  tr('next_bonus', {
+                    'n': nextMilestone,
+                    'c': Progress.streakBonusFor(nextMilestone),
+                  }),
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+                Text(
+                  tr('best_streak', {'n': best}),
+                  style: const TextStyle(color: Colors.white54, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _todayCard(DateTime today, bool solved) {
     return _Panel(
-      child: Row(children: [
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text("Today's puzzle",
-                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-            const SizedBox(height: 4),
-            Text('Difficulty: ${_difficulty[today.weekday - 1]}',
-                style: const TextStyle(color: Colors.white70, fontSize: 13)),
-            Text(
-                solved
-                    ? 'Solved! Come back tomorrow.'
-                    : 'Reward: ${Progress.dailyReward} coins + streak',
-                style: TextStyle(
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  tr('todays_puzzle'),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  tr('difficulty', {'d': tr('diff_${today.weekday - 1}')}),
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+                Text(
+                  solved
+                      ? tr('daily_solved_msg')
+                      : tr('daily_reward_msg', {'n': Progress.dailyReward}),
+                  style: TextStyle(
                     color: solved ? const Color(0xFF6CF0B8) : AppColors.gold,
                     fontSize: 13,
-                    fontWeight: FontWeight.w700)),
-          ]),
-        ),
-        PillButton(
-          label: solved ? 'Replay' : 'Play',
-          width: 110,
-          icon: solved ? Icons.replay_rounded : Icons.play_arrow_rounded,
-          color: solved ? AppColors.button : AppColors.accent,
-          dark: solved ? AppColors.buttonDark : AppColors.accentDark,
-          onTap: () => _play(today),
-        ),
-      ]),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          PillButton(
+            label: solved ? tr('replay') : tr('play'),
+            width: 110,
+            icon: solved ? Icons.replay_rounded : Icons.play_arrow_rounded,
+            color: solved ? AppColors.button : AppColors.accent,
+            dark: solved ? AppColors.buttonDark : AppColors.accentDark,
+            onTap: () => _play(today),
+          ),
+        ],
+      ),
     );
   }
 
@@ -174,34 +228,43 @@ class _DailyScreenState extends State<DailyScreen> {
     final daysInMonth = DateTime(today.year, today.month + 1, 0).day;
     final lead = first.weekday - 1; // Monday-first
     final solved = p.dailySolved;
-    const heads = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    final heads = [for (var i = 1; i <= 7; i++) tr('weekday_$i')];
     return _Panel(
       padding: const EdgeInsets.all(10),
-      child: Column(children: [
-        Row(children: [
-          for (final h in heads)
-            Expanded(
-              child: Center(
-                child: Text(h,
-                    style: const TextStyle(
-                        color: Colors.white54, fontSize: 12, fontWeight: FontWeight.w800)),
-              ),
-            ),
-        ]),
-        const SizedBox(height: 6),
-        GridView.count(
-          crossAxisCount: 7,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-          children: [
-            for (var i = 0; i < lead; i++) const SizedBox(),
-            for (var d = 1; d <= daysInMonth; d++)
-              _dayCell(DateTime(today.year, today.month, d), today, solved),
-          ],
-        ),
-      ]),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              for (final h in heads)
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      h,
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          GridView.count(
+            crossAxisCount: 7,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
+            children: [
+              for (var i = 0; i < lead; i++) const SizedBox(),
+              for (var d = 1; d <= daysInMonth; d++)
+                _dayCell(DateTime(today.year, today.month, d), today, solved),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -230,11 +293,18 @@ class _DailyScreenState extends State<DailyScreen> {
         ),
         alignment: Alignment.center,
         child: isSolved
-            ? const Icon(Icons.local_fire_department_rounded, color: Colors.white, size: 20)
-            : Text('${day.day}',
+            ? const Icon(
+                Icons.local_fire_department_rounded,
+                color: Colors.white,
+                size: 20,
+              )
+            : Text(
+                '${day.day}',
                 style: TextStyle(
-                    color: future ? Colors.white24 : Colors.white,
-                    fontWeight: FontWeight.w800)),
+                  color: future ? Colors.white24 : Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
       ),
     );
   }

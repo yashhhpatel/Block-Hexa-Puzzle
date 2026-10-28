@@ -15,7 +15,9 @@ class Chapter {
   /// Localized name, e.g. "Easy" or "Grandmaster III".
   String get name => index < Chapters.fixedCount
       ? tr('chapter_$index')
-      : tr('chapter_grand', {'n': Chapters.roman(index - Chapters.fixedCount + 1)});
+      : tr('chapter_grand', {
+          'n': Chapters.roman(index - Chapters.fixedCount + 1),
+        });
 
   int get last => first + count - 1;
   bool contains(int level) => level >= first && level <= last;
@@ -56,14 +58,18 @@ class Chapters {
     }
     final k = index - _fixed.length;
     return Chapter(
-        index, _fixedLevels + 1 + k * _endlessSize, _endlessSize, color);
+      index,
+      _fixedLevels + 1 + k * _endlessSize,
+      _endlessSize,
+      color,
+    );
   }
 
   static Chapter forLevel(int level) {
     if (level > _fixedLevels) {
       return at(_fixed.length + (level - _fixedLevels - 1) ~/ _endlessSize);
     }
-    for (var i = 0;; i++) {
+    for (var i = 0; ; i++) {
       final c = at(i);
       if (c.contains(level)) return c;
     }
@@ -71,7 +77,21 @@ class Chapters {
 
   static String roman(int n) {
     const vals = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
-    const syms = ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I'];
+    const syms = [
+      'M',
+      'CM',
+      'D',
+      'CD',
+      'C',
+      'XC',
+      'L',
+      'XL',
+      'X',
+      'IX',
+      'V',
+      'IV',
+      'I',
+    ];
     final b = StringBuffer();
     for (var i = 0; i < vals.length; i++) {
       while (n >= vals[i]) {

@@ -59,9 +59,10 @@ enum BoardStyle { symmetric, blob, twin }
 /// cut into connected blocks, so the cut itself is a valid solution.
 class LevelGenerator {
   static Level generate(int levelNumber) => _generate(
-      seed: _seedFor(levelNumber),
-      difficultyLevel: levelNumber,
-      number: levelNumber);
+    seed: _seedFor(levelNumber),
+    difficultyLevel: levelNumber,
+    number: levelNumber,
+  );
 
   /// The Daily Puzzle for [day]: same for every player on that date, easier
   /// early in the week and hardest on Sunday.
@@ -96,16 +97,23 @@ class LevelGenerator {
       final level = _buildValid(rng, diff, number, dailyKey);
       first ??= level;
       if (!wantUnique) break;
-      final count = Solver(level.board, level.pieces, nodeLimit: _uniqueNodeBudget)
-          .countSolutions(limit: 2);
+      final count = Solver(
+        level.board,
+        level.pieces,
+        nodeLimit: _uniqueNodeBudget,
+      ).countSolutions(limit: 2);
       if (count == 1) return level;
     }
     return first!;
   }
 
   static Level _buildValid(
-      math.Random rng, Difficulty diff, int number, int? dailyKey) {
-    for (var attempt = 0;; attempt++) {
+    math.Random rng,
+    Difficulty diff,
+    int number,
+    int? dailyKey,
+  ) {
+    for (var attempt = 0; ; attempt++) {
       // Relax the target if a shape refuses to split nicely.
       final pieceCount = math.max(2, diff.pieceCount - attempt ~/ 40);
       final level = _tryBuild(number, dailyKey, rng, diff, pieceCount);
@@ -115,14 +123,17 @@ class LevelGenerator {
 
   static int _seedFor(int level) => (level * 2654435761 + 97) & 0x7fffffff;
 
-  static Level? _tryBuild(int levelNumber, int? dailyKey, math.Random rng,
-      Difficulty diff, int pieceCount) {
+  static Level? _tryBuild(
+    int levelNumber,
+    int? dailyKey,
+    math.Random rng,
+    Difficulty diff,
+    int pieceCount,
+  ) {
     final avg = (diff.minPieceSize + diff.maxPieceSize) / 2;
     final targetCells = (pieceCount * avg).round();
 
-    final style = levelNumber == 1
-        ? BoardStyle.twin
-        : _pickStyle(rng);
+    final style = levelNumber == 1 ? BoardStyle.twin : _pickStyle(rng);
 
     List<Set<Hex>> components;
     switch (style) {
@@ -144,7 +155,13 @@ class LevelGenerator {
           ? remaining
           : math.max(1, (pieceCount * comp.length / total).round());
       remaining -= k;
-      final parts = _partition(rng, comp, k, diff.minPieceSize, diff.maxPieceSize);
+      final parts = _partition(
+        rng,
+        comp,
+        k,
+        diff.minPieceSize,
+        diff.maxPieceSize,
+      );
       if (parts == null) return null;
       regions.addAll(parts);
     }
@@ -160,8 +177,13 @@ class LevelGenerator {
       entries.add((piece, anchor));
     }
     for (var d = 0; d < diff.decoys; d++) {
-      final size = diff.minPieceSize + rng.nextInt(math.max(1, diff.maxPieceSize - diff.minPieceSize));
-      entries.add((Piece(_growBlob(rng, size, mirror: false).toList(), 0), null));
+      final size =
+          diff.minPieceSize +
+          rng.nextInt(math.max(1, diff.maxPieceSize - diff.minPieceSize));
+      entries.add((
+        Piece(_growBlob(rng, size, mirror: false).toList(), 0),
+        null,
+      ));
     }
     entries.shuffle(rng);
 
@@ -172,11 +194,12 @@ class LevelGenerator {
       solution.add(entries[i].$2);
     }
     return Level(
-        number: levelNumber,
-        dailyKey: dailyKey,
-        board: board,
-        pieces: pieces,
-        solution: solution);
+      number: levelNumber,
+      dailyKey: dailyKey,
+      board: board,
+      pieces: pieces,
+      solution: solution,
+    );
   }
 
   static BoardStyle _pickStyle(math.Random rng) {
@@ -231,18 +254,24 @@ class LevelGenerator {
   static Set<Hex> _mirroredCopyBeside(Set<Hex> shape) {
     final mirrored = shape.map((h) => h.mirrored).toSet();
     // Shifting by (2k, -k) moves right without changing screen height.
-    for (var k = 1;; k++) {
+    for (var k = 1; ; k++) {
       final shift = Hex(2 * k, -k);
       final moved = mirrored.map((h) => h + shift).toSet();
       final clash = moved.any(
-          (h) => shape.contains(h) || h.neighbors.any(shape.contains));
+        (h) => shape.contains(h) || h.neighbors.any(shape.contains),
+      );
       if (!clash) return moved;
     }
   }
 
   /// Splits [cells] into [k] connected regions sized within [minS]..[maxS].
   static List<Set<Hex>>? _partition(
-      math.Random rng, Set<Hex> cells, int k, int minS, int maxS) {
+    math.Random rng,
+    Set<Hex> cells,
+    int k,
+    int minS,
+    int maxS,
+  ) {
     k = math.min(k, cells.length ~/ minS);
     if (k <= 0) return null;
     if (cells.length > k * maxS) {

@@ -39,7 +39,8 @@ const Map<String, String> stringsFr = {
   "daily_title": "Défi du {date}",
   "tip_drag": "Faites glisser les blocs pour remplir le plateau.",
   "tip_tricky": "Niveau piège !\nVous n’aurez pas besoin de tous les blocs.",
-  "hint_no_coins": "Pas assez de pièces. Terminez des niveaux et des quêtes pour en gagner plus !",
+  "hint_no_coins":
+      "Pas assez de pièces. Terminez des niveaux et des quêtes pour en gagner plus !",
 
   "cheer_0": "Génial !",
   "cheer_1": "Brillant !",
@@ -75,7 +76,8 @@ const Map<String, String> stringsFr = {
   "diff_6": "Expert",
   "daily_solved_msg": "Résolu ! Revenez demain.",
   "daily_reward_msg": "Récompense : {n} pièces + série",
-  "daily_footer": "Résolvez le puzzle du jour pour prolonger votre série. Vous avez manqué un jour ce mois-ci ? Touchez-le pour le rattraper contre la moitié des pièces.",
+  "daily_footer":
+      "Résolvez le puzzle du jour pour prolonger votre série. Vous avez manqué un jour ce mois-ci ? Touchez-le pour le rattraper contre la moitié des pièces.",
   "date_short": "{d} {m}",
   "month_year": "{m} {y}",
   "month_1": "Janvier",
@@ -132,7 +134,8 @@ const Map<String, String> stringsFr = {
   "tab_blocks": "Blocs",
   "tab_themes": "Thèmes",
   "need_stars": "Collectez {n} étoiles pour débloquer {name}.",
-  "shop_no_coins": "Pas encore assez de pièces. Terminez des niveaux et des quêtes pour en gagner plus !",
+  "shop_no_coins":
+      "Pas encore assez de pièces. Terminez des niveaux et des quêtes pour en gagner plus !",
   "skin_gem": "Gemme",
   "skin_flat": "Mat",
   "skin_candy": "Bonbon",
@@ -161,20 +164,27 @@ const Map<String, String> stringsFr = {
   "ad_privacy": "Choix de confidentialité publicitaire",
   "contact_subject": "Assistance Hexa Fill Puzzle",
   "contact_body": "Décrivez votre question ou votre problème ici :",
-  "contact_no_email": "Aucune app de messagerie trouvée. Écrivez-nous à {email}",
+  "contact_no_email":
+      "Aucune app de messagerie trouvée. Écrivez-nous à {email}",
 
   "htp_1_title": "Faites glisser les blocs",
-  "htp_1_body": "Prenez un bloc dans le plateau du bas et déposez-le sur la grille. Il s’emboîte quand toutes ses cases rentrent.",
+  "htp_1_body":
+      "Prenez un bloc dans le plateau du bas et déposez-le sur la grille. Il s’emboîte quand toutes ses cases rentrent.",
   "htp_2_title": "Remplissez chaque case",
-  "htp_2_body": "Couvrez toute la grille pour terminer le niveau. Les blocs ne pivotent pas : observez bien leurs formes.",
+  "htp_2_body":
+      "Couvrez toute la grille pour terminer le niveau. Les blocs ne pivotent pas : observez bien leurs formes.",
   "htp_3_title": "Changez d’avis",
-  "htp_3_body": "Faites glisser un bloc posé pour le déplacer ou le retirer. Annuler est gratuit et Recommencer vide la grille.",
+  "htp_3_body":
+      "Faites glisser un bloc posé pour le déplacer ou le retirer. Annuler est gratuit et Recommencer vide la grille.",
   "htp_4_title": "Gagnez 3 étoiles",
-  "htp_4_body": "Une étoile pour la réussite, une sans indice et une pour avoir battu le temps cible.",
+  "htp_4_body":
+      "Une étoile pour la réussite, une sans indice et une pour avoir battu le temps cible.",
   "htp_5_title": "Niveaux pièges",
-  "htp_5_body": "Certains niveaux contiennent des blocs en trop. Bloqué ? Un indice place un bloc pour 25 pièces.",
+  "htp_5_body":
+      "Certains niveaux contiennent des blocs en trop. Bloqué ? Un indice place un bloc pour 25 pièces.",
   "htp_6_title": "Revenez chaque jour",
-  "htp_6_body": "Résolvez le défi du jour pour prolonger votre série, terminez des quêtes et récupérez votre récompense.",
+  "htp_6_body":
+      "Résolvez le défi du jour pour prolonger votre série, terminez des quêtes et récupérez votre récompense.",
   "htp_start": "C’est parti !",
   "htp_skip": "Passer",
 
@@ -184,21 +194,29 @@ const Map<String, String> stringsFr = {
   "ra_benefit_appopen": "Aucune pub à l’ouverture du jeu",
   "ra_plan": "Abonnement mensuel",
   "ra_per_month": "/ mois",
-  "ra_duration": "Supprime toutes les pubs pendant 1 mois. Renouvellement automatique chaque mois.",
+  "ra_duration":
+      "Supprime toutes les pubs pendant 1 mois. Renouvellement automatique chaque mois.",
   "ra_subscribe": "S’abonner pour {price}",
-  "ra_terms": "{price} facturés chaque mois via Google Play jusqu’à résiliation. Résiliez à tout moment dans Google Play › Paiements et abonnements › Abonnements.",
+  "ra_terms":
+      "{price} facturés chaque mois via Google Play jusqu’à résiliation. Résiliez à tout moment dans Google Play › Paiements et abonnements › Abonnements.",
   "ra_active": "Pubs supprimées. Merci !",
-  "ra_active_detail": "Votre abonnement est actif et se renouvelle chaque mois, sauf résiliation.",
+  "ra_active_detail":
+      "Votre abonnement est actif et se renouvelle chaque mois, sauf résiliation.",
   "ra_manage": "Gérer l’abonnement",
   "ra_restore": "Restaurer les achats",
-  "ra_pending": "Paiement en attente. Les pubs seront supprimées dès que Google Play l’aura confirmé.",
-  "ra_store_unavailable": "Google Play est indisponible pour le moment. Vérifiez votre connexion et réessayez.",
-  "ra_product_unavailable": "Cet abonnement n’est pas disponible pour le moment. Réessayez plus tard.",
+  "ra_pending":
+      "Paiement en attente. Les pubs seront supprimées dès que Google Play l’aura confirmé.",
+  "ra_store_unavailable":
+      "Google Play est indisponible pour le moment. Vérifiez votre connexion et réessayez.",
+  "ra_product_unavailable":
+      "Cet abonnement n’est pas disponible pour le moment. Réessayez plus tard.",
   "ra_canceled": "Achat annulé.",
   "ra_failed": "L’achat a échoué. Veuillez réessayer.",
   "ra_restore_none": "Aucun abonnement actif trouvé.",
   "ra_restore_ok": "Abonnement restauré. Pubs supprimées !",
-  "ra_expired": "Votre abonnement sans pub est terminé : les publicités sont de retour.",
-  "ra_verify_failed": "Impossible de vérifier cet achat. Veuillez nous contacter.",
+  "ra_expired":
+      "Votre abonnement sans pub est terminé : les publicités sont de retour.",
+  "ra_verify_failed":
+      "Impossible de vérifier cet achat. Veuillez nous contacter.",
   "ra_success": "Merci ! Les pubs sont maintenant supprimées.",
 };

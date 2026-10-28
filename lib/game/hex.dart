@@ -67,7 +67,8 @@ class Hex {
   static Hex fromJson(List<dynamic> j) => Hex(j[0] as int, j[1] as int);
 
   @override
-  bool operator ==(Object other) => other is Hex && other.q == q && other.r == r;
+  bool operator ==(Object other) =>
+      other is Hex && other.q == q && other.r == r;
 
   @override
   int get hashCode => q * 7919 + r;

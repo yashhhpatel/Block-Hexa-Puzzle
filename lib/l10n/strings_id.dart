@@ -39,7 +39,8 @@ const Map<String, String> stringsId = {
   "daily_title": "Harian {date}",
   "tip_drag": "Seret balok untuk mengisi papan.",
   "tip_tricky": "Level jebakan!\nKamu tidak butuh semua balok.",
-  "hint_no_coins": "Koin tidak cukup. Selesaikan level dan misi untuk mendapat lebih banyak!",
+  "hint_no_coins":
+      "Koin tidak cukup. Selesaikan level dan misi untuk mendapat lebih banyak!",
 
   "cheer_0": "Keren!",
   "cheer_1": "Cemerlang!",
@@ -75,7 +76,8 @@ const Map<String, String> stringsId = {
   "diff_6": "Ahli",
   "daily_solved_msg": "Selesai! Kembali lagi besok.",
   "daily_reward_msg": "Hadiah: {n} koin + beruntun",
-  "daily_footer": "Selesaikan teka-teki hari ini untuk menambah beruntunmu. Terlewat satu hari bulan ini? Ketuk untuk mengejarnya dengan setengah koin.",
+  "daily_footer":
+      "Selesaikan teka-teki hari ini untuk menambah beruntunmu. Terlewat satu hari bulan ini? Ketuk untuk mengejarnya dengan setengah koin.",
   "date_short": "{d} {m}",
   "month_year": "{m} {y}",
   "month_1": "Januari",
@@ -132,7 +134,8 @@ const Map<String, String> stringsId = {
   "tab_blocks": "Balok",
   "tab_themes": "Tema",
   "need_stars": "Kumpulkan {n} bintang untuk membuka {name}.",
-  "shop_no_coins": "Koin belum cukup. Selesaikan level dan misi untuk mendapat lebih banyak!",
+  "shop_no_coins":
+      "Koin belum cukup. Selesaikan level dan misi untuk mendapat lebih banyak!",
   "skin_gem": "Permata",
   "skin_flat": "Doff",
   "skin_candy": "Permen",
@@ -164,17 +167,23 @@ const Map<String, String> stringsId = {
   "contact_no_email": "Aplikasi email tidak ditemukan. Kirim email ke {email}",
 
   "htp_1_title": "Seret balok",
-  "htp_1_body": "Ambil balok dari baki dan lepaskan di papan. Balok terkunci di tempat saat semua selnya pas.",
+  "htp_1_body":
+      "Ambil balok dari baki dan lepaskan di papan. Balok terkunci di tempat saat semua selnya pas.",
   "htp_2_title": "Isi setiap sel",
-  "htp_2_body": "Tutupi seluruh papan untuk menyelesaikan level. Balok tidak bisa diputar, jadi perhatikan bentuknya baik-baik.",
+  "htp_2_body":
+      "Tutupi seluruh papan untuk menyelesaikan level. Balok tidak bisa diputar, jadi perhatikan bentuknya baik-baik.",
   "htp_3_title": "Berubah pikiran",
-  "htp_3_body": "Seret balok yang sudah diletakkan untuk memindahkan atau mengembalikannya. Urungkan gratis, dan Ulangi mengosongkan papan.",
+  "htp_3_body":
+      "Seret balok yang sudah diletakkan untuk memindahkan atau mengembalikannya. Urungkan gratis, dan Ulangi mengosongkan papan.",
   "htp_4_title": "Raih 3 bintang",
-  "htp_4_body": "Satu bintang karena selesai, satu tanpa petunjuk, dan satu karena mengalahkan waktu target.",
+  "htp_4_body":
+      "Satu bintang karena selesai, satu tanpa petunjuk, dan satu karena mengalahkan waktu target.",
   "htp_5_title": "Level jebakan",
-  "htp_5_body": "Beberapa level punya balok cadangan yang tidak dibutuhkan. Buntu? Petunjuk meletakkan satu balok seharga 25 koin.",
+  "htp_5_body":
+      "Beberapa level punya balok cadangan yang tidak dibutuhkan. Buntu? Petunjuk meletakkan satu balok seharga 25 koin.",
   "htp_6_title": "Kembali setiap hari",
-  "htp_6_body": "Selesaikan teka-teki harian untuk menambah beruntun, selesaikan misi, dan ambil hadiah harianmu.",
+  "htp_6_body":
+      "Selesaikan teka-teki harian untuk menambah beruntun, selesaikan misi, dan ambil hadiah harianmu.",
   "htp_start": "Ayo main!",
   "htp_skip": "Lewati",
 
@@ -184,21 +193,29 @@ const Map<String, String> stringsId = {
   "ra_benefit_appopen": "Tanpa iklan saat membuka game",
   "ra_plan": "Paket bulanan",
   "ra_per_month": "/ bulan",
-  "ra_duration": "Menghapus semua iklan selama 1 bulan. Diperpanjang otomatis setiap bulan.",
+  "ra_duration":
+      "Menghapus semua iklan selama 1 bulan. Diperpanjang otomatis setiap bulan.",
   "ra_subscribe": "Berlangganan seharga {price}",
-  "ra_terms": "Ditagih {price} setiap bulan melalui Google Play sampai dibatalkan. Batalkan kapan saja di Google Play › Pembayaran & langganan › Langganan.",
+  "ra_terms":
+      "Ditagih {price} setiap bulan melalui Google Play sampai dibatalkan. Batalkan kapan saja di Google Play › Pembayaran & langganan › Langganan.",
   "ra_active": "Iklan dihapus. Terima kasih!",
-  "ra_active_detail": "Langgananmu aktif dan diperpanjang setiap bulan kecuali kamu membatalkannya.",
+  "ra_active_detail":
+      "Langgananmu aktif dan diperpanjang setiap bulan kecuali kamu membatalkannya.",
   "ra_manage": "Kelola langganan",
   "ra_restore": "Pulihkan pembelian",
-  "ra_pending": "Pembayaran tertunda. Iklan akan dihapus setelah Google Play mengonfirmasinya.",
-  "ra_store_unavailable": "Google Play sedang tidak tersedia. Periksa koneksimu lalu coba lagi.",
-  "ra_product_unavailable": "Langganan ini sedang tidak tersedia. Coba lagi nanti.",
+  "ra_pending":
+      "Pembayaran tertunda. Iklan akan dihapus setelah Google Play mengonfirmasinya.",
+  "ra_store_unavailable":
+      "Google Play sedang tidak tersedia. Periksa koneksimu lalu coba lagi.",
+  "ra_product_unavailable":
+      "Langganan ini sedang tidak tersedia. Coba lagi nanti.",
   "ra_canceled": "Pembelian dibatalkan.",
   "ra_failed": "Pembelian gagal. Silakan coba lagi.",
   "ra_restore_none": "Tidak ada langganan aktif.",
   "ra_restore_ok": "Langganan dipulihkan. Iklan dihapus!",
-  "ra_expired": "Langganan Hapus Iklan sudah berakhir, jadi iklan muncul kembali.",
-  "ra_verify_failed": "Pembelian ini tidak dapat diverifikasi. Silakan hubungi kami.",
+  "ra_expired":
+      "Langganan Hapus Iklan sudah berakhir, jadi iklan muncul kembali.",
+  "ra_verify_failed":
+      "Pembelian ini tidak dapat diverifikasi. Silakan hubungi kami.",
   "ra_success": "Terima kasih! Iklan sudah dihapus.",
 };

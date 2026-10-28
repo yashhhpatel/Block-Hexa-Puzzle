@@ -31,7 +31,10 @@ class Solver {
     _index = {for (var i = 0; i < _cells.length; i++) _cells[i]: i};
     _adj = [
       for (final c in _cells)
-        [for (final n in c.neighbors) if (_index.containsKey(n)) _index[n]!]
+        [
+          for (final n in c.neighbors)
+            if (_index.containsKey(n)) _index[n]!,
+        ],
     ];
     _startingAt = List.generate(_cells.length, (_) => <_Placement>[]);
     for (var p = 0; p < pieces.length; p++) {
@@ -126,7 +129,8 @@ class Solver {
       if (st.used[pl.piece]) continue;
       if (!_fits(st, pl.cells)) continue;
       // Identical shapes in the same spot are interchangeable.
-      if (!tried.add('${pieces[pl.piece].shapeKey}@${pl.cells.first}')) continue;
+      if (!tried.add('${pieces[pl.piece].shapeKey}@${pl.cells.first}'))
+        continue;
       for (final i in pl.cells) {
         st.filled[i] = true;
       }
@@ -196,9 +200,9 @@ class _State {
   int cursor = 0;
 
   _State(int cells, int pieces)
-      : filled = List.filled(cells, false),
-        used = List.filled(pieces, false),
-        result = List.filled(pieces, null),
-        seen = List.filled(cells, false),
-        empty = cells;
+    : filled = List.filled(cells, false),
+      used = List.filled(pieces, false),
+      result = List.filled(pieces, null),
+      seen = List.filled(cells, false),
+      empty = cells;
 }

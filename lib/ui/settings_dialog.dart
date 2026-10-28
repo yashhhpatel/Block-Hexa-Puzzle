@@ -48,67 +48,94 @@ class _SettingsPanelState extends State<_SettingsPanel> {
             border: Border.all(color: AppColors.boardLine, width: 2.5),
             boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 20)],
           ),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Row(children: [
-              const SizedBox(width: 32),
-              const Expanded(
-                  child: Center(child: OutlinedTitle('Settings', size: 26))),
-              IconButton(
-                icon: const Icon(Icons.close_rounded, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  const SizedBox(width: 32),
+                  const Expanded(
+                    child: Center(child: OutlinedTitle('Settings', size: 26)),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
               ),
-            ]),
-            const SizedBox(height: 8),
-            _toggle('Music', Icons.music_note_rounded, p.musicOn, (v) async {
-              await p.setMusic(v);
-              widget.services.sfx.updateMusic();
-            }),
-            _toggle('Sound effects', Icons.volume_up_rounded, p.soundOn,
-                (v) => p.setSound(v)),
-            _toggle('Vibration', Icons.vibration_rounded, p.vibrationOn,
-                (v) => p.setVibration(v)),
-            _toggle('Background effect', Icons.auto_awesome_rounded,
-                p.backgroundFx, (v) => p.setBackgroundFx(v)),
-            const SizedBox(height: 14),
-            PillButton(
-              label: 'How to play',
-              icon: Icons.school_rounded,
-              width: 220,
-              color: const Color(0xFF7A55F0),
-              dark: const Color(0xFF4A2BB0),
-              onTap: () => _howTo(context),
-            ),
-          ]),
+              const SizedBox(height: 8),
+              _toggle('Music', Icons.music_note_rounded, p.musicOn, (v) async {
+                await p.setMusic(v);
+                widget.services.sfx.updateMusic();
+              }),
+              _toggle(
+                'Sound effects',
+                Icons.volume_up_rounded,
+                p.soundOn,
+                (v) => p.setSound(v),
+              ),
+              _toggle(
+                'Vibration',
+                Icons.vibration_rounded,
+                p.vibrationOn,
+                (v) => p.setVibration(v),
+              ),
+              _toggle(
+                'Background effect',
+                Icons.auto_awesome_rounded,
+                p.backgroundFx,
+                (v) => p.setBackgroundFx(v),
+              ),
+              const SizedBox(height: 14),
+              PillButton(
+                label: 'How to play',
+                icon: Icons.school_rounded,
+                width: 220,
+                color: const Color(0xFF7A55F0),
+                dark: const Color(0xFF4A2BB0),
+                onTap: () => _howTo(context),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _toggle(String label, IconData icon, bool value,
-      Future<void> Function(bool) save) {
+  Widget _toggle(
+    String label,
+    IconData icon,
+    bool value,
+    Future<void> Function(bool) save,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(children: [
-        Icon(icon, color: Colors.white70),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(label,
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white70),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
               style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700)),
-        ),
-        Switch(
-          value: value,
-          activeThumbColor: Colors.white,
-          activeTrackColor: AppColors.accent,
-          onChanged: (v) async {
-            await save(v);
-            widget.services.sfx.play(Sound.button);
-            setState(() {});
-          },
-        ),
-      ]),
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          Switch(
+            value: value,
+            activeThumbColor: Colors.white,
+            activeTrackColor: AppColors.accent,
+            onChanged: (v) async {
+              await save(v);
+              widget.services.sfx.play(Sound.button);
+              setState(() {});
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -117,8 +144,10 @@ class _SettingsPanelState extends State<_SettingsPanel> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF15276A),
-        title: const Text('How to play',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+        title: const Text(
+          'How to play',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+        ),
         content: const Text(
           '• Drag blocks from the tray onto the board.\n'
           '• Fill every empty cell to clear the level.\n'
@@ -132,8 +161,9 @@ class _SettingsPanelState extends State<_SettingsPanel> {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Got it')),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Got it'),
+          ),
         ],
       ),
     );

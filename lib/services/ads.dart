@@ -50,7 +50,10 @@ class AdsService {
       return;
     }
     try {
-      await _gatherConsent().timeout(const Duration(seconds: 10), onTimeout: () {});
+      await _gatherConsent().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {},
+      );
       if (await ConsentInformation.instance.canRequestAds()) {
         await MobileAds.instance.initialize();
         ready.value = true;
@@ -89,7 +92,8 @@ class AdsService {
   Future<bool> privacyOptionsRequired() async {
     if (!enabled) return false;
     try {
-      return await ConsentInformation.instance.getPrivacyOptionsRequirementStatus() ==
+      return await ConsentInformation.instance
+              .getPrivacyOptionsRequirementStatus() ==
           PrivacyOptionsRequirementStatus.required;
     } catch (_) {
       return false;
@@ -150,7 +154,9 @@ class AdsService {
 
   /// Shows the app-open ad on a cold start if one loads within [wait].
   /// Completes when the game may continue.
-  Future<void> showAppOpenOnLaunch({Duration wait = const Duration(seconds: 5)}) async {
+  Future<void> showAppOpenOnLaunch({
+    Duration wait = const Duration(seconds: 5),
+  }) async {
     if (!enabled) return;
     await _initDone.future.timeout(wait, onTimeout: () {});
     final deadline = DateTime.now().add(wait);
@@ -167,7 +173,9 @@ class AdsService {
       return;
     }
     if (!_adsAllowed || _fullScreenShowing) return;
-    if (DateTime.now().difference(_lastFullScreenEnd) < const Duration(seconds: 30)) return;
+    if (DateTime.now().difference(_lastFullScreenEnd) <
+        const Duration(seconds: 30))
+      return;
     if (!_appOpenFresh) {
       _appOpen?.dispose();
       _appOpen = null;

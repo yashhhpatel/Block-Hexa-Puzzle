@@ -19,8 +19,15 @@ class BoardLayout {
   final double trayCell;
   final List<Offset> traySlots; // centre of each piece's tray bounding box
 
-  BoardLayout._(this.size, this.boardRect, this.trayRect, this.cell,
-      this.boardOrigin, this.trayCell, this.traySlots);
+  BoardLayout._(
+    this.size,
+    this.boardRect,
+    this.trayRect,
+    this.cell,
+    this.boardOrigin,
+    this.trayCell,
+    this.traySlots,
+  );
 
   factory BoardLayout.compute(Size size, Level level) {
     final trayH = size.height * 0.34;
@@ -43,7 +50,8 @@ class BoardLayout {
       size.width / 8.5,
     );
     final boardCenter = boardRect.center.translate(0, boardRect.height * 0.02);
-    final boardOrigin = boardCenter -
+    final boardOrigin =
+        boardCenter -
         Offset((minX + maxX) / 2 * cell, (minY + maxY) / 2 * cell);
 
     // Tray: pack piece bounding boxes into centred rows, shrinking to fit.
@@ -56,14 +64,26 @@ class BoardLayout {
         break;
       }
       trayCell *= 0.92;
-      if (i == 29) slots = _pack(level.pieces, trayCell, trayRect, force: true)!;
+      if (i == 29)
+        slots = _pack(level.pieces, trayCell, trayRect, force: true)!;
     }
     return BoardLayout._(
-        size, boardRect, trayRect, cell, boardOrigin, trayCell, slots);
+      size,
+      boardRect,
+      trayRect,
+      cell,
+      boardOrigin,
+      trayCell,
+      slots,
+    );
   }
 
-  static List<Offset>? _pack(List<Piece> pieces, double s, Rect area,
-      {bool force = false}) {
+  static List<Offset>? _pack(
+    List<Piece> pieces,
+    double s,
+    Rect area, {
+    bool force = false,
+  }) {
     final gap = s * 0.9;
     final rows = <List<int>>[[]];
     final rowW = <double>[0];
@@ -109,7 +129,9 @@ class BoardLayout {
 
   /// Centroid position of [piece] when placed at [anchor].
   Offset boardCentroid(Level level, int piece, Hex anchor) =>
-      boardOrigin + anchor.toPixel(cell) + level.pieces[piece].unitCentroid * cell;
+      boardOrigin +
+      anchor.toPixel(cell) +
+      level.pieces[piece].unitCentroid * cell;
 }
 
 class _Visual {
@@ -234,8 +256,14 @@ class BoardViewState extends State<BoardView>
     for (var k = 0; k < n; k++) {
       final a = _rng.nextDouble() * 2 * math.pi;
       final v = speed * (2 + _rng.nextDouble() * 3);
-      _sparks.add(_Spark(at, Offset(math.cos(a), math.sin(a)) * v, color,
-          (_layout?.cell ?? 20) * (0.12 + _rng.nextDouble() * 0.12)));
+      _sparks.add(
+        _Spark(
+          at,
+          Offset(math.cos(a), math.sin(a)) * v,
+          color,
+          (_layout?.cell ?? 20) * (0.12 + _rng.nextDouble() * 0.12),
+        ),
+      );
     }
   }
 
@@ -297,12 +325,16 @@ class BoardViewState extends State<BoardView>
     final fresh = _visuals.isEmpty;
     _visuals
       ..clear()
-      ..addAll(List.generate(level.pieces.length, (i) {
-        final c = _targetCenter(i);
-        // On a new level, blocks rise into the tray.
-        return _Visual(fresh ? c.translate(0, _layout!.trayRect.height) : c,
-            _targetScale(i));
-      }));
+      ..addAll(
+        List.generate(level.pieces.length, (i) {
+          final c = _targetCenter(i);
+          // On a new level, blocks rise into the tray.
+          return _Visual(
+            fresh ? c.translate(0, _layout!.trayRect.height) : c,
+            _targetScale(i),
+          );
+        }),
+      );
     if (!_ticker.isActive) _ticker.start();
   }
 
@@ -403,31 +435,33 @@ class BoardViewState extends State<BoardView>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      _ensureLayout(constraints.biggest);
-      return Listener(
-        behavior: HitTestBehavior.opaque,
-        onPointerDown: _onDown,
-        onPointerMove: _onMove,
-        onPointerUp: _onUp,
-        onPointerCancel: _onUp,
-        child: CustomPaint(
-          size: constraints.biggest,
-          painter: _BoardPainter(
-            game: game,
-            layout: _layout!,
-            visuals: _visuals.cast<_Visual>(),
-            sparks: _sparks,
-            skin: widget.skin,
-            theme: widget.theme,
-            drag: _drag,
-            preview: _preview,
-            winT: _celebrating ? _winT : 0,
-            almostPulse: _almost ? (math.sin(_time * 5) + 1) / 2 : -1,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        _ensureLayout(constraints.biggest);
+        return Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: _onDown,
+          onPointerMove: _onMove,
+          onPointerUp: _onUp,
+          onPointerCancel: _onUp,
+          child: CustomPaint(
+            size: constraints.biggest,
+            painter: _BoardPainter(
+              game: game,
+              layout: _layout!,
+              visuals: _visuals.cast<_Visual>(),
+              sparks: _sparks,
+              skin: widget.skin,
+              theme: widget.theme,
+              drag: _drag,
+              preview: _preview,
+              winT: _celebrating ? _winT : 0,
+              almostPulse: _almost ? (math.sin(_time * 5) + 1) / 2 : -1,
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }
 
@@ -479,8 +513,9 @@ class _BoardPainter extends CustomPainter {
     }
     for (final s in sparks) {
       canvas.drawPath(
-          hexPath(s.pos, s.size * (0.4 + 0.6 * s.life)),
-          Paint()..color = s.color.withValues(alpha: s.life.clamp(0.0, 1.0)));
+        hexPath(s.pos, s.size * (0.4 + 0.6 * s.life)),
+        Paint()..color = s.color.withValues(alpha: s.life.clamp(0.0, 1.0)),
+      );
     }
   }
 
@@ -517,8 +552,9 @@ class _BoardPainter extends CustomPainter {
           layout.trayCentroid(level, i) - p.unitCentroid * layout.trayCell;
       for (final c in p.cells) {
         canvas.drawPath(
-            hexPath(origin + c.toPixel(layout.trayCell), layout.trayCell * 0.92),
-            ghost);
+          hexPath(origin + c.toPixel(layout.trayCell), layout.trayCell * 0.92),
+          ghost,
+        );
       }
     }
   }
@@ -538,8 +574,10 @@ class _BoardPainter extends CustomPainter {
 
     final outline = Path();
     for (final h in level.board) {
-      outline.addPath(hexPath(layout.boardOrigin + h.toPixel(s), s, roundness: 0.1),
-          Offset.zero);
+      outline.addPath(
+        hexPath(layout.boardOrigin + h.toPixel(s), s, roundness: 0.1),
+        Offset.zero,
+      );
     }
     canvas.drawPath(outline, glow);
     canvas.drawPath(outline, fill);
@@ -552,8 +590,7 @@ class _BoardPainter extends CustomPainter {
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.2);
       for (final h in level.board) {
         if (game.occupantAt(h) != null) continue;
-        canvas.drawPath(
-            hexPath(layout.boardOrigin + h.toPixel(s), s * 0.8), p);
+        canvas.drawPath(hexPath(layout.boardOrigin + h.toPixel(s), s * 0.8), p);
       }
     }
 
@@ -561,8 +598,7 @@ class _BoardPainter extends CustomPainter {
     if (drag != null && preview != null) {
       final p = Paint()..color = Colors.white.withValues(alpha: 0.16);
       for (final c in level.pieces[drag!].cellsAt(preview!)) {
-        canvas.drawPath(
-            hexPath(layout.boardOrigin + c.toPixel(s), s * 0.9), p);
+        canvas.drawPath(hexPath(layout.boardOrigin + c.toPixel(s), s * 0.9), p);
       }
     }
   }
@@ -579,9 +615,12 @@ class _BoardPainter extends CustomPainter {
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, v.scale * 0.25);
       for (final c in p.cells) {
         canvas.drawPath(
-            hexPath(origin + c.toPixel(v.scale) + Offset(0, v.scale * 0.35),
-                v.scale * 0.9),
-            shadow);
+          hexPath(
+            origin + c.toPixel(v.scale) + Offset(0, v.scale * 0.35),
+            v.scale * 0.9,
+          ),
+          shadow,
+        );
       }
     }
     final maxDist = layout.boardRect.longestSide * 0.6;
@@ -599,15 +638,20 @@ class _BoardPainter extends CustomPainter {
       }
       drawBlock(canvas, center, size, color, skin);
       if (flash > 0) {
-        canvas.drawPath(hexPath(center, size * 0.95),
-            Paint()..color = Colors.white.withValues(alpha: flash));
+        canvas.drawPath(
+          hexPath(center, size * 0.95),
+          Paint()..color = Colors.white.withValues(alpha: flash),
+        );
       }
     }
     if (game.hinted.contains(i)) {
       // Small light marks a hint-placed (locked) block.
       final c = origin + p.cells.first.toPixel(v.scale);
-      canvas.drawCircle(c, v.scale * 0.16,
-          Paint()..color = Colors.white.withValues(alpha: 0.85));
+      canvas.drawCircle(
+        c,
+        v.scale * 0.16,
+        Paint()..color = Colors.white.withValues(alpha: 0.85),
+      );
     }
   }
 

@@ -18,7 +18,8 @@ const Map<String, String> stringsDe = {
   "in_use": "Aktiv",
   "claim": "ABHOLEN",
   "loading": "Wird geladen…",
-  "link_error": "Der Link konnte nicht geöffnet werden. Bitte später erneut versuchen.",
+  "link_error":
+      "Der Link konnte nicht geöffnet werden. Bitte später erneut versuchen.",
 
   "next_chest": "Nächste Truhe: {n}/{total} Level",
   "menu_daily": "Täglich",
@@ -39,7 +40,8 @@ const Map<String, String> stringsDe = {
   "daily_title": "Täglich {date}",
   "tip_drag": "Zieh die Blöcke, um das Spielfeld zu füllen.",
   "tip_tricky": "Knifflig!\nDu brauchst nicht alle Blöcke.",
-  "hint_no_coins": "Nicht genug Münzen. Schließe Level und Aufgaben ab, um mehr zu verdienen!",
+  "hint_no_coins":
+      "Nicht genug Münzen. Schließe Level und Aufgaben ab, um mehr zu verdienen!",
 
   "cheer_0": "Super!",
   "cheer_1": "Brillant!",
@@ -75,7 +77,8 @@ const Map<String, String> stringsDe = {
   "diff_6": "Experte",
   "daily_solved_msg": "Gelöst! Komm morgen wieder.",
   "daily_reward_msg": "Belohnung: {n} Münzen + Serie",
-  "daily_footer": "Löse das heutige Rätsel, um deine Serie zu verlängern. Einen Tag in diesem Monat verpasst? Tippe ihn an, um ihn für die halben Münzen nachzuholen.",
+  "daily_footer":
+      "Löse das heutige Rätsel, um deine Serie zu verlängern. Einen Tag in diesem Monat verpasst? Tippe ihn an, um ihn für die halben Münzen nachzuholen.",
   "date_short": "{d}. {m}",
   "month_year": "{m} {y}",
   "month_1": "Januar",
@@ -132,7 +135,8 @@ const Map<String, String> stringsDe = {
   "tab_blocks": "Blöcke",
   "tab_themes": "Designs",
   "need_stars": "Sammle {n} Sterne, um {name} freizuschalten.",
-  "shop_no_coins": "Noch nicht genug Münzen. Schließe Level und Aufgaben ab, um mehr zu verdienen!",
+  "shop_no_coins":
+      "Noch nicht genug Münzen. Schließe Level und Aufgaben ab, um mehr zu verdienen!",
   "skin_gem": "Edelstein",
   "skin_flat": "Matt",
   "skin_candy": "Bonbon",
@@ -164,17 +168,23 @@ const Map<String, String> stringsDe = {
   "contact_no_email": "Keine E-Mail-App gefunden. Schreib uns an {email}",
 
   "htp_1_title": "Blöcke ziehen",
-  "htp_1_body": "Nimm einen Block aus der Ablage und lass ihn auf dem Spielfeld los. Er rastet ein, wenn alle Felder passen.",
+  "htp_1_body":
+      "Nimm einen Block aus der Ablage und lass ihn auf dem Spielfeld los. Er rastet ein, wenn alle Felder passen.",
   "htp_2_title": "Jedes Feld füllen",
-  "htp_2_body": "Bedecke das ganze Spielfeld, um das Level zu schaffen. Blöcke lassen sich nicht drehen – achte also genau auf ihre Form.",
+  "htp_2_body":
+      "Bedecke das ganze Spielfeld, um das Level zu schaffen. Blöcke lassen sich nicht drehen – achte also genau auf ihre Form.",
   "htp_3_title": "Umentscheiden",
-  "htp_3_body": "Zieh einen gelegten Block, um ihn zu verschieben oder zurückzulegen. Rückgängig ist kostenlos, Neu starten leert das Feld.",
+  "htp_3_body":
+      "Zieh einen gelegten Block, um ihn zu verschieben oder zurückzulegen. Rückgängig ist kostenlos, Neu starten leert das Feld.",
   "htp_4_title": "3 Sterne holen",
-  "htp_4_body": "Ein Stern fürs Schaffen, einer ohne Tipps und einer fürs Schlagen der Zielzeit.",
+  "htp_4_body":
+      "Ein Stern fürs Schaffen, einer ohne Tipps und einer fürs Schlagen der Zielzeit.",
   "htp_5_title": "Knifflige Level",
-  "htp_5_body": "Manche Level enthalten Blöcke, die du nicht brauchst. Festgefahren? Ein Tipp legt für 25 Münzen einen Block.",
+  "htp_5_body":
+      "Manche Level enthalten Blöcke, die du nicht brauchst. Festgefahren? Ein Tipp legt für 25 Münzen einen Block.",
   "htp_6_title": "Jeden Tag wiederkommen",
-  "htp_6_body": "Löse das Tagesrätsel für deine Serie, erledige Aufgaben und hol dir deine tägliche Belohnung.",
+  "htp_6_body":
+      "Löse das Tagesrätsel für deine Serie, erledige Aufgaben und hol dir deine tägliche Belohnung.",
   "htp_start": "Los geht’s!",
   "htp_skip": "Überspringen",
 
@@ -184,21 +194,29 @@ const Map<String, String> stringsDe = {
   "ra_benefit_appopen": "Keine Werbung beim Öffnen des Spiels",
   "ra_plan": "Monatsabo",
   "ra_per_month": "/ Monat",
-  "ra_duration": "Entfernt alle Werbung für 1 Monat. Verlängert sich automatisch jeden Monat.",
+  "ra_duration":
+      "Entfernt alle Werbung für 1 Monat. Verlängert sich automatisch jeden Monat.",
   "ra_subscribe": "Für {price} abonnieren",
-  "ra_terms": "{price} werden monatlich über Google Play abgerechnet, bis du kündigst. Kündige jederzeit unter Google Play › Zahlungen & Abos › Abos.",
+  "ra_terms":
+      "{price} werden monatlich über Google Play abgerechnet, bis du kündigst. Kündige jederzeit unter Google Play › Zahlungen & Abos › Abos.",
   "ra_active": "Werbung entfernt. Danke!",
-  "ra_active_detail": "Dein Abo ist aktiv und verlängert sich monatlich, solange du nicht kündigst.",
+  "ra_active_detail":
+      "Dein Abo ist aktiv und verlängert sich monatlich, solange du nicht kündigst.",
   "ra_manage": "Abo verwalten",
   "ra_restore": "Käufe wiederherstellen",
-  "ra_pending": "Zahlung ausstehend. Die Werbung verschwindet, sobald Google Play sie bestätigt.",
-  "ra_store_unavailable": "Google Play ist gerade nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
-  "ra_product_unavailable": "Dieses Abo ist gerade nicht verfügbar. Bitte versuche es später.",
+  "ra_pending":
+      "Zahlung ausstehend. Die Werbung verschwindet, sobald Google Play sie bestätigt.",
+  "ra_store_unavailable":
+      "Google Play ist gerade nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
+  "ra_product_unavailable":
+      "Dieses Abo ist gerade nicht verfügbar. Bitte versuche es später.",
   "ra_canceled": "Kauf abgebrochen.",
   "ra_failed": "Kauf fehlgeschlagen. Bitte versuche es erneut.",
   "ra_restore_none": "Kein aktives Abo gefunden.",
   "ra_restore_ok": "Abo wiederhergestellt. Werbung entfernt!",
-  "ra_expired": "Dein Abo zum Entfernen der Werbung ist abgelaufen, daher wird wieder Werbung angezeigt.",
-  "ra_verify_failed": "Dieser Kauf konnte nicht bestätigt werden. Bitte kontaktiere uns.",
+  "ra_expired":
+      "Dein Abo zum Entfernen der Werbung ist abgelaufen, daher wird wieder Werbung angezeigt.",
+  "ra_verify_failed":
+      "Dieser Kauf konnte nicht bestätigt werden. Bitte kontaktiere uns.",
   "ra_success": "Danke! Die Werbung ist jetzt entfernt.",
 };

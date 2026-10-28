@@ -186,7 +186,8 @@ const Map<String, String> stringsJa = {
   "ra_per_month": "/ 月",
   "ra_duration": "1か月間すべての広告を削除します。毎月自動更新されます。",
   "ra_subscribe": "{price} で登録する",
-  "ra_terms": "解約するまで Google Play で毎月 {price} が請求されます。Google Play › お支払いと定期購入 › 定期購入 からいつでも解約できます。",
+  "ra_terms":
+      "解約するまで Google Play で毎月 {price} が請求されます。Google Play › お支払いと定期購入 › 定期購入 からいつでも解約できます。",
   "ra_active": "広告を削除しました。ありがとうございます！",
   "ra_active_detail": "定期購入は有効です。解約しない限り毎月更新されます。",
   "ra_manage": "定期購入を管理",

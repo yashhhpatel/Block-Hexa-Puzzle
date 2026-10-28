@@ -39,7 +39,8 @@ const Map<String, String> stringsPt = {
   "daily_title": "Diário {date}",
   "tip_drag": "Arraste os blocos para preencher o tabuleiro.",
   "tip_tricky": "Nível traiçoeiro!\nVocê não vai precisar de todos os blocos.",
-  "hint_no_coins": "Moedas insuficientes. Passe de níveis e missões para ganhar mais!",
+  "hint_no_coins":
+      "Moedas insuficientes. Passe de níveis e missões para ganhar mais!",
 
   "cheer_0": "Incrível!",
   "cheer_1": "Brilhante!",
@@ -75,7 +76,8 @@ const Map<String, String> stringsPt = {
   "diff_6": "Especialista",
   "daily_solved_msg": "Resolvido! Volte amanhã.",
   "daily_reward_msg": "Recompensa: {n} moedas + sequência",
-  "daily_footer": "Resolva o quebra-cabeça de hoje para aumentar sua sequência. Perdeu um dia neste mês? Toque nele para recuperar por metade das moedas.",
+  "daily_footer":
+      "Resolva o quebra-cabeça de hoje para aumentar sua sequência. Perdeu um dia neste mês? Toque nele para recuperar por metade das moedas.",
   "date_short": "{d} de {m}",
   "month_year": "{m} de {y}",
   "month_1": "Janeiro",
@@ -132,7 +134,8 @@ const Map<String, String> stringsPt = {
   "tab_blocks": "Blocos",
   "tab_themes": "Temas",
   "need_stars": "Junte {n} estrelas para desbloquear {name}.",
-  "shop_no_coins": "Moedas insuficientes por enquanto. Passe de níveis e missões para ganhar mais!",
+  "shop_no_coins":
+      "Moedas insuficientes por enquanto. Passe de níveis e missões para ganhar mais!",
   "skin_gem": "Gema",
   "skin_flat": "Fosco",
   "skin_candy": "Doce",
@@ -164,17 +167,23 @@ const Map<String, String> stringsPt = {
   "contact_no_email": "Nenhum app de e-mail encontrado. Escreva para {email}",
 
   "htp_1_title": "Arraste os blocos",
-  "htp_1_body": "Pegue um bloco da bandeja e solte no tabuleiro. Ele se encaixa quando todas as células cabem.",
+  "htp_1_body":
+      "Pegue um bloco da bandeja e solte no tabuleiro. Ele se encaixa quando todas as células cabem.",
   "htp_2_title": "Preencha cada célula",
-  "htp_2_body": "Cubra o tabuleiro inteiro para concluir o nível. Os blocos não podem ser girados, então observe bem os formatos.",
+  "htp_2_body":
+      "Cubra o tabuleiro inteiro para concluir o nível. Os blocos não podem ser girados, então observe bem os formatos.",
   "htp_3_title": "Mude de ideia",
-  "htp_3_body": "Arraste um bloco colocado para movê-lo ou devolvê-lo. Desfazer é grátis, e Reiniciar limpa o tabuleiro.",
+  "htp_3_body":
+      "Arraste um bloco colocado para movê-lo ou devolvê-lo. Desfazer é grátis, e Reiniciar limpa o tabuleiro.",
   "htp_4_title": "Ganhe 3 estrelas",
-  "htp_4_body": "Uma estrela por concluir, uma por não usar dicas e uma por bater o tempo-alvo.",
+  "htp_4_body":
+      "Uma estrela por concluir, uma por não usar dicas e uma por bater o tempo-alvo.",
   "htp_5_title": "Níveis traiçoeiros",
-  "htp_5_body": "Alguns níveis têm blocos extras que você não vai usar. Travou? Uma dica coloca um bloco por 25 moedas.",
+  "htp_5_body":
+      "Alguns níveis têm blocos extras que você não vai usar. Travou? Uma dica coloca um bloco por 25 moedas.",
   "htp_6_title": "Volte todo dia",
-  "htp_6_body": "Resolva o quebra-cabeça diário para aumentar sua sequência, conclua missões e pegue sua recompensa diária.",
+  "htp_6_body":
+      "Resolva o quebra-cabeça diário para aumentar sua sequência, conclua missões e pegue sua recompensa diária.",
   "htp_start": "Vamos jogar!",
   "htp_skip": "Pular",
 
@@ -184,21 +193,28 @@ const Map<String, String> stringsPt = {
   "ra_benefit_appopen": "Sem anúncios ao abrir o jogo",
   "ra_plan": "Plano mensal",
   "ra_per_month": "/ mês",
-  "ra_duration": "Remove todos os anúncios por 1 mês. Renova automaticamente todo mês.",
+  "ra_duration":
+      "Remove todos os anúncios por 1 mês. Renova automaticamente todo mês.",
   "ra_subscribe": "Assinar por {price}",
-  "ra_terms": "Cobrança de {price} todo mês pelo Google Play até o cancelamento. Cancele quando quiser em Google Play › Pagamentos e assinaturas › Assinaturas.",
+  "ra_terms":
+      "Cobrança de {price} todo mês pelo Google Play até o cancelamento. Cancele quando quiser em Google Play › Pagamentos e assinaturas › Assinaturas.",
   "ra_active": "Anúncios removidos. Obrigado!",
-  "ra_active_detail": "Sua assinatura está ativa e é renovada todo mês, a menos que você cancele.",
+  "ra_active_detail":
+      "Sua assinatura está ativa e é renovada todo mês, a menos que você cancele.",
   "ra_manage": "Gerenciar assinatura",
   "ra_restore": "Restaurar compras",
-  "ra_pending": "Pagamento pendente. Os anúncios serão removidos assim que o Google Play confirmar.",
-  "ra_store_unavailable": "O Google Play não está disponível agora. Verifique sua conexão e tente novamente.",
-  "ra_product_unavailable": "Esta assinatura não está disponível agora. Tente mais tarde.",
+  "ra_pending":
+      "Pagamento pendente. Os anúncios serão removidos assim que o Google Play confirmar.",
+  "ra_store_unavailable":
+      "O Google Play não está disponível agora. Verifique sua conexão e tente novamente.",
+  "ra_product_unavailable":
+      "Esta assinatura não está disponível agora. Tente mais tarde.",
   "ra_canceled": "Compra cancelada.",
   "ra_failed": "A compra falhou. Tente novamente.",
   "ra_restore_none": "Nenhuma assinatura ativa encontrada.",
   "ra_restore_ok": "Assinatura restaurada. Anúncios removidos!",
-  "ra_expired": "Sua assinatura para remover anúncios terminou, então os anúncios voltaram.",
+  "ra_expired":
+      "Sua assinatura para remover anúncios terminou, então os anúncios voltaram.",
   "ra_verify_failed": "Não foi possível verificar esta compra. Fale conosco.",
   "ra_success": "Obrigado! Os anúncios foram removidos.",
 };

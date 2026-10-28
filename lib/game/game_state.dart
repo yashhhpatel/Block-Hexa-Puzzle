@@ -163,12 +163,12 @@ class GameState extends ChangeNotifier {
   }
 
   Map<String, dynamic> toJson() => {
-        'level': level.number,
-        'placements': [for (final p in placements) p?.toJson()],
-        'hinted': hinted.toList(),
-        'hintsUsed': hintsUsed,
-        'version': kSaveVersion,
-      };
+    'level': level.number,
+    'placements': [for (final p in placements) p?.toJson()],
+    'hinted': hinted.toList(),
+    'hintsUsed': hintsUsed,
+    'version': kSaveVersion,
+  };
 
   /// Restores a saved in-progress board for the same level.
   void restore(Map<String, dynamic> json) {
