@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
@@ -52,6 +53,14 @@ class WinSummary {
   bool get newBest => stars > previousStars;
 }
 
+/// A newly reached achievement tier, for the unlock notification.
+class AchievementUnlock {
+  final AchievementDef def;
+  final int target;
+  final int reward;
+  const AchievementUnlock(this.def, this.target, this.reward);
+}
+
 class QuestStatus {
   final QuestDef def;
   final int progress;
@@ -75,7 +84,6 @@ class AchievementStatus {
 
 /// Local, offline save data and the rules for earning and spending it.
 class Progress {
-  static const hintCost = 25;
   static const firstClearReward = 5;
   static const coinsPerNewStar = 3;
   static const startingCoins = 100;
@@ -90,8 +98,19 @@ class Progress {
 
   Progress._(this._prefs, this.now);
 
-  static Future<Progress> load({DateTime Function()? clock}) async =>
-      Progress._(await SharedPreferences.getInstance(), clock ?? DateTime.now);
+  static Future<Progress> load({DateTime Function()? clock}) async {
+    final p = Progress._(
+      await SharedPreferences.getInstance(),
+      clock ?? DateTime.now,
+    );
+    await p._seedAchievements();
+    return p;
+  }
+
+  final _unlocks = StreamController<AchievementUnlock>.broadcast();
+
+  /// Fires whenever play pushes an achievement past a new tier.
+  Stream<AchievementUnlock> get achievementUnlocks => _unlocks.stream;
 
   int get today => dayKeyOf(now());
 
@@ -177,6 +196,46 @@ class Progress {
     final prog = (q['progress'] as Map<String, dynamic>);
     prog[s.name] = ((prog[s.name] as int?) ?? 0) + by;
     await _putMap('quests', q);
+    await _checkUnlocks(s);
+  }
+
+  int _tiersReached(AchievementDef a) {
+    final v = stat(a.stat);
+    return a.tiers.where((t) => v >= t).length;
+  }
+
+  /// Marks tiers that were already reached before this version as seen, so
+  /// updating the game doesn't fire a burst of old unlocks.
+  Future<void> _seedAchievements() async {
+    final seen = _map('achSeen');
+    var changed = false;
+    for (final a in Quests.achievements) {
+      if (seen.containsKey(a.id)) continue;
+      seen[a.id] = _tiersReached(a);
+      changed = true;
+    }
+    if (changed) await _putMap('achSeen', seen);
+  }
+
+  Future<void> _checkUnlocks(Stat s) async {
+    final seen = _map('achSeen');
+    var changed = false;
+    for (final a in Quests.achievements) {
+      if (a.stat != s) continue;
+      final reached = _tiersReached(a);
+      final before = (seen[a.id] as int?) ?? 0;
+      if (reached <= before) continue;
+      seen[a.id] = reached;
+      changed = true;
+      if (!_unlocks.isClosed) {
+        _unlocks.add(AchievementUnlock(
+          a,
+          a.tiers[reached - 1],
+          a.rewards[reached - 1],
+        ));
+      }
+    }
+    if (changed) await _putMap('achSeen', seen);
   }
 
   Future<void> _setMax(Stat s, int value) async {
@@ -184,6 +243,7 @@ class Progress {
     if (((stats[s.name] as int?) ?? 0) >= value) return;
     stats[s.name] = value;
     await _putMap('stats', stats);
+    await _checkUnlocks(s);
   }
 
   /// Counts blocks placed during play (feeds quests and achievements).
@@ -227,6 +287,7 @@ class Progress {
         chest = 0;
         chestReward = 30 + math.Random(n).nextInt(51); // 30..80
         coinsWon += chestReward;
+        await _bump(Stat.chestsOpened, 1);
       }
       await _prefs.setInt('chest', chest);
 
@@ -302,6 +363,9 @@ class Progress {
       );
       coinsWon += key == today ? dailyReward : dailyReward ~/ 2;
       await _bump(Stat.dailyPlayed, 1);
+      if (hintsUsed == 0 && seconds <= level.parSeconds) {
+        await _bump(Stat.dailyPerfect, 1);
+      }
       if (key == today) {
         final last = _prefs.getInt('streakLast');
         final s = (last != null && daysBetween(last, today) == 1)
@@ -382,6 +446,7 @@ class Progress {
     q['claimed'] = claimed;
     await _putMap('quests', q);
     await addCoins(reward);
+    if (id != 'all') await _bump(Stat.questsCompleted, 1);
     return reward;
   }
 
@@ -426,6 +491,7 @@ class Progress {
     await _prefs.setInt('loginLast', today);
     await _prefs.setInt('loginIndex', day);
     await addCoins(loginRewards[day]);
+    await _bump(Stat.loginDays, 1);
     return loginRewards[day];
   }
 
@@ -443,6 +509,7 @@ class Progress {
     if (item.starsRequired > 0 && totalStars < item.starsRequired) return false;
     if (item.price > 0 && !spendCoins(item.price)) return false;
     await _prefs.setStringList('owned', [...owned, item.id]);
+    await _bump(Stat.itemsUnlocked, 1);
     return true;
   }
 

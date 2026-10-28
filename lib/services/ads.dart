@@ -32,6 +32,8 @@ class AdsService {
   bool _appOpenLoading = false;
   InterstitialAd? _interstitial;
   bool _interstitialLoading = false;
+  RewardedAd? _rewarded;
+  bool _rewardedLoading = false;
 
   bool _fullScreenShowing = false;
   DateTime _lastFullScreenEnd = DateTime.fromMillisecondsSinceEpoch(0);
@@ -61,6 +63,7 @@ class AdsService {
           _loadAppOpen();
           _loadInterstitial();
         }
+        _loadRewarded();
         AppStateEventNotifier.startListening();
         _appState = AppStateEventNotifier.appStateStream.listen((s) {
           if (s == AppState.foreground) showAppOpenIfAvailable();
@@ -127,6 +130,7 @@ class AdsService {
     billing.premium.removeListener(_onPremiumChanged);
     _appOpen?.dispose();
     _interstitial?.dispose();
+    _rewarded?.dispose();
   }
 
   // ---- app open -----------------------------------------------------------
@@ -250,6 +254,62 @@ class AdsService {
     });
     _loadInterstitial();
     return shown;
+  }
+
+  // ---- rewarded -----------------------------------------------------------
+
+  // Rewarded videos are opt-in (the player asks for one to earn a hint), so
+  // they stay available to Remove Ads subscribers too.
+  bool get _rewardedAllowed => enabled && ready.value;
+
+  void _loadRewarded() {
+    if (_rewardedLoading || _rewarded != null || !_rewardedAllowed) return;
+    _rewardedLoading = true;
+    RewardedAd.load(
+      adUnitId: kRewardedAdUnit,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          _rewardedLoading = false;
+          _rewarded = ad;
+        },
+        onAdFailedToLoad: (_) => _rewardedLoading = false,
+      ),
+    );
+  }
+
+  bool get rewardedReady => _rewardedAllowed && _rewarded != null;
+
+  /// Starts loading a rewarded video if none is ready yet.
+  void preloadRewarded() => _loadRewarded();
+
+  /// Shows a rewarded video. Returns true only if Google's reward callback
+  /// fired, i.e. the video was watched to the end. Skipped, closed early,
+  /// failed or unavailable all return false.
+  Future<bool> showRewarded() async {
+    final ad = _rewarded;
+    if (!_rewardedAllowed || _fullScreenShowing || ad == null) {
+      _loadRewarded();
+      return false;
+    }
+    _rewarded = null;
+    var earned = false;
+    await _showFullScreen((onEnd) {
+      ad.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (a) {
+          a.dispose();
+          onEnd();
+        },
+        onAdFailedToShowFullScreenContent: (a, _) {
+          a.dispose();
+          onEnd();
+        },
+        onAdClicked: (_) => _skipNextAppOpen = true,
+      );
+      ad.show(onUserEarnedReward: (_, _) => earned = true);
+    });
+    _loadRewarded();
+    return earned;
   }
 
   /// Runs a full-screen ad: pauses music, blocks other ads, and completes

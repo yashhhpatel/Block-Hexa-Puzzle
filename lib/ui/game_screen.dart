@@ -249,27 +249,90 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     g.undo();
   }
 
-  void _hint() {
+  bool _hintBusy = false;
+
+  /// One free hint per level; after that, one rewarded video = one hint.
+  Future<void> _hint() async {
     final g = _game;
-    if (g == null || g.isComplete) return;
-    if (!progress.spendCoins(Progress.hintCost)) {
-      sfx.play(Sound.fail);
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(tr('hint_no_coins')),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+    if (g == null || g.isComplete || _hintBusy) return;
+    if (g.freeHintAvailable) {
+      _giveHint(g);
       return;
     }
-    if (g.applyHint() == null) {
-      progress.addCoins(Progress.hintCost); // nothing left to hint: refund
-    } else {
-      sfx.play(Sound.hint);
+    sfx.play(Sound.button);
+    final watch = await _confirmVideo();
+    if (watch != true || !mounted || _game != g || g.isComplete) return;
+
+    final ads = widget.services.ads;
+    if (!ads.rewardedReady) {
+      ads.preloadRewarded();
+      _snack(tr('hint_ad_unavailable'));
+      return;
     }
+    _hintBusy = true;
+    _clock.stop(); // the video doesn't count against the target time
+    final earned = await ads.showRewarded();
+    _hintBusy = false;
+    if (!mounted || _game != g) return;
+    if (!g.isComplete) _clock.start();
+    if (earned) {
+      _giveHint(g);
+    } else {
+      sfx.play(Sound.fail);
+      _snack(tr('hint_ad_incomplete'));
+    }
+  }
+
+  void _giveHint(GameState g) {
+    if (g.applyHint() != null) sfx.play(Sound.hint);
     setState(() {});
+  }
+
+  void _snack(String text) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(text), duration: const Duration(seconds: 3)),
+      );
+  }
+
+  Future<bool?> _confirmVideo() {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF15276A),
+        icon: const Icon(
+          Icons.ondemand_video_rounded,
+          color: AppColors.gold,
+          size: 40,
+        ),
+        title: Text(
+          tr('hint_watch_title'),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        content: Text(
+          tr('hint_watch_body'),
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white70, fontSize: 15),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(tr('cancel')),
+          ),
+          FilledButton.icon(
+            onPressed: () => Navigator.pop(context, true),
+            icon: const Icon(Icons.play_arrow_rounded),
+            label: Text(tr('hint_watch_btn')),
+          ),
+        ],
+      ),
+    );
   }
 
   // ---- ui -----------------------------------------------------------------
@@ -438,32 +501,37 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             color: AppColors.gold,
             dark: const Color(0xFFC67F00),
             onTap: _hint,
-            badge: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-              decoration: BoxDecoration(
-                color: const Color(0xFF5B2A9E),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.white, width: 1.2),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CoinIcon(size: 12),
-                  SizedBox(width: 2),
-                  Text(
-                    '${Progress.hintCost}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            badge: _hintBadge(g),
           ),
         ],
       ),
+    );
+  }
+
+  /// "FREE" while the level's free hint is unused, then a video icon.
+  Widget _hintBadge(GameState? g) {
+    final free = g?.freeHintAvailable ?? true;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+      decoration: BoxDecoration(
+        color: free ? const Color(0xFF2FB58A) : const Color(0xFF5B2A9E),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white, width: 1.2),
+      ),
+      child: free
+          ? Text(
+              tr('hint_free'),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+              ),
+            )
+          : const Icon(
+              Icons.ondemand_video_rounded,
+              color: Colors.white,
+              size: 13,
+            ),
     );
   }
 

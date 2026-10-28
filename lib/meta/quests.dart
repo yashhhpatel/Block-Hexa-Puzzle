@@ -13,6 +13,11 @@ enum Stat {
   blocksPlaced,
   chaptersCompleted,
   bestStreak,
+  questsCompleted,
+  loginDays,
+  chestsOpened,
+  itemsUnlocked,
+  dailyPerfect,
 }
 
 class QuestDef {
@@ -31,16 +36,21 @@ class AchievementDef {
   final Stat stat;
   final List<int> tiers;
   final List<int> rewards;
-  final String titleKey;
+  /// Key of the description, e.g. "Clear {n} levels".
+  final String descKey;
   const AchievementDef(
     this.id,
     this.stat,
     this.tiers,
     this.rewards,
-    this.titleKey,
+    this.descKey,
   );
 
-  String title(int target) => tr(titleKey, {'n': target});
+  /// Unique name, e.g. "Level Climber".
+  String get name => tr('ach_$id');
+
+  /// What to do for the tier with this [target].
+  String title(int target) => tr(descKey, {'n': target});
 }
 
 class Quests {
@@ -130,6 +140,48 @@ class Quests {
       [1, 3, 6, 10],
       [50, 150, 300, 600],
       'a_chapters',
+    ),
+    AchievementDef(
+      'speed',
+      Stat.fastClears,
+      [5, 25, 100, 300],
+      [25, 75, 200, 400],
+      'q_fast',
+    ),
+    AchievementDef(
+      'quests',
+      Stat.questsCompleted,
+      [5, 25, 100, 365],
+      [25, 75, 200, 500],
+      'a_quests',
+    ),
+    AchievementDef(
+      'loyal',
+      Stat.loginDays,
+      [7, 30, 100, 365],
+      [30, 100, 300, 800],
+      'a_login',
+    ),
+    AchievementDef(
+      'chests',
+      Stat.chestsOpened,
+      [1, 10, 50, 100],
+      [20, 60, 200, 400],
+      'a_chests',
+    ),
+    AchievementDef(
+      'collector',
+      Stat.itemsUnlocked,
+      [1, 3, 5, 8],
+      [20, 50, 100, 250],
+      'a_items',
+    ),
+    AchievementDef(
+      'dailystar',
+      Stat.dailyPerfect,
+      [1, 10, 50, 100],
+      [25, 75, 200, 400],
+      'a_daily_perfect',
     ),
   ];
 }

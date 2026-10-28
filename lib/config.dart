@@ -24,6 +24,7 @@ const bool kUseTestAds = true;
 const String kAppOpenAdUnit = 'ca-app-pub-3940256099942544/9257395921';
 const String kInterstitialAdUnit = 'ca-app-pub-3940256099942544/1033173712';
 const String kBannerAdUnit = 'ca-app-pub-3940256099942544/6300978111';
+const String kRewardedAdUnit = 'ca-app-pub-3940256099942544/5224354917';
 
 /// Show an interstitial after every Nth completed level.
 const int kInterstitialEveryLevels = 2;

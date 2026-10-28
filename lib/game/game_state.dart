@@ -25,6 +25,11 @@ class GameState extends ChangeNotifier {
   /// Hints spent on this attempt (affects the "no hints" star).
   int hintsUsed = 0;
 
+  /// Each level gives one free hint; every further hint costs a rewarded
+  /// video. A new GameState (new level or replay) starts fresh, while a
+  /// resumed board keeps its count, so quitting can't refill the free hint.
+  bool get freeHintAvailable => hintsUsed == 0;
+
   /// Blocks the player has put on the board this attempt.
   int blocksPlaced = 0;
 
