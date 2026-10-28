@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
@@ -37,8 +39,9 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.fromLTRB(18, 6, 18, 24),
-                  // All reached chapters plus a peek at the next locked one.
-                  itemCount: current + 2,
+                  // Every named chapter (so players see what lies ahead),
+                  // then Grandmaster chapters as they are reached.
+                  itemCount: math.max(Chapters.fixedCount, current + 2),
                   itemBuilder: (context, i) {
                     final c = Chapters.at(i);
                     final open = c.first <= unlocked;
@@ -49,7 +52,20 @@ class _ChaptersScreenState extends State<ChaptersScreen> {
                       cleared: cleared,
                       stars: open ? p.starsInChapter(c) : 0,
                       onTap: !open
-                          ? null
+                          ? () {
+                              widget.services.sfx.play(Sound.fail);
+                              ScaffoldMessenger.of(context)
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      tr('chapter_locked', {
+                                        'name': Chapters.at(i - 1).name,
+                                      }),
+                                    ),
+                                  ),
+                                );
+                            }
                           : () async {
                               widget.services.sfx.play(Sound.button);
                               await Navigator.of(context).push(
@@ -109,7 +125,7 @@ class _ChapterCard extends StatelessWidget {
   final bool open;
   final int cleared;
   final int stars;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   const _ChapterCard({
     required this.chapter,
@@ -123,74 +139,135 @@ class _ChapterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = chapter;
     final done = cleared >= c.count;
-    return GestureDetector(
+    // 10-step difficulty meter; endless Grandmaster chapters are maxed out.
+    final level = (c.index + 1).clamp(1, 10);
+    return Pressable(
+      pressedScale: 0.97,
       onTap: onTap,
-      child: Opacity(
-        opacity: open ? 1 : 0.55,
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                c.color.withValues(alpha: open ? 0.45 : 0.15),
-                Colors.black.withValues(alpha: 0.3),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: c.color.withValues(alpha: 0.8),
-              width: 1.5,
-            ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: open
+                ? [c.color.withValues(alpha: 0.55), c.style.deep]
+                : [
+                    Colors.white.withValues(alpha: 0.06),
+                    Colors.black.withValues(alpha: 0.35),
+                  ],
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 58,
-                height: 58,
-                decoration: ShapeDecoration(
-                  shape: const HexBorder(),
-                  color: open ? c.color : Colors.white24,
-                ),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: open ? c.color : Colors.white.withValues(alpha: 0.15),
+            width: open ? 2 : 1,
+          ),
+          boxShadow: open
+              ? [
+                  BoxShadow(
+                    color: c.color.withValues(alpha: 0.35),
+                    blurRadius: 16,
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 64,
+              height: 64,
+              child: Stack(
                 alignment: Alignment.center,
-                child: open
-                    ? Icon(
-                        done
-                            ? Icons.emoji_events_rounded
-                            : Icons.play_arrow_rounded,
-                        color: Colors.white,
-                        size: 30,
-                      )
-                    : const Icon(Icons.lock_rounded, color: Colors.white70),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      c.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 19,
-                        fontWeight: FontWeight.w900,
+                children: [
+                  Container(
+                    width: 62,
+                    height: 62,
+                    decoration: ShapeDecoration(
+                      shape: const HexBorder(),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: open
+                            ? [
+                                Color.lerp(c.color, Colors.white, 0.3)!,
+                                c.style.deep,
+                              ]
+                            : const [Color(0x33FFFFFF), Color(0x22000000)],
                       ),
                     ),
-                    Text(
-                      tr('levels_range', {'a': c.first, 'b': c.last}),
-                      style: const TextStyle(
+                  ),
+                  Opacity(
+                    opacity: open ? 1 : 0.35,
+                    child: Text(c.emoji, style: const TextStyle(fontSize: 28)),
+                  ),
+                  if (!open)
+                    const Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Icon(
+                        Icons.lock_rounded,
                         color: Colors.white70,
-                        fontSize: 13,
+                        size: 22,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                  if (done)
+                    const Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Icon(
+                        Icons.check_circle_rounded,
+                        color: Color(0xFF6CF0B8),
+                        size: 22,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    c.name,
+                    style: TextStyle(
+                      color: open ? Colors.white : Colors.white60,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  Text(
+                    tr('levels_range', {'a': c.first, 'b': c.last}),
+                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      for (var i = 0; i < 10; i++)
+                        Expanded(
+                          child: Container(
+                            height: 5,
+                            margin: const EdgeInsets.only(right: 2),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(3),
+                              color: i < level
+                                  ? (open ? c.color : Colors.white38)
+                                  : Colors.white12,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  if (open) ...[
                     ClipRRect(
                       borderRadius: BorderRadius.circular(6),
                       child: LinearProgressIndicator(
                         value: cleared / c.count,
-                        minHeight: 8,
+                        minHeight: 7,
                         backgroundColor: Colors.white12,
-                        color: c.color,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -220,11 +297,21 @@ class _ChapterCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ] else
+                    Text(
+                      tr('chapter_locked', {
+                        'name': Chapters.at(c.index - 1).name,
+                      }),
+                      style: const TextStyle(
+                        color: Colors.white60,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -279,7 +366,7 @@ class _LevelGridScreenState extends State<LevelGridScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              _TopBar(services: widget.services, title: c.name),
+              _TopBar(services: widget.services, title: c.title),
               Expanded(
                 child: GridView.builder(
                   controller: _scroll,
@@ -296,7 +383,20 @@ class _LevelGridScreenState extends State<LevelGridScreen> {
                     final open = n <= unlocked;
                     return GestureDetector(
                       onTap: !open
-                          ? null
+                          ? () {
+                              widget.services.sfx.play(Sound.fail);
+                              ScaffoldMessenger.of(context)
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      tr('chapter_locked', {
+                                        'name': Chapters.at(i - 1).name,
+                                      }),
+                                    ),
+                                  ),
+                                );
+                            }
                           : () async {
                               widget.services.sfx.play(Sound.button);
                               if (n != p.currentLevel) await p.clearBoard();

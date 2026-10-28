@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 10),
               OutlinedTitle(tr('level_n', {'n': level}), size: 26),
               Text(
-                '${chapter.name} · ${chapter.positionOf(level)}/${chapter.count}',
+                '${chapter.title} · ${chapter.positionOf(level)}/${chapter.count}',
                 style: TextStyle(
                   color: chapter.color,
                   fontWeight: FontWeight.w800,

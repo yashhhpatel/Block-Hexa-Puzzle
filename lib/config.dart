@@ -14,7 +14,7 @@ const String kRemoveAdsFallbackPrice = '₹299';
 /// check (purchases are then trusted as reported by Google Play).
 const String kPlayLicenseKey = '';
 
-const String kSupportEmail = 'yashpatel4611@gmail.com';
+const String kSupportEmail = 'anjalisasani4611@gmail.com';
 const String kPrivacyPolicyUrl =
     'https://yashhhpatel.github.io/Block-Hexa-Puzzle/privacy-policy.html';
 const String kAndroidPackage = 'com.yashpatel.block_hexa_puzzle';

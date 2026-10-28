@@ -463,7 +463,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                           ),
                         ),
                         child: Text(
-                          '${chapter.name} ${chapter.positionOf(level!.number)}/${chapter.count}',
+                          '${chapter.title} ${chapter.positionOf(level!.number)}/${chapter.count}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -932,7 +932,7 @@ class _WinOverlayState extends State<_WinOverlay> {
       lines.add(
         note(
           Icons.emoji_events_rounded,
-          tr('chapter_complete', {'name': ch.name, 'n': ch.reward}),
+          tr('chapter_complete', {'name': ch.title, 'n': ch.reward}),
           ch.color,
         ),
       );

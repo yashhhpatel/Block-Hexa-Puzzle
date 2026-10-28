@@ -319,7 +319,7 @@ class _HeroCard extends StatelessWidget {
                   style: const TextStyle(color: Colors.white70, fontSize: 13),
                 ),
                 Text(
-                  chapter.name,
+                  chapter.title,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
