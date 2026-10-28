@@ -10,7 +10,8 @@ class Services {
   static Future<Services> create() async {
     final progress = await Progress.load();
     final sfx = Sfx(progress);
-    await sfx.init();
+    // Audio loads in the background so the first screen appears at once.
+    sfx.init();
     return Services(progress, sfx);
   }
 }

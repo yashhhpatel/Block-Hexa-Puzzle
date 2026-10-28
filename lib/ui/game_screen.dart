@@ -629,7 +629,7 @@ class _WinOverlayState extends State<_WinOverlay> {
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeOutBack,
         builder: (_, v, child) => Container(
-          color: Colors.black.withValues(alpha: 0.6 * v.clamp(0, 1)),
+          color: Colors.black.withValues(alpha: 0.55 * v.clamp(0, 1)),
           alignment: Alignment.center,
           child: Transform.scale(
             scale: 0.7 + 0.3 * v,
@@ -637,52 +637,70 @@ class _WinOverlayState extends State<_WinOverlay> {
           ),
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _BigStars(lit: _litStars),
-              const SizedBox(height: 8),
-              OutlinedTitle(cheer.toUpperCase(), size: 34),
-              const SizedBox(height: 4),
-              Text(
-                level.isDaily
-                    ? 'Daily Puzzle solved in ${formatTime(widget.seconds)}'
-                    : 'Level ${level.number} cleared in ${formatTime(widget.seconds)}',
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.85),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
+          padding: const EdgeInsets.symmetric(horizontal: 22),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(18, 6, 18, 22),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xF0233F9A), Color(0xF20E1A4A)],
               ),
-              const SizedBox(height: 14),
-              _criteria(s, level),
-              const SizedBox(height: 12),
-              ..._rewards(s),
-              if (!level.isDaily) ...[
-                const SizedBox(height: 12),
-                _ChestBar(
-                  progress: s.chestProgress,
-                  opened: s.chestReward != null,
-                ),
+              borderRadius: BorderRadius.circular(26),
+              border: Border.all(
+                color: AppColors.gold.withValues(alpha: 0.8),
+                width: 2,
+              ),
+              boxShadow: const [
+                BoxShadow(color: Colors.black54, blurRadius: 24),
               ],
-              const SizedBox(height: 22),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  RoundButton(
-                    icon: Icons.refresh_rounded,
-                    onTap: widget.onReplay,
-                    semanticLabel: 'Replay',
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _BigStars(lit: _litStars),
+                const SizedBox(height: 8),
+                OutlinedTitle(cheer.toUpperCase(), size: 34),
+                const SizedBox(height: 4),
+                Text(
+                  level.isDaily
+                      ? 'Daily Puzzle solved in ${formatTime(widget.seconds)}'
+                      : 'Level ${level.number} cleared in ${formatTime(widget.seconds)}',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.85),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
                   ),
-                  const SizedBox(width: 18),
-                  PillButton(
-                    label: level.isDaily ? 'Done' : 'Next',
-                    onTap: widget.onNext,
+                ),
+                const SizedBox(height: 14),
+                _criteria(s, level),
+                const SizedBox(height: 12),
+                ..._rewards(s),
+                if (!level.isDaily) ...[
+                  const SizedBox(height: 12),
+                  _ChestBar(
+                    progress: s.chestProgress,
+                    opened: s.chestReward != null,
                   ),
                 ],
-              ),
-            ],
+                const SizedBox(height: 22),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    RoundButton(
+                      icon: Icons.refresh_rounded,
+                      onTap: widget.onReplay,
+                      semanticLabel: 'Replay',
+                    ),
+                    const SizedBox(width: 18),
+                    PillButton(
+                      label: level.isDaily ? 'Done' : 'Next',
+                      onTap: widget.onNext,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
