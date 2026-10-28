@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -93,12 +94,10 @@ void drawGem(Canvas canvas, Offset c, double size, Color color,
     outer,
     Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = math_max(1, size * 0.06)
+      ..strokeWidth = math.max(1.0, size * 0.06)
       ..color = _shade(color, -0.3).withValues(alpha: 0.9 * opacity),
   );
 }
-
-double math_max(double a, double b) => a > b ? a : b;
 
 /// Rounded hex button shape used for the Play button and level tiles.
 class HexBorder extends ShapeBorder {
@@ -112,8 +111,8 @@ class HexBorder extends ShapeBorder {
     // Pointy-top for buttons reads better as a "badge".
     final path = Path();
     for (var i = 0; i < 6; i++) {
-      final a = (60 * i - 90) * 3.141592653589793 / 180;
-      final p = r.center + Offset(size * cos(a), size * sin(a));
+      final a = (60 * i - 90) * math.pi / 180;
+      final p = r.center + Offset(size * math.cos(a), size * math.sin(a));
       i == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
     }
     return path..close();
@@ -128,22 +127,3 @@ class HexBorder extends ShapeBorder {
   @override
   ShapeBorder scale(double t) => this;
 }
-
-double cos(double a) => _cos(a);
-double sin(double a) => _sin(a);
-double _cos(double a) => _math.cos(a);
-double _sin(double a) => _math.sin(a);
-
-// ignore: library_prefixes
-class _math {
-  static double cos(double a) => _Trig.cos(a);
-  static double sin(double a) => _Trig.sin(a);
-}
-
-class _Trig {
-  static double cos(double a) => _dartMathCos(a);
-  static double sin(double a) => _dartMathSin(a);
-}
-
-double _dartMathCos(double a) => mathCos(a);
-double _dartMathSin(double a) => mathSin(a);
