@@ -1,5 +1,6 @@
 import 'package:block_hexa_puzzle/game/generator.dart';
 import 'package:block_hexa_puzzle/game/hex.dart';
+import 'package:block_hexa_puzzle/game/level.dart';
 import 'package:block_hexa_puzzle/game/solver.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -31,6 +32,29 @@ void main() {
       final result = solver.solve();
       expect(result, isNotNull, reason: 'level $n (${solver.nodes} nodes)');
     }
+  });
+
+  test('harder levels prefer a single solution', () {
+    var unique = 0;
+    for (var n = 20; n < 60; n++) {
+      final l = LevelGenerator.generate(n);
+      if (Solver(l.board, l.pieces, nodeLimit: 200000).countSolutions() == 1) {
+        unique++;
+      }
+    }
+    expect(unique, greaterThanOrEqualTo(36), reason: '$unique/40 unique');
+  });
+
+  test('solution counter sees multiple solutions', () {
+    // A 2-cell board fits either the domino, or both single cells.
+    final board = {const Hex(0, 0), const Hex(0, 1)};
+    final pieces = [
+      Piece([const Hex(0, 0), const Hex(0, 1)], 0),
+      Piece([const Hex(0, 0)], 1),
+      Piece([const Hex(0, 0)], 2),
+    ];
+    expect(Solver(board, pieces).countSolutions(limit: 5), 2);
+    expect(Solver(board, pieces.sublist(0, 1)).countSolutions(), 1);
   });
 
   test('very high levels still generate quickly', () {

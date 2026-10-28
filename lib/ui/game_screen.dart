@@ -22,8 +22,12 @@ class GameScreen extends StatefulWidget {
   final int? level;
   final DateTime? dailyDate;
 
-  const GameScreen({super.key, required this.services, this.level, this.dailyDate})
-      : assert((level == null) != (dailyDate == null));
+  const GameScreen({
+    super.key,
+    required this.services,
+    this.level,
+    this.dailyDate,
+  }) : assert((level == null) != (dailyDate == null));
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -173,8 +177,16 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     final seconds = _clock.elapsed.inSeconds;
     if (g.level.number == 1) progress.setTutorialSeen();
     final summary = g.level.isDaily
-        ? await progress.recordDailyWin(g.level, seconds: seconds, hintsUsed: g.hintsUsed)
-        : await progress.recordLevelWin(g.level, seconds: seconds, hintsUsed: g.hintsUsed);
+        ? await progress.recordDailyWin(
+            g.level,
+            seconds: seconds,
+            hintsUsed: g.hintsUsed,
+          )
+        : await progress.recordLevelWin(
+            g.level,
+            seconds: seconds,
+            hintsUsed: g.hintsUsed,
+          );
     if (!mounted || _game != g) return;
     _win = summary;
     _boardKey.currentState?.celebrate();
@@ -222,10 +234,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       sfx.play(Sound.fail);
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(const SnackBar(
-          content: Text('Not enough coins. Clear levels and quests to earn more!'),
-          duration: Duration(seconds: 2),
-        ));
+        ..showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Not enough coins. Clear levels and quests to earn more!',
+            ),
+            duration: Duration(seconds: 2),
+          ),
+        );
       return;
     }
     if (g.applyHint() == null) {
@@ -246,36 +262,43 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
         animate: progress.backgroundFx,
         theme: progress.theme,
         child: SafeArea(
-          child: Stack(children: [
-            Column(children: [
-              _header(g),
-              Expanded(
-                child: g == null
-                    ? const Center(
-                        child: CircularProgressIndicator(color: AppColors.boardLine))
-                    : BoardView(
-                        key: _boardKey,
-                        game: g,
-                        skin: progress.skin.style,
-                        theme: progress.theme,
-                        onPick: () => sfx.play(Sound.pick),
-                        onPlace: () => sfx.play(Sound.place),
-                        onFail: () => sfx.play(Sound.fail),
-                      ),
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  _header(g),
+                  Expanded(
+                    child: g == null
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.boardLine,
+                            ),
+                          )
+                        : BoardView(
+                            key: _boardKey,
+                            game: g,
+                            skin: progress.skin.style,
+                            theme: progress.theme,
+                            onPick: () => sfx.play(Sound.pick),
+                            onPlace: () => sfx.play(Sound.place),
+                            onFail: () => sfx.play(Sound.fail),
+                          ),
+                  ),
+                  _bottomBar(g),
+                ],
               ),
-              _bottomBar(g),
-            ]),
-            if (_tip != null) _tipBanner(_tip!),
-            if (_showWin && g != null && _win != null)
-              _WinOverlay(
-                level: g.level,
-                summary: _win!,
-                seconds: _clock.elapsed.inSeconds,
-                sfx: sfx,
-                onNext: _next,
-                onReplay: _replay,
-              ),
-          ]),
+              if (_tip != null) _tipBanner(_tip!),
+              if (_showWin && g != null && _win != null)
+                _WinOverlay(
+                  level: g.level,
+                  summary: _win!,
+                  seconds: _clock.elapsed.inSeconds,
+                  sfx: sfx,
+                  onNext: _next,
+                  onReplay: _replay,
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -288,41 +311,74 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
         : 'Level ${level?.number ?? widget.level}';
     final secs = _clock.elapsed.inSeconds;
     final par = level?.parSeconds;
-    final chapter = level != null && !level.isDaily ? Chapters.forLevel(level.number) : null;
+    final chapter = level != null && !level.isDaily
+        ? Chapters.forLevel(level.number)
+        : null;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 2),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            OutlinedTitle(title, size: 28),
-            const SizedBox(height: 2),
-            Row(children: [
-              if (chapter != null) ...[
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: chapter.color.withValues(alpha: 0.25),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: chapter.color.withValues(alpha: 0.8)),
-                  ),
-                  child: Text(
-                      '${chapter.name} ${chapter.positionOf(level!.number)}/${chapter.count}',
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800)),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                OutlinedTitle(title, size: 28),
+                const SizedBox(height: 2),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 3,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    if (chapter != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: chapter.color.withValues(alpha: 0.25),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: chapter.color.withValues(alpha: 0.8),
+                          ),
+                        ),
+                        child: Text(
+                          '${chapter.name} ${chapter.positionOf(level!.number)}/${chapter.count}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    if (par != null) _ParClock(seconds: secs, par: par),
+                  ],
                 ),
-                const SizedBox(width: 8),
               ],
-              if (par != null) _ParClock(seconds: secs, par: par),
-            ]),
-          ]),
-        ),
-        CoinPill(coins: progress.coins),
-      ]),
+            ),
+          ),
+          CoinPill(coins: progress.coins),
+        ],
+      ),
     );
   }
 
   static String _shortDate(DateTime d) {
-    const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const m = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${m[d.month - 1]} ${d.day}';
   }
 
@@ -351,14 +407,20 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               sfx.play(Sound.button);
               _clock.stop();
               await showSettingsDialog(context, widget.services);
-              if (mounted && _game != null && !_game!.isComplete) _clock.start();
+              if (mounted && _game != null && !_game!.isComplete) {
+                _clock.start();
+              }
               if (mounted) setState(() {});
             },
           ),
           Opacity(
             opacity: g != null && g.canUndo && !g.isComplete ? 1 : 0.45,
             child: RoundButton(
-                icon: Icons.undo_rounded, size: size, semanticLabel: 'Undo', onTap: _undo),
+              icon: Icons.undo_rounded,
+              size: size,
+              semanticLabel: 'Undo',
+              onTap: _undo,
+            ),
           ),
           RoundButton(
             icon: Icons.refresh_rounded,
@@ -380,13 +442,21 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.white, width: 1.2),
               ),
-              child: const Row(mainAxisSize: MainAxisSize.min, children: [
-                CoinIcon(size: 12),
-                SizedBox(width: 2),
-                Text('${Progress.hintCost}',
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CoinIcon(size: 12),
+                  SizedBox(width: 2),
+                  Text(
+                    '${Progress.hintCost}',
                     style: TextStyle(
-                        color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800)),
-              ]),
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -404,22 +474,31 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           tween: Tween(begin: 0, end: 1),
           duration: const Duration(milliseconds: 400),
           builder: (_, v, child) => Opacity(
-              opacity: v,
-              child: Transform.translate(offset: Offset(0, (1 - v) * -12), child: child)),
+            opacity: v,
+            child: Transform.translate(
+              offset: Offset(0, (1 - v) * -12),
+              child: child,
+            ),
+          ),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               color: const Color(0xFF0A1A44).withValues(alpha: 0.85),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.boardLine.withValues(alpha: 0.6)),
+              border: Border.all(
+                color: AppColors.boardLine.withValues(alpha: 0.6),
+              ),
             ),
-            child: Text(text,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                    fontStyle: FontStyle.italic)),
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
           ),
         ),
       ),
@@ -438,19 +517,39 @@ class _ParClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ok = seconds <= par;
-    return Row(mainAxisSize: MainAxisSize.min, children: [
-      Icon(Icons.timer_outlined, size: 15, color: Colors.white.withValues(alpha: 0.8)),
-      const SizedBox(width: 3),
-      Text(formatTime(seconds),
-          style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w800)),
-      const SizedBox(width: 6),
-      Icon(Icons.star_rounded, size: 15, color: ok ? AppColors.gold : Colors.white38),
-      Text(formatTime(par),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.timer_outlined,
+          size: 15,
+          color: Colors.white.withValues(alpha: 0.8),
+        ),
+        const SizedBox(width: 3),
+        Text(
+          formatTime(seconds),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Icon(
+          Icons.star_rounded,
+          size: 15,
+          color: ok ? AppColors.gold : Colors.white38,
+        ),
+        Text(
+          formatTime(par),
           style: TextStyle(
-              color: ok ? AppColors.gold : Colors.white38,
-              fontSize: 13,
-              fontWeight: FontWeight.w800)),
-    ]);
+            color: ok ? AppColors.gold : Colors.white38,
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -476,7 +575,13 @@ class _WinOverlay extends StatefulWidget {
 }
 
 class _WinOverlayState extends State<_WinOverlay> {
-  static const _cheers = ['Awesome!', 'Brilliant!', 'Great!', 'Superb!', 'Perfect!'];
+  static const _cheers = [
+    'Awesome!',
+    'Brilliant!',
+    'Great!',
+    'Superb!',
+    'Perfect!',
+  ];
   int _litStars = 0;
   final List<Timer> _timers = [];
 
@@ -485,15 +590,21 @@ class _WinOverlayState extends State<_WinOverlay> {
     super.initState();
     // Stars pop in one at a time.
     for (var i = 0; i < widget.summary.stars; i++) {
-      _timers.add(Timer(Duration(milliseconds: 450 + 280 * i), () {
-        if (!mounted) return;
-        setState(() => _litStars = i + 1);
-        widget.sfx.play(Sound.star);
-      }));
+      _timers.add(
+        Timer(Duration(milliseconds: 450 + 280 * i), () {
+          if (!mounted) return;
+          setState(() => _litStars = i + 1);
+          widget.sfx.play(Sound.star);
+        }),
+      );
     }
     if (widget.summary.coins > 0) {
-      _timers.add(Timer(Duration(milliseconds: 600 + 280 * widget.summary.stars),
-          () => widget.sfx.play(Sound.coin)));
+      _timers.add(
+        Timer(
+          Duration(milliseconds: 600 + 280 * widget.summary.stars),
+          () => widget.sfx.play(Sound.coin),
+        ),
+      );
     }
   }
 
@@ -521,40 +632,58 @@ class _WinOverlayState extends State<_WinOverlay> {
           color: Colors.black.withValues(alpha: 0.6 * v.clamp(0, 1)),
           alignment: Alignment.center,
           child: Transform.scale(
-              scale: 0.7 + 0.3 * v,
-              child: Opacity(opacity: v.clamp(0, 1), child: child)),
+            scale: 0.7 + 0.3 * v,
+            child: Opacity(opacity: v.clamp(0, 1), child: child),
+          ),
         ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            _BigStars(lit: _litStars),
-            const SizedBox(height: 8),
-            OutlinedTitle(cheer.toUpperCase(), size: 34),
-            const SizedBox(height: 4),
-            Text(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _BigStars(lit: _litStars),
+              const SizedBox(height: 8),
+              OutlinedTitle(cheer.toUpperCase(), size: 34),
+              const SizedBox(height: 4),
+              Text(
                 level.isDaily
                     ? 'Daily Puzzle solved in ${formatTime(widget.seconds)}'
                     : 'Level ${level.number} cleared in ${formatTime(widget.seconds)}',
                 style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.85),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700)),
-            const SizedBox(height: 14),
-            _criteria(s, level),
-            const SizedBox(height: 12),
-            ..._rewards(s),
-            if (!level.isDaily) ...[
+                  color: Colors.white.withValues(alpha: 0.85),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 14),
+              _criteria(s, level),
               const SizedBox(height: 12),
-              _ChestBar(progress: s.chestProgress, opened: s.chestReward != null),
+              ..._rewards(s),
+              if (!level.isDaily) ...[
+                const SizedBox(height: 12),
+                _ChestBar(
+                  progress: s.chestProgress,
+                  opened: s.chestReward != null,
+                ),
+              ],
+              const SizedBox(height: 22),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RoundButton(
+                    icon: Icons.refresh_rounded,
+                    onTap: widget.onReplay,
+                    semanticLabel: 'Replay',
+                  ),
+                  const SizedBox(width: 18),
+                  PillButton(
+                    label: level.isDaily ? 'Done' : 'Next',
+                    onTap: widget.onNext,
+                  ),
+                ],
+              ),
             ],
-            const SizedBox(height: 22),
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              RoundButton(
-                  icon: Icons.refresh_rounded, onTap: widget.onReplay, semanticLabel: 'Replay'),
-              const SizedBox(width: 18),
-              PillButton(label: level.isDaily ? 'Done' : 'Next', onTap: widget.onNext),
-            ]),
-          ]),
+          ),
         ),
       ),
     );
@@ -562,71 +691,128 @@ class _WinOverlayState extends State<_WinOverlay> {
 
   Widget _criteria(WinSummary s, Level level) {
     Widget row(bool ok, String text) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(ok ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                size: 18, color: ok ? const Color(0xFF6CF0B8) : Colors.white38),
-            const SizedBox(width: 6),
-            Text(text,
-                style: TextStyle(
-                    color: ok ? Colors.white : Colors.white54,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700)),
-          ]),
-        );
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            ok ? Icons.check_circle_rounded : Icons.cancel_rounded,
+            size: 18,
+            color: ok ? const Color(0xFF6CF0B8) : Colors.white38,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: TextStyle(
+              color: ok ? Colors.white : Colors.white54,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        row(true, 'Board filled'),
-        row(s.noHints, 'No hints used'),
-        row(s.underPar, 'Under ${formatTime(level.parSeconds)}'),
-      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          row(true, 'Board filled'),
+          row(s.noHints, 'No hints used'),
+          row(s.underPar, 'Under ${formatTime(level.parSeconds)}'),
+        ],
+      ),
     );
   }
 
   List<Widget> _rewards(WinSummary s) {
     final lines = <Widget>[];
     if (s.coins > 0) {
-      lines.add(Row(mainAxisSize: MainAxisSize.min, children: [
-        const CoinIcon(size: 26),
-        const SizedBox(width: 6),
-        Text('+${s.coins}',
-            style: const TextStyle(
-                color: AppColors.gold, fontSize: 26, fontWeight: FontWeight.w900)),
-      ]));
+      lines.add(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CoinIcon(size: 26),
+            const SizedBox(width: 6),
+            Text(
+              '+${s.coins}',
+              style: const TextStyle(
+                color: AppColors.gold,
+                fontSize: 26,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
+      );
     }
     Widget note(IconData icon, String text, Color color) => Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(icon, size: 18, color: color),
-            const SizedBox(width: 6),
-            Text(text,
-                style: TextStyle(color: color, fontSize: 14, fontWeight: FontWeight.w800)),
-          ]),
-        );
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
     if (s.newBest && s.previousStars > 0) {
-      lines.add(note(Icons.trending_up_rounded, 'New best: ${s.stars} stars', AppColors.gold));
+      lines.add(
+        note(
+          Icons.trending_up_rounded,
+          'New best: ${s.stars} stars',
+          AppColors.gold,
+        ),
+      );
     }
     if (s.dailyStreak != null) {
-      lines.add(note(Icons.local_fire_department_rounded,
-          '${s.dailyStreak}-day streak!', const Color(0xFFFF8A2B)));
+      lines.add(
+        note(
+          Icons.local_fire_department_rounded,
+          '${s.dailyStreak}-day streak!',
+          const Color(0xFFFF8A2B),
+        ),
+      );
     }
     if (s.streakBonus != null) {
-      lines.add(note(Icons.card_giftcard_rounded, 'Streak bonus +${s.streakBonus}',
-          const Color(0xFFFF8A2B)));
+      lines.add(
+        note(
+          Icons.card_giftcard_rounded,
+          'Streak bonus +${s.streakBonus}',
+          const Color(0xFFFF8A2B),
+        ),
+      );
     }
     if (s.chestReward != null) {
-      lines.add(note(Icons.inventory_2_rounded, 'Chest opened! +${s.chestReward}',
-          const Color(0xFF6CF0B8)));
+      lines.add(
+        note(
+          Icons.inventory_2_rounded,
+          'Chest opened! +${s.chestReward}',
+          const Color(0xFF6CF0B8),
+        ),
+      );
     }
     final ch = s.chapterCompleted;
     if (ch != null) {
-      lines.add(note(Icons.emoji_events_rounded,
-          '${ch.name} complete! +${ch.reward}', ch.color));
+      lines.add(
+        note(
+          Icons.emoji_events_rounded,
+          '${ch.name} complete! +${ch.reward}',
+          ch.color,
+        ),
+      );
     }
     return lines;
   }
@@ -646,23 +832,28 @@ class _BigStars extends StatelessWidget {
           scale: on ? 1 : 0.8,
           duration: const Duration(milliseconds: 300),
           curve: Curves.elasticOut,
-          child: Icon(Icons.star_rounded,
-              size: size,
-              color: on ? AppColors.gold : Colors.white.withValues(alpha: 0.18),
-              shadows: on
-                  ? const [Shadow(color: Color(0xAAFFC52E), blurRadius: 18)]
-                  : null),
+          child: Icon(
+            Icons.star_rounded,
+            size: size,
+            color: on ? AppColors.gold : Colors.white.withValues(alpha: 0.18),
+            shadows: on
+                ? const [Shadow(color: Color(0xAAFFC52E), blurRadius: 18)]
+                : null,
+          ),
         ),
       );
     }
 
     return SizedBox(
       height: 110,
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Transform.rotate(angle: -math.pi / 14, child: star(0, 70, 14)),
-        star(1, 96, 0),
-        Transform.rotate(angle: math.pi / 14, child: star(2, 70, 14)),
-      ]),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Transform.rotate(angle: -math.pi / 14, child: star(0, 70, 14)),
+          star(1, 96, 0),
+          Transform.rotate(angle: math.pi / 14, child: star(2, 70, 14)),
+        ],
+      ),
     );
   }
 }
@@ -678,32 +869,48 @@ class _ChestBar extends StatelessWidget {
     final frac = opened ? 1.0 : progress / Progress.chestSize;
     return SizedBox(
       width: 240,
-      child: Row(children: [
-        const Icon(Icons.inventory_2_rounded, color: Color(0xFF6CF0B8), size: 26),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(opened ? 'Chest opened!' : 'Chest $progress/${Progress.chestSize}',
-                style: const TextStyle(
-                    color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 3),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0, end: frac),
-                duration: const Duration(milliseconds: 900),
-                curve: Curves.easeOutCubic,
-                builder: (_, v, _) => LinearProgressIndicator(
-                  value: v,
-                  minHeight: 10,
-                  backgroundColor: Colors.white12,
-                  color: const Color(0xFF6CF0B8),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.inventory_2_rounded,
+            color: Color(0xFF6CF0B8),
+            size: 26,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  opened
+                      ? 'Chest opened!'
+                      : 'Chest $progress/${Progress.chestSize}',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 3),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: frac),
+                    duration: const Duration(milliseconds: 900),
+                    curve: Curves.easeOutCubic,
+                    builder: (_, v, _) => LinearProgressIndicator(
+                      value: v,
+                      minHeight: 10,
+                      backgroundColor: Colors.white12,
+                      color: const Color(0xFF6CF0B8),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ]),
-        ),
-      ]),
+          ),
+        ],
+      ),
     );
   }
 }

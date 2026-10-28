@@ -43,7 +43,8 @@ void main() {
       final start = p.coins;
       await p.recordLevelWin(_level(1), seconds: 999, hintsUsed: 1); // 1 star
       final afterFirst = p.coins;
-      expect(afterFirst - start, Progress.firstClearReward);
+      expect(afterFirst - start,
+          Progress.firstClearReward + Progress.coinsPerNewStar);
 
       final same = await p.recordLevelWin(_level(1), seconds: 999, hintsUsed: 1);
       expect(same.coins, 0, reason: 'no improvement, no coins');
