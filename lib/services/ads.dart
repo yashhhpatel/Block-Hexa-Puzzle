@@ -24,6 +24,9 @@ class AdsService {
   /// True once the SDK may serve ads (consent resolved, SDK started).
   final ValueNotifier<bool> ready = ValueNotifier(false);
 
+  /// True once the consent/SDK start-up has finished, whatever the outcome.
+  final ValueNotifier<bool> settled = ValueNotifier(false);
+
   AppOpenAd? _appOpen;
   DateTime? _appOpenLoadedAt;
   bool _appOpenLoading = false;
@@ -42,6 +45,7 @@ class AdsService {
 
   Future<void> init() async {
     if (!enabled || defaultTargetPlatform != TargetPlatform.android) {
+      settled.value = true;
       _initDone.complete();
       return;
     }
@@ -63,6 +67,7 @@ class AdsService {
       // Ads are optional; the game must work without them.
     }
     billing.premium.addListener(_onPremiumChanged);
+    settled.value = true;
     if (!_initDone.isCompleted) _initDone.complete();
   }
 
@@ -282,6 +287,7 @@ class _AdBannerState extends State<AdBanner> {
   void initState() {
     super.initState();
     ads.ready.addListener(_sync);
+    ads.settled.addListener(_sync);
     ads.billing.premium.addListener(_sync);
     _sync();
   }
@@ -289,12 +295,19 @@ class _AdBannerState extends State<AdBanner> {
   @override
   void dispose() {
     ads.ready.removeListener(_sync);
+    ads.settled.removeListener(_sync);
     ads.billing.premium.removeListener(_sync);
     _ad?.dispose();
     super.dispose();
   }
 
-  bool get _wanted => ads.enabled && !ads.billing.premium.value && !_failed;
+  /// No space is kept once it's clear no ad can come (subscriber, no fill,
+  /// or consent didn't allow ads).
+  bool get _wanted =>
+      ads.enabled &&
+      !ads.billing.premium.value &&
+      !_failed &&
+      !(ads.settled.value && !ads.ready.value);
 
   void _sync() {
     if (!_wanted) {

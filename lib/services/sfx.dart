@@ -11,6 +11,7 @@ class Sfx {
   final Map<Sound, AudioPlayer> _players = {};
   AudioPlayer? _music;
   bool _appVisible = true;
+  bool _adShowing = false;
 
   Sfx(this.progress);
 
@@ -48,11 +49,17 @@ class Sfx {
   void updateMusic() {
     final m = _music;
     if (m == null) return;
-    if (progress.musicOn && _appVisible) {
+    if (progress.musicOn && _appVisible && !_adShowing) {
       m.resume().catchError((_) {});
     } else {
       m.pause().catchError((_) {});
     }
+  }
+
+  /// Full-screen ads have their own sound, so music pauses meanwhile.
+  void setAdShowing(bool showing) {
+    _adShowing = showing;
+    updateMusic();
   }
 
   void setAppVisible(bool visible) {
