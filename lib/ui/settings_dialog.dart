@@ -8,6 +8,7 @@ import '../services/sfx.dart';
 import 'how_to_play_screen.dart';
 import 'languages_screen.dart';
 import 'remove_ads_screen.dart';
+import 'stats_screen.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -182,6 +183,11 @@ class _SettingsPanelState extends State<_SettingsPanel> {
                         onTap: () => _push(RemoveAdsScreen(services: s)),
                       ),
                       const SizedBox(height: 8),
+                      _row(
+                        Icons.bar_chart_rounded,
+                        tr('statistics'),
+                        onTap: () => _push(StatsScreen(services: s)),
+                      ),
                       _row(
                         Icons.translate_rounded,
                         tr('language'),
