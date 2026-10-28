@@ -97,4 +97,21 @@ void main() {
       }
     }
   });
+
+  test('one free hint per level, reset for each new level', () {
+    final g = GameState(_tinyLevel());
+    expect(g.freeHintAvailable, isTrue);
+    g.applyHint();
+    expect(g.freeHintAvailable, isFalse);
+    g.reset();
+    expect(g.freeHintAvailable, isFalse, reason: 'restart keeps it used');
+    expect(GameState(_tinyLevel()).freeHintAvailable, isTrue,
+        reason: 'a new level (or replay) starts with a free hint');
+  });
+
+  test('resuming a saved board keeps the free hint used', () {
+    final g = GameState(_tinyLevel())..applyHint();
+    final resumed = GameState(_tinyLevel())..restore(g.toJson());
+    expect(resumed.freeHintAvailable, isFalse);
+  });
 }

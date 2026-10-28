@@ -8,8 +8,9 @@ import 'strings_hi.dart';
 import 'strings_id.dart';
 import 'strings_ja.dart';
 import 'strings_pt.dart';
+import 'strings_zh.dart';
 
-/// The eight languages the game ships with.
+/// The languages the game ships with.
 enum AppLang {
   en('English', 'English', Locale('en')),
   hi('हिन्दी', 'Hindi', Locale('hi')),
@@ -18,7 +19,13 @@ enum AppLang {
   fr('Français', 'French', Locale('fr')),
   de('Deutsch', 'German', Locale('de')),
   id('Bahasa Indonesia', 'Indonesian', Locale('id')),
-  ja('日本語', 'Japanese', Locale('ja'));
+  ja('日本語', 'Japanese', Locale('ja')),
+  // Script subtag makes Android pick Simplified Chinese glyph shapes.
+  zh(
+    '简体中文',
+    'Chinese',
+    Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+  );
 
   final String nativeName;
   final String englishName;
@@ -46,6 +53,7 @@ const Map<AppLang, Map<String, String>> kStrings = {
   AppLang.de: stringsDe,
   AppLang.id: stringsId,
   AppLang.ja: stringsJa,
+  AppLang.zh: stringsZh,
 };
 
 /// Current language. Changing it rebuilds the whole app (see main.dart).

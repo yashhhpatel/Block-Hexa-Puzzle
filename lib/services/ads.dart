@@ -59,11 +59,13 @@ class AdsService {
       if (await ConsentInformation.instance.canRequestAds()) {
         await MobileAds.instance.initialize();
         ready.value = true;
+        // Stagger loads: several ads loading at once is heavy work on the
+        // main thread for the ads SDK, especially on slower phones. The
+        // rewarded video loads on demand (once a level's free hint is used).
         if (!billing.premium.value) {
           _loadAppOpen();
-          _loadInterstitial();
+          Future.delayed(const Duration(seconds: 4), _loadInterstitial);
         }
-        _loadRewarded();
         AppStateEventNotifier.startListening();
         _appState = AppStateEventNotifier.appStateStream.listen((s) {
           if (s == AppState.foreground) showAppOpenIfAvailable();

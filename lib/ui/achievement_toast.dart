@@ -34,15 +34,16 @@ class _AchievementToasterState extends State<AchievementToaster>
   AchievementUnlock? _current;
   StreamSubscription<AchievementUnlock>? _sub;
   Timer? _hide;
-  late final AnimationController _slide = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 450),
-    reverseDuration: const Duration(milliseconds: 300),
-  );
+  late final AnimationController _slide;
 
   @override
   void initState() {
     super.initState();
+    _slide = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 450),
+      reverseDuration: const Duration(milliseconds: 300),
+    );
     _sub = widget.progress.achievementUnlocks.listen((u) {
       _queue.add(u);
       if (_current == null) _next();

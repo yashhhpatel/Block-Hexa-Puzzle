@@ -9,8 +9,8 @@ Set<String> _params(String s) =>
     _placeholder.allMatches(s).map((m) => m.group(1)!).toSet();
 
 void main() {
-  test('there are exactly 8 languages', () {
-    expect(AppLang.values.length, 8);
+  test('there are exactly 9 languages', () {
+    expect(AppLang.values.length, 9);
     expect(kStrings.keys.toSet(), AppLang.values.toSet());
   });
 
@@ -39,6 +39,9 @@ void main() {
     appLang.value = AppLang.ja;
     expect(monthYear(DateTime(2026, 10, 3)), '2026年10月');
     expect(shortDate(DateTime(2026, 10, 3)), '10月3日');
+    appLang.value = AppLang.zh;
+    expect(tr('level_n', {'n': 7}), '第 7 关');
+    expect(monthYear(DateTime(2026, 10, 3)), '2026年10月');
     appLang.value = AppLang.en;
     expect(shortDate(DateTime(2026, 10, 3)), 'Oct 3');
   });
@@ -47,5 +50,7 @@ void main() {
     expect(AppLang.fromDevice(const Locale('hi', 'IN')), AppLang.hi);
     expect(AppLang.fromDevice(const Locale('pt', 'PT')), AppLang.pt);
     expect(AppLang.fromDevice(const Locale('ko')), AppLang.en);
+    expect(AppLang.fromDevice(const Locale('zh', 'CN')), AppLang.zh);
+    expect(AppLang.fromDevice(const Locale('zh', 'TW')), AppLang.zh);
   });
 }

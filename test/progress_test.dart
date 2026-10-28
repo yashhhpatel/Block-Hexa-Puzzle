@@ -211,4 +211,82 @@ void main() {
     }
     expect(Chapters.forLevel(5000).name, startsWith('Grandmaster'));
   });
+
+  group('new achievements', () {
+    test('every achievement has a unique name and id', () {
+      final ids = Quests.achievements.map((a) => a.id).toSet();
+      final names = Quests.achievements.map((a) => a.name).toSet();
+      expect(ids.length, Quests.achievements.length);
+      expect(names.length, Quests.achievements.length);
+      expect(Quests.achievements.length, 14);
+    });
+
+    test('new stats are tracked automatically', () async {
+      // Login days.
+      await p.claimLoginBonus();
+      expect(p.stat(Stat.loginDays), 1);
+      // Items unlocked.
+      await p.setCoins(1000);
+      await p.unlock(Cosmetics.skins.firstWhere((s) => s.id == 'flat'));
+      expect(p.stat(Stat.itemsUnlocked), 1);
+      // Chests opened.
+      for (var n = 1; n <= 10; n++) {
+        await p.recordLevelWin(_level(n), seconds: 1, hintsUsed: 0);
+      }
+      expect(p.stat(Stat.chestsOpened), 1);
+      // Perfect daily (no hints, under target time).
+      await p.recordDailyWin(LevelGenerator.generateDaily(clock),
+          seconds: 1, hintsUsed: 0);
+      expect(p.stat(Stat.dailyPerfect), 1);
+      // Quests completed.
+      final q = p.todayQuests.firstWhere((q) => q.claimable);
+      await p.claimQuest(q.def.id);
+      expect(p.stat(Stat.questsCompleted), 1);
+    });
+
+    test('a daily solved with hints is not a perfect daily', () async {
+      await p.recordDailyWin(LevelGenerator.generateDaily(clock),
+          seconds: 1, hintsUsed: 1);
+      expect(p.stat(Stat.dailyPerfect), 0);
+    });
+
+    test('unlock events fire once per tier, as soon as it is reached', () async {
+      final events = <AchievementUnlock>[];
+      final sub = p.achievementUnlocks.listen(events.add);
+      for (var n = 1; n <= 10; n++) {
+        await p.recordLevelWin(_level(n), seconds: 1, hintsUsed: 0);
+      }
+      await Future<void>.delayed(Duration.zero);
+      final levels = events.where((e) => e.def.id == 'levels').toList();
+      expect(levels.length, 1, reason: 'tier 1 (10 levels) reached once');
+      expect(levels.single.target, 10);
+      expect(levels.single.reward, 20);
+      expect(events.any((e) => e.def.id == 'stars'), isTrue, reason: '30 stars');
+      expect(events.any((e) => e.def.id == 'chests'), isTrue, reason: 'first chest');
+
+      events.clear();
+      await p.recordLevelWin(_level(11), seconds: 1, hintsUsed: 0);
+      await Future<void>.delayed(Duration.zero);
+      expect(events.where((e) => e.def.id == 'levels'), isEmpty);
+      await sub.cancel();
+    });
+
+    test('updating the game does not replay old unlocks', () async {
+      SharedPreferences.setMockInitialValues({
+        'stats': '{"levelsCleared": 120}',
+      });
+      final upgraded = await Progress.load(clock: () => clock);
+      final events = <AchievementUnlock>[];
+      final sub = upgraded.achievementUnlocks.listen(events.add);
+      await upgraded.recordLevelWin(_level(1), seconds: 1, hintsUsed: 0);
+      await Future<void>.delayed(Duration.zero);
+      expect(events.where((e) => e.def.id == 'levels'), isEmpty,
+          reason: '121 levels is still inside the already-seen tiers');
+      // Old rewards are still claimable as before.
+      final levels =
+          upgraded.achievements.firstWhere((a) => a.def.id == 'levels');
+      expect(levels.claimable, isTrue);
+      await sub.cancel();
+    });
+  });
 }

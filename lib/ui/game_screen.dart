@@ -81,7 +81,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // The clock only runs while the player can actually see the board.
     if (state == AppLifecycleState.resumed) {
-      if (_game != null && !_game!.isComplete) _clock.start();
+      // Coming back from a rewarded video also "resumes" the app; the hint
+      // flow restarts the clock itself once the video is closed.
+      if (_game != null && !_game!.isComplete && !_hintBusy) _clock.start();
     } else {
       _clock.stop();
     }
@@ -141,6 +143,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void _attach(GameState game) {
     game.addListener(_onChanged);
     _game = game;
+    if (!game.freeHintAvailable) widget.services.ads.preloadRewarded();
     _clock.start();
   }
 
@@ -257,24 +260,34 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     if (g == null || g.isComplete || _hintBusy) return;
     if (g.freeHintAvailable) {
       _giveHint(g);
+      // The next hint will need a video: get one ready now.
+      widget.services.ads.preloadRewarded();
       return;
     }
     sfx.play(Sound.button);
-    final watch = await _confirmVideo();
-    if (watch != true || !mounted || _game != g || g.isComplete) return;
-
-    final ads = widget.services.ads;
-    if (!ads.rewardedReady) {
-      ads.preloadRewarded();
-      _snack(tr('hint_ad_unavailable'));
-      return;
-    }
+    // Neither the question nor the video counts against the target time.
     _hintBusy = true;
-    _clock.stop(); // the video doesn't count against the target time
-    final earned = await ads.showRewarded();
+    _clock.stop();
+    final watch = await _confirmVideo();
+    final ads = widget.services.ads;
+    var earned = false;
+    var unavailable = false;
+    if (watch == true && mounted && _game == g && !g.isComplete) {
+      if (ads.rewardedReady) {
+        earned = await ads.showRewarded();
+      } else {
+        ads.preloadRewarded();
+        unavailable = true;
+      }
+    }
     _hintBusy = false;
     if (!mounted || _game != g) return;
     if (!g.isComplete) _clock.start();
+    if (watch != true) return;
+    if (unavailable) {
+      _snack(tr('hint_ad_unavailable'));
+      return;
+    }
     if (earned) {
       _giveHint(g);
     } else {
@@ -292,7 +305,13 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        SnackBar(content: Text(text), duration: const Duration(seconds: 3)),
+        SnackBar(
+          content: Text(text),
+          duration: const Duration(seconds: 3),
+          // Float above the control bar so the buttons stay tappable.
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 140),
+        ),
       );
   }
 

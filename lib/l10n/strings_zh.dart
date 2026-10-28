@@ -184,7 +184,8 @@ const Map<String, String> stringsZh = {
   "ra_per_month": "/ 月",
   "ra_duration": "移除所有广告 1 个月，每月自动续订。",
   "ra_subscribe": "以 {price} 订阅",
-  "ra_terms": "取消前每月通过 Google Play 扣费 {price}。可随时在 Google Play › 付款和订阅 › 订阅 中取消。",
+  "ra_terms":
+      "取消前每月通过 Google Play 扣费 {price}。可随时在 Google Play › 付款和订阅 › 订阅 中取消。",
   "ra_active": "广告已移除，感谢支持！",
   "ra_active_detail": "您的订阅已生效，除非取消，否则每月自动续订。",
   "ra_manage": "管理订阅",

@@ -114,4 +114,53 @@ void main() {
     expect(find.text('Come back daily'), findsOneWidget);
     expect(find.text("Let's play!"), findsOneWidget);
   });
+
+  testWidgets('hints: first is free, then a video is required', (tester) async {
+    final services = await _services();
+    await tester.binding.setSurfaceSize(const Size(400, 860));
+    await tester.pumpWidget(HexaApp(services: services));
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.play_arrow_rounded));
+    await _settle(tester);
+    expect(find.text('FREE'), findsOneWidget);
+
+    // Free hint: placed straight away.
+    await tester.tap(find.byIcon(Icons.lightbulb_rounded));
+    await _settle(tester);
+    expect(find.text('FREE'), findsNothing);
+    expect(find.byIcon(Icons.ondemand_video_rounded), findsOneWidget);
+
+    // Second hint: asks to watch a video.
+    await tester.tap(find.byIcon(Icons.lightbulb_rounded));
+    await _settle(tester);
+    expect(find.text('Need another hint?'), findsOneWidget);
+    await tester.tap(find.text('Watch video'));
+    await _settle(tester);
+    // No video can load in tests, so no hint may be granted.
+    expect(find.textContaining('No video is available'), findsOneWidget);
+
+    // Cancelling the dialog grants nothing either.
+    await tester.tap(find.byIcon(Icons.lightbulb_rounded));
+    await _settle(tester);
+    await tester.tap(find.text('Cancel'));
+    await _settle(tester);
+    expect(find.text('Need another hint?'), findsNothing);
+  });
+
+  testWidgets('reaching an achievement tier shows the unlock toast',
+      (tester) async {
+    final services = await _services();
+    await tester.binding.setSurfaceSize(const Size(400, 860));
+    await tester.pumpWidget(HexaApp(services: services));
+    await tester.pump();
+    await tester.runAsync(() => services.progress.recordBlocksPlaced(100));
+    await _settle(tester);
+    expect(find.text('ACHIEVEMENT UNLOCKED!'), findsOneWidget);
+    expect(find.text('Master Builder'), findsOneWidget);
+    expect(find.text('Place 100 blocks'), findsOneWidget);
+    // It slides away by itself.
+    await tester.pump(const Duration(seconds: 4));
+    await _settle(tester);
+    expect(find.text('Master Builder'), findsNothing);
+  });
 }
