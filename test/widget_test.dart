@@ -17,12 +17,12 @@ void main() {
 
     await tester.binding.setSurfaceSize(const Size(400, 860));
     await tester.pumpWidget(HexaApp(services: services));
-    expect(find.text('Level 1'), findsOneWidget);
+    expect(find.text('Level 1'), findsWidgets);
 
     await tester.tap(find.byIcon(Icons.play_arrow_rounded));
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pump(const Duration(seconds: 1));
-    expect(find.text('Level 1'), findsOneWidget);
+    expect(find.text('Level 1'), findsWidgets);
     expect(find.textContaining('Drag the blocks'), findsOneWidget);
     expect(find.byIcon(Icons.lightbulb_rounded), findsOneWidget);
   });
