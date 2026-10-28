@@ -17,9 +17,32 @@ Future<void> main() async {
   runApp(HexaApp(services: services));
 }
 
-class HexaApp extends StatelessWidget {
+class HexaApp extends StatefulWidget {
   final Services services;
   const HexaApp({super.key, required this.services});
+
+  @override
+  State<HexaApp> createState() => _HexaAppState();
+}
+
+class _HexaAppState extends State<HexaApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Music pauses whenever the game isn't on screen.
+    widget.services.sfx.setAppVisible(state == AppLifecycleState.resumed);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +55,7 @@ class HexaApp extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.bgBottom,
         useMaterial3: true,
       ),
-      home: HomeScreen(services: services),
+      home: HomeScreen(services: widget.services),
     );
   }
 }

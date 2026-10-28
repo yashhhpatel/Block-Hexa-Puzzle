@@ -59,6 +59,10 @@ class _SettingsPanelState extends State<_SettingsPanel> {
               ),
             ]),
             const SizedBox(height: 8),
+            _toggle('Music', Icons.music_note_rounded, p.musicOn, (v) async {
+              await p.setMusic(v);
+              widget.services.sfx.updateMusic();
+            }),
             _toggle('Sound effects', Icons.volume_up_rounded, p.soundOn,
                 (v) => p.setSound(v)),
             _toggle('Vibration', Icons.vibration_rounded, p.vibrationOn,
@@ -121,7 +125,9 @@ class _SettingsPanelState extends State<_SettingsPanel> {
           '• Blocks cannot be rotated.\n'
           '• Drag a placed block to move it or put it back.\n'
           '• Some tricky levels have spare blocks you won\'t need.\n'
-          '• Stuck? A hint places one block for 25 coins.',
+          '• Stuck? Undo is free; a hint places one block for 25 coins.\n'
+          '• Earn up to 3 stars: clear it, use no hints, beat the target time.\n'
+          '• Come back daily for the Daily Puzzle, quests and login rewards.',
           style: TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
         ),
         actions: [
