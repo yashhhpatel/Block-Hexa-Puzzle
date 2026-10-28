@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../meta/quests.dart';
 import '../services/progress.dart';
 import '../services/services.dart';
 import '../services/sfx.dart';
@@ -94,14 +95,13 @@ class _DailyScreenState extends State<DailyScreen> {
 
   Widget _streakCard(int streak) {
     final best = p.stat(Stat.bestStreak);
-    var nextMilestone = 3;
-    for (final m in [3, 7, 14, 30]) {
-      if (streak < m) {
-        nextMilestone = m;
-        break;
-      }
-      nextMilestone = (streak ~/ 30 + 1) * 30;
-    }
+    final nextMilestone = streak < 3
+        ? 3
+        : streak < 7
+            ? 7
+            : streak < 14
+                ? 14
+                : (streak ~/ 30 + 1) * 30;
     return _Panel(
       child: Row(children: [
         Container(
