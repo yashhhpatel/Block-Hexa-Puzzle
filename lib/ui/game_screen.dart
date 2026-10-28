@@ -37,6 +37,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   WinSummary? _win;
   bool _showWin = false;
   bool _blocksRecorded = false;
+  bool _winning = false;
   String? _tip;
   Timer? _tipTimer;
   int _loadToken = 0;
@@ -120,6 +121,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _game?.removeListener(_onChanged);
     _game = null;
     _win = null;
+    _winning = false;
     _showWin = false;
     _blocksRecorded = false;
     _tipTimer?.cancel();
@@ -163,9 +165,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _onWin(GameState g) async {
-    if (_win != null || !_clock.isRunning && _clock.elapsed == Duration.zero) {
-      if (_win != null) return;
-    }
+    if (_winning) return;
+    _winning = true;
     _clock.stop();
     _tip = null;
     _recordBlocks();
@@ -682,7 +683,7 @@ class _ChestBar extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(opened ? 'Chest opened!' : 'Chest ${progress}/${Progress.chestSize}',
+            Text(opened ? 'Chest opened!' : 'Chest $progress/${Progress.chestSize}',
                 style: const TextStyle(
                     color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w800)),
             const SizedBox(height: 3),
