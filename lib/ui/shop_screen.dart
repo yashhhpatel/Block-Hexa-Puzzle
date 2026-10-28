@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../game/hex.dart';
 import '../meta/cosmetics.dart';
 import '../services/progress.dart';
 import '../services/services.dart';
@@ -269,7 +270,7 @@ class _ThemePainter extends CustomPainter {
     ];
     for (var i = 0; i < cells.length; i++) {
       final p = c + Offset(cells[i].$1 * s, cells[i].$2 * s * 1.732);
-      final path = hexPathAt(p, s);
+      final path = hexPath(p, s, roundness: 0.1);
       canvas.drawPath(path, Paint()..color = theme.cell);
       canvas.drawPath(
           path,
