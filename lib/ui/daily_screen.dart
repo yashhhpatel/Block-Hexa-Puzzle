@@ -186,10 +186,11 @@ class _DailyScreenState extends State<DailyScreen>
           end: Alignment.bottomRight,
           colors: [Color(0xFFFF8A2B), Color(0xFFE0284A), Color(0xFF5B2A9E)],
         ),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 1.5),
-        boxShadow: const [
-          BoxShadow(color: Color(0x55FF6A1F), blurRadius: 20),
-        ],
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
+        boxShadow: const [BoxShadow(color: Color(0x55FF6A1F), blurRadius: 20)],
       ),
       child: Row(
         children: [
@@ -213,8 +214,9 @@ class _DailyScreenState extends State<DailyScreen>
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFFFC14D)
-                                .withValues(alpha: 0.4 + 0.3 * k),
+                            color: const Color(
+                              0xFFFFC14D,
+                            ).withValues(alpha: 0.4 + 0.3 * k),
                             blurRadius: 18 + 10 * k,
                           ),
                         ],
@@ -269,7 +271,10 @@ class _DailyScreenState extends State<DailyScreen>
                 ),
                 const SizedBox(height: 10),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(12),
@@ -277,8 +282,11 @@ class _DailyScreenState extends State<DailyScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.schedule_rounded,
-                          color: Colors.white, size: 15),
+                      const Icon(
+                        Icons.schedule_rounded,
+                        color: Colors.white,
+                        size: 15,
+                      ),
                       const SizedBox(width: 5),
                       Flexible(
                         child: Text(
@@ -317,11 +325,7 @@ class _DailyScreenState extends State<DailyScreen>
         children: [
           for (var i = 0; i < 7; i++)
             Expanded(
-              child: _weekDay(
-                monday.add(Duration(days: i)),
-                today,
-                solved,
-              ),
+              child: _weekDay(monday.add(Duration(days: i)), today, solved),
             ),
         ],
       ),
@@ -364,8 +368,11 @@ class _DailyScreenState extends State<DailyScreen>
           ),
           alignment: Alignment.center,
           child: done
-              ? const Icon(Icons.local_fire_department_rounded,
-                  color: Colors.white, size: 20)
+              ? const Icon(
+                  Icons.local_fire_department_rounded,
+                  color: Colors.white,
+                  size: 20,
+                )
               : Text(
                   '${day.day}',
                   style: TextStyle(
@@ -445,7 +452,10 @@ class _DailyScreenState extends State<DailyScreen>
                     ),
                     Text(
                       shortDate(today),
-                      style: const TextStyle(color: Colors.white60, fontSize: 13),
+                      style: const TextStyle(
+                        color: Colors.white60,
+                        fontSize: 13,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
@@ -475,8 +485,10 @@ class _DailyScreenState extends State<DailyScreen>
                 Expanded(
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle_rounded,
-                          color: Color(0xFF6CF0B8)),
+                      const Icon(
+                        Icons.check_circle_rounded,
+                        color: Color(0xFF6CF0B8),
+                      ),
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
@@ -501,8 +513,11 @@ class _DailyScreenState extends State<DailyScreen>
                         '+${Progress.dailyReward}',
                       ),
                       _rewardChip(
-                        const Icon(Icons.local_fire_department_rounded,
-                            color: Color(0xFFFF8A2B), size: 16),
+                        const Icon(
+                          Icons.local_fire_department_rounded,
+                          color: Color(0xFFFF8A2B),
+                          size: 16,
+                        ),
                         '+1',
                       ),
                     ],
@@ -807,7 +822,8 @@ class _MiniBoardPainter extends CustomPainter {
       size.height * 0.86 / (maxY - minY),
     );
     final origin =
-        size.center(Offset.zero) - Offset((minX + maxX) / 2 * s, (minY + maxY) / 2 * s);
+        size.center(Offset.zero) -
+        Offset((minX + maxX) / 2 * s, (minY + maxY) / 2 * s);
     final fill = Paint()
       ..color = solved
           ? const Color(0xFF6CF0B8).withValues(alpha: 0.35)
