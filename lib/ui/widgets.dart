@@ -381,7 +381,7 @@ class _SkinPreviewPainter extends CustomPainter {
     final s = size.width * 0.2;
     final c = size.center(Offset.zero);
     const cells = [Hex(0, 0), Hex(1, 0), Hex(0, 1)];
-    const colors = [kBlockColors[0], kBlockColors[5], kBlockColors[2]];
+    final colors = [kBlockColors[0], kBlockColors[5], kBlockColors[2]];
     var centroid = Offset.zero;
     for (final h in cells) {
       centroid += h.toPixel(s);
