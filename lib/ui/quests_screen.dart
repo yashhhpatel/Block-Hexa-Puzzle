@@ -219,6 +219,10 @@ class _QuestsScreenState extends State<QuestsScreen> {
     Stat.chestsOpened => Icons.inventory_2_rounded,
     Stat.itemsUnlocked => Icons.palette_rounded,
     Stat.dailyPerfect => Icons.wb_sunny_rounded,
+    Stat.hintsUsed => Icons.lightbulb_rounded,
+    Stat.playSeconds ||
+    Stat.timedClears ||
+    Stat.timedSeconds => Icons.timer_rounded,
   };
 }
 

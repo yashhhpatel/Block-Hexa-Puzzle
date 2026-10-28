@@ -247,6 +247,33 @@ class Progress {
   /// Counts blocks placed during play (feeds quests and achievements).
   Future<void> recordBlocksPlaced(int n) => _bump(Stat.blocksPlaced, n);
 
+  /// Statistics: a hint was given (free or from a video).
+  Future<void> recordHint() => _bump(Stat.hintsUsed, 1);
+
+  /// Statistics: time spent with a board on screen.
+  Future<void> recordPlayTime(int seconds) => _bump(Stat.playSeconds, seconds);
+
+  /// Average time per cleared puzzle (levels and dailies, replays included).
+  double? get averageClearSeconds {
+    final n = stat(Stat.timedClears);
+    return n == 0 ? null : stat(Stat.timedSeconds) / n;
+  }
+
+  /// Achievement tiers claimed, out of all tiers in the game.
+  (int, int) get achievementTiers {
+    var done = 0, total = 0;
+    for (final a in achievements) {
+      done += a.claimedTiers;
+      total += a.def.tiers.length;
+    }
+    return (done, total);
+  }
+
+  Future<void> _recordClearTime(int seconds) async {
+    await _bump(Stat.timedClears, 1);
+    await _bump(Stat.timedSeconds, seconds);
+  }
+
   // ---- level wins ---------------------------------------------------------
 
   /// Records a cleared main level. Only first clears and star improvements
@@ -261,6 +288,7 @@ class Progress {
     final noHints = hintsUsed == 0;
     final underPar = seconds <= level.parSeconds;
     final stars = starsFor3(noHints, underPar);
+    await _recordClearTime(seconds);
     final prev = starsFor(n);
     final firstClear = n >= unlockedLevel;
     var coinsWon = 0;
@@ -350,6 +378,7 @@ class Progress {
   }) async {
     final key = level.dailyKey!;
     final already = isDailySolved(key);
+    await _recordClearTime(seconds);
     var coinsWon = 0;
     int? streakNow;
     int? bonus;

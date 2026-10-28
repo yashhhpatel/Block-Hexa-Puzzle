@@ -70,6 +70,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _recordPlay();
     _recordBlocks();
     _ticker?.cancel();
     _tipTimer?.cancel();
@@ -86,7 +87,17 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       if (_game != null && !_game!.isComplete && !_hintBusy) _clock.start();
     } else {
       _clock.stop();
+      _recordPlay();
     }
+  }
+
+  int _playRecorded = 0;
+
+  /// Adds board time since the last call to the "time played" statistic.
+  void _recordPlay() {
+    final now = _clock.elapsed.inSeconds;
+    if (now > _playRecorded) progress.recordPlayTime(now - _playRecorded);
+    _playRecorded = now;
   }
 
   // ---- loading ------------------------------------------------------------
@@ -126,6 +137,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   void _detach() {
+    _recordPlay();
     _recordBlocks();
     _game?.removeListener(_onChanged);
     _game = null;
@@ -138,6 +150,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _clock
       ..stop()
       ..reset();
+    _playRecorded = 0;
   }
 
   void _attach(GameState game) {
@@ -297,7 +310,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   void _giveHint(GameState g) {
-    if (g.applyHint() != null) sfx.play(Sound.hint);
+    if (g.applyHint() != null) {
+      sfx.play(Sound.hint);
+      progress.recordHint();
+    }
     setState(() {});
   }
 

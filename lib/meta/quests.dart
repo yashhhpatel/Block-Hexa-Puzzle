@@ -18,6 +18,11 @@ enum Stat {
   chestsOpened,
   itemsUnlocked,
   dailyPerfect,
+  // Statistics only (no quests/achievements):
+  hintsUsed,
+  playSeconds,
+  timedClears,
+  timedSeconds,
 }
 
 class QuestDef {
