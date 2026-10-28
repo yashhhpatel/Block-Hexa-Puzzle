@@ -120,7 +120,6 @@ class _Visual {
 /// The playfield: board, tray and the block being dragged.
 class BoardView extends StatefulWidget {
   final GameState game;
-  final bool backgroundFx;
   final VoidCallback onPick;
   final VoidCallback onPlace;
   final VoidCallback onFail;
@@ -131,7 +130,6 @@ class BoardView extends StatefulWidget {
     required this.onPick,
     required this.onPlace,
     required this.onFail,
-    this.backgroundFx = true,
   });
 
   @override
@@ -235,7 +233,6 @@ class BoardViewState extends State<BoardView>
       _winGlow = math.min(1, _winGlow + dt / 0.9);
       moving = true;
     }
-    if (widget.backgroundFx) moving = true; // drifting background hexes
     setState(() {});
     if (!moving && _drag == null) {
       _ticker.stop();
