@@ -540,11 +540,9 @@ class PillButton extends StatelessWidget {
               ],
               Text(
                 label,
-                style: const TextStyle(
+                style: kDisplayStyle.copyWith(
                   color: Colors.white,
-                  fontSize: 19,
-                  fontWeight: FontWeight.w900,
-                  fontStyle: FontStyle.italic,
+                  fontSize: 20,
                 ),
               ),
             ],
@@ -569,11 +567,7 @@ class OutlinedTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = TextStyle(
-      fontSize: size,
-      fontWeight: FontWeight.w900,
-      fontStyle: FontStyle.italic,
-    );
+    final style = kDisplayStyle.copyWith(fontSize: size);
     return Stack(
       children: [
         Text(

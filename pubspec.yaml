@@ -66,6 +66,14 @@ flutter:
   assets:
     - assets/sfx/
     - assets/music/
+    - assets/fonts/OFL.txt
+
+  # Baloo 2 (SIL Open Font License, see assets/fonts/OFL.txt): titles,
+  # buttons and the logo. One variable file covers every weight.
+  fonts:
+    - family: Baloo2
+      fonts:
+        - asset: assets/fonts/Baloo2-Variable.ttf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

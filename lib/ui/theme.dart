@@ -5,6 +5,18 @@ import 'package:flutter/material.dart';
 import '../game/hex.dart';
 import '../meta/cosmetics.dart';
 
+/// Rounded display face for titles, buttons and the logo (Baloo 2).
+const kDisplayFont = 'Baloo2';
+
+/// Heavy weight of the variable display font. Its tall default line box is
+/// tightened so titles take the same room as before.
+const kDisplayStyle = TextStyle(
+  fontFamily: kDisplayFont,
+  fontWeight: FontWeight.w800,
+  fontVariations: [FontVariation('wght', 800)],
+  height: 1.15,
+);
+
 class AppColors {
   static const bgTop = Color(0xFF14286B);
   static const bgMid = Color(0xFF0C1C4D);

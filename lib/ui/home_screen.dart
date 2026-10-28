@@ -416,11 +416,11 @@ class _Logo extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     letters[i],
-                    style: const TextStyle(
+                    style: kDisplayStyle.copyWith(
                       color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      shadows: [
+                      fontSize: 34,
+                      height: 1.25,
+                      shadows: const [
                         Shadow(
                           color: Colors.black38,
                           offset: Offset(0, 2),
