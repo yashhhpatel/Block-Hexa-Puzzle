@@ -73,8 +73,13 @@ class _ShopScreenState extends State<ShopScreen> {
                         },
                       ),
                       const SizedBox(width: 10),
-                      OutlinedTitle(tr('shop_title'), size: 28),
-                      const Spacer(),
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: OutlinedTitle(tr('shop_title'), size: 28),
+                        ),
+                      ),
                       _StarPill(stars: p.totalStars),
                       const SizedBox(width: 6),
                       CoinPill(coins: p.coins),

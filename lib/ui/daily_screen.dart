@@ -91,8 +91,13 @@ class _DailyScreenState extends State<DailyScreen> {
             },
           ),
           const SizedBox(width: 10),
-          OutlinedTitle(title, size: 28),
-          const Spacer(),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: OutlinedTitle(title, size: 28),
+            ),
+          ),
           CoinPill(coins: p.coins),
         ],
       ),

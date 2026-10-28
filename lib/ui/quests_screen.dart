@@ -72,8 +72,13 @@ class _QuestsScreenState extends State<QuestsScreen> {
                         },
                       ),
                       const SizedBox(width: 10),
-                      OutlinedTitle(tr('quests_title'), size: 28),
-                      const Spacer(),
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: OutlinedTitle(tr('quests_title'), size: 28),
+                        ),
+                      ),
                       CoinPill(coins: p.coins),
                     ],
                   ),
@@ -116,14 +121,16 @@ class _QuestsScreenState extends State<QuestsScreen> {
           children: [
             const Icon(Icons.schedule_rounded, color: Colors.white54, size: 16),
             const SizedBox(width: 6),
-            Text(
-              tr('new_quests_in', {
-                'h': left.inHours,
-                'm': left.inMinutes % 60,
-              }),
-              style: const TextStyle(
-                color: Colors.white60,
-                fontWeight: FontWeight.w700,
+            Expanded(
+              child: Text(
+                tr('new_quests_in', {
+                  'h': left.inHours,
+                  'm': left.inMinutes % 60,
+                }),
+                style: const TextStyle(
+                  color: Colors.white60,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],

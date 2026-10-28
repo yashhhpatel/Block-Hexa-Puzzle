@@ -67,7 +67,16 @@ void main() {
         for (var i = 0; i < 6; i++) {
           await tester.pump(const Duration(milliseconds: 100));
         }
-        expect(tester.takeException(), isNull, reason: '${e.key} in ${lang.name}');
+        final err = tester.takeException();
+        if (err != null) {
+          final lines = err is FlutterError
+              ? err.toStringDeep().split('\n').where(
+                  (l) => l.contains('creator') || l.contains('overflowed'))
+              : ['$err'];
+          // ignore: avoid_print
+          print('OVERFLOW ${e.key} ${lang.name}: ${lines.join(' | ')}');
+        }
+        expect(err, isNull, reason: '${e.key} in ${lang.name}');
       }
 
       // Settings is a dialog over the home screen.
