@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
@@ -107,7 +109,11 @@ class _ShopScreenState extends State<ShopScreen> {
                         for (final s in Cosmetics.skins)
                           _ItemCard(
                             item: s,
-                            preview: SkinPreview(style: s.style, size: 78),
+                            preview: SkinPreview(
+                              style: s.style,
+                              size: 78,
+                              animate: true,
+                            ),
                             unlocked: p.isUnlocked(s),
                             equipped: p.skinId == s.id,
                             onTap: () => _tap(s),
@@ -163,8 +169,8 @@ class _StarPill extends StatelessWidget {
       children: [
         const Icon(Icons.star_rounded, color: AppColors.gold, size: 22),
         const SizedBox(width: 4),
-        Text(
-          '$stars',
+        CountUpText(
+          stars,
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w800,
@@ -215,7 +221,8 @@ class _ItemCard extends StatelessWidget {
         coin: true,
       );
     }
-    return GestureDetector(
+    return Pressable(
+      pressedScale: 0.95,
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -310,26 +317,51 @@ class _Tag extends StatelessWidget {
   );
 }
 
-/// Mini board in the theme's colours with a couple of blocks on it.
-class _ThemePreview extends StatelessWidget {
+/// Mini board in the theme's colours. A block slides into place on a loop
+/// and the board outline breathes, so the theme is seen "in play".
+class _ThemePreview extends StatefulWidget {
   final BoardTheme theme;
   final SkinStyle skin;
   const _ThemePreview({required this.theme, required this.skin});
 
   @override
+  State<_ThemePreview> createState() => _ThemePreviewState();
+}
+
+class _ThemePreviewState extends State<_ThemePreview>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2800),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 120,
-      height: 92,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [theme.bgTop, theme.bgMid, theme.bgBottom],
+    final theme = widget.theme;
+    return RepaintBoundary(
+      child: Container(
+        width: 120,
+        height: 92,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [theme.bgTop, theme.bgMid, theme.bgBottom],
+          ),
+        ),
+        child: AnimatedBuilder(
+          animation: _c,
+          builder: (_, _) =>
+              CustomPaint(painter: _ThemePainter(theme, widget.skin, _c.value)),
         ),
       ),
-      child: CustomPaint(painter: _ThemePainter(theme, skin)),
     );
   }
 }
@@ -337,39 +369,55 @@ class _ThemePreview extends StatelessWidget {
 class _ThemePainter extends CustomPainter {
   final BoardTheme theme;
   final SkinStyle skin;
-  _ThemePainter(this.theme, this.skin);
+  final double t;
+  _ThemePainter(this.theme, this.skin, this.t);
+
+  static const _cells = [
+    (0.0, -1.0),
+    (-1.5, -0.5),
+    (1.5, -0.5),
+    (0.0, 0.0),
+    (-1.5, 0.5),
+    (1.5, 0.5),
+    (0.0, 1.0),
+  ];
 
   @override
   void paint(Canvas canvas, Size size) {
     final s = size.height * 0.16;
     final c = size.center(Offset.zero);
-    const cells = [
-      (0.0, -1.0),
-      (-1.5, -0.5),
-      (1.5, -0.5),
-      (0.0, 0.0),
-      (-1.5, 0.5),
-      (1.5, 0.5),
-      (0.0, 1.0),
-    ];
-    for (var i = 0; i < cells.length; i++) {
-      final p = c + Offset(cells[i].$1 * s, cells[i].$2 * s * 1.732);
-      final path = hexPath(p, s, roundness: 0.1);
+    Offset at(int i) => c + Offset(_cells[i].$1 * s, _cells[i].$2 * s * 1.732);
+    final glow = 0.6 + 0.4 * math.sin(t * 2 * math.pi).abs();
+    for (var i = 0; i < _cells.length; i++) {
+      final path = hexPath(at(i), s, roundness: 0.1);
       canvas.drawPath(path, Paint()..color = theme.cell);
       canvas.drawPath(
         path,
         Paint()
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.4
-          ..color = theme.line.withValues(alpha: 0.85),
+          ..color = theme.line.withValues(alpha: 0.85 * glow),
       );
-      if (i == 1 || i == 3 || i == 4) {
-        drawBlock(canvas, p, s, kBlockColors[i == 3 ? 0 : 6], skin);
-      }
     }
+    // Two blocks rest on the board...
+    drawBlock(canvas, at(1), s, kBlockColors[6], skin);
+    drawBlock(canvas, at(4), s, kBlockColors[6], skin);
+    // ...and a third glides in from the right and settles in the middle.
+    final k = Curves.easeOutBack.transform((t / 0.45).clamp(0.0, 1.0));
+    final fade = t > 0.85 ? (1 - (t - 0.85) / 0.15) : 1.0;
+    final from = c + Offset(size.width * 0.7, -s);
+    final p = Offset.lerp(from, at(3), k)!;
+    drawBlock(
+      canvas,
+      p,
+      s,
+      kBlockColors[0],
+      skin,
+      opacity: fade.clamp(0.0, 1.0),
+    );
   }
 
   @override
   bool shouldRepaint(_ThemePainter old) =>
-      old.theme != theme || old.skin != skin;
+      old.t != t || old.theme != theme || old.skin != skin;
 }

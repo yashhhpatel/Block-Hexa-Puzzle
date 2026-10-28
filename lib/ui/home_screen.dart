@@ -129,8 +129,8 @@ class _HomeScreenState extends State<HomeScreen>
                             size: 24,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            '${p.totalStars}',
+                          CountUpText(
+                            p.totalStars,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w800,
@@ -154,32 +154,35 @@ class _HomeScreenState extends State<HomeScreen>
                   scale: 1 + 0.05 * Curves.easeInOut.transform(_pulse.value),
                   child: child,
                 ),
-                child: GestureDetector(
+                child: Pressable(
+                  pressedScale: 0.92,
                   onTap: () => _open(
                     GameScreen(services: widget.services, level: level),
                   ),
-                  child: Container(
-                    width: 140,
-                    height: 140,
-                    decoration: const ShapeDecoration(
-                      shape: HexBorder(),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFFFF8DB5),
-                          AppColors.accent,
-                          AppColors.accentDark,
+                  child: HexShimmer(
+                    child: Container(
+                      width: 140,
+                      height: 140,
+                      decoration: const ShapeDecoration(
+                        shape: HexBorder(),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xFFFF8DB5),
+                            AppColors.accent,
+                            AppColors.accentDark,
+                          ],
+                        ),
+                        shadows: [
+                          BoxShadow(color: Color(0x99FF4F8B), blurRadius: 30),
                         ],
                       ),
-                      shadows: [
-                        BoxShadow(color: Color(0x99FF4F8B), blurRadius: 30),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.play_arrow_rounded,
-                      color: Colors.white,
-                      size: 80,
+                      child: const Icon(
+                        Icons.play_arrow_rounded,
+                        color: Colors.white,
+                        size: 80,
+                      ),
                     ),
                   ),
                 ),
@@ -305,7 +308,7 @@ class _MenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Pressable(
       onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
