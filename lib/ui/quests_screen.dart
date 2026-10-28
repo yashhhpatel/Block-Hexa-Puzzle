@@ -72,13 +72,13 @@ class _QuestsScreenState extends State<QuestsScreen> {
                         },
                       ),
                       const SizedBox(width: 10),
-                      const OutlinedTitle(tr('quests_title'), size: 28),
+                      OutlinedTitle(tr('quests_title'), size: 28),
                       const Spacer(),
                       CoinPill(coins: p.coins),
                     ],
                   ),
                 ),
-                const TabBar(
+                TabBar(
                   indicatorColor: AppColors.accent,
                   labelStyle: TextStyle(
                     fontWeight: FontWeight.w900,
@@ -365,7 +365,7 @@ class _Card extends StatelessWidget {
                         ],
                       ),
                       if (onClaim != null)
-                        const Text(
+                        Text(
                           tr('claim'),
                           style: TextStyle(
                             color: Colors.white,

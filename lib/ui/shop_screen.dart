@@ -73,7 +73,7 @@ class _ShopScreenState extends State<ShopScreen> {
                         },
                       ),
                       const SizedBox(width: 10),
-                      const OutlinedTitle(tr('shop_title'), size: 28),
+                      OutlinedTitle(tr('shop_title'), size: 28),
                       const Spacer(),
                       _StarPill(stars: p.totalStars),
                       const SizedBox(width: 6),
@@ -81,7 +81,7 @@ class _ShopScreenState extends State<ShopScreen> {
                     ],
                   ),
                 ),
-                const TabBar(
+                TabBar(
                   indicatorColor: AppColors.accent,
                   labelStyle: TextStyle(
                     fontWeight: FontWeight.w900,
@@ -190,13 +190,13 @@ class _ItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget action;
     if (equipped) {
-      action = const _Tag(
+      action = _Tag(
         label: tr('in_use'),
         color: Color(0xFF2FB58A),
         icon: Icons.check_rounded,
       );
     } else if (unlocked) {
-      action = const _Tag(label: tr('use'), color: AppColors.button);
+      action = _Tag(label: tr('use'), color: AppColors.button);
     } else if (item.starsRequired > 0) {
       action = _Tag(
         label: '${item.starsRequired}',

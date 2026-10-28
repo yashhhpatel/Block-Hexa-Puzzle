@@ -174,8 +174,9 @@ class AdsService {
     }
     if (!_adsAllowed || _fullScreenShowing) return;
     if (DateTime.now().difference(_lastFullScreenEnd) <
-        const Duration(seconds: 30))
+        const Duration(seconds: 30)) {
       return;
+    }
     if (!_appOpenFresh) {
       _appOpen?.dispose();
       _appOpen = null;

@@ -55,9 +55,9 @@ class _LoginBonus extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const OutlinedTitle(tr('login_title'), size: 28),
+              OutlinedTitle(tr('login_title'), size: 28),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 tr('login_sub'),
                 style: TextStyle(color: Colors.white70, fontSize: 13),
               ),

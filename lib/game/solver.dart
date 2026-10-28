@@ -129,8 +129,9 @@ class Solver {
       if (st.used[pl.piece]) continue;
       if (!_fits(st, pl.cells)) continue;
       // Identical shapes in the same spot are interchangeable.
-      if (!tried.add('${pieces[pl.piece].shapeKey}@${pl.cells.first}'))
+      if (!tried.add('${pieces[pl.piece].shapeKey}@${pl.cells.first}')) {
         continue;
+      }
       for (final i in pl.cells) {
         st.filled[i] = true;
       }

@@ -184,7 +184,7 @@ class _DailyScreenState extends State<DailyScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   tr('todays_puzzle'),
                   style: TextStyle(
                     color: Colors.white,

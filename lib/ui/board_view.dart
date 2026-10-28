@@ -64,8 +64,9 @@ class BoardLayout {
         break;
       }
       trayCell *= 0.92;
-      if (i == 29)
+      if (i == 29) {
         slots = _pack(level.pieces, trayCell, trayRect, force: true)!;
+      }
     }
     return BoardLayout._(
       size,
