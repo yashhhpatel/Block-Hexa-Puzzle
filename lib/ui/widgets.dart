@@ -3,13 +3,16 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../game/hex.dart';
+import '../meta/cosmetics.dart';
 import 'theme.dart';
 
 /// Deep-blue gradient with slowly drifting hexagon outlines.
 class GameBackground extends StatefulWidget {
   final bool animate;
+  final BoardTheme? theme;
   final Widget child;
-  const GameBackground({super.key, required this.child, this.animate = true});
+  const GameBackground(
+      {super.key, required this.child, this.animate = true, this.theme});
 
   @override
   State<GameBackground> createState() => _GameBackgroundState();
@@ -27,8 +30,8 @@ class _GameBackgroundState extends State<GameBackground>
   }
 
   @override
-  void didUpdateWidget(GameBackground old) {
-    super.didUpdateWidget(old);
+  void didUpdateWidget(GameBackground oldWidget) {
+    super.didUpdateWidget(oldWidget);
     if (widget.animate && !_c.isAnimating) _c.repeat();
     if (!widget.animate) _c.stop();
   }
@@ -41,13 +44,15 @@ class _GameBackgroundState extends State<GameBackground>
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
+    final t = widget.theme ?? Cosmetics.themes.first;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.bgTop, AppColors.bgMid, AppColors.bgBottom],
-          stops: [0, 0.55, 1],
+          colors: [t.bgTop, t.bgMid, t.bgBottom],
+          stops: const [0, 0.55, 1],
         ),
       ),
       child: Stack(fit: StackFit.expand, children: [
@@ -304,4 +309,89 @@ class OutlinedTitle extends StatelessWidget {
       Text(text, style: style.copyWith(color: color)),
     ]);
   }
+}
+
+/// Three stars, [earned] of them lit.
+class StarRow extends StatelessWidget {
+  final int earned;
+  final double size;
+  const StarRow({super.key, required this.earned, this.size = 14});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      for (var i = 0; i < 3; i++)
+        Icon(Icons.star_rounded,
+            size: size,
+            color: i < earned ? AppColors.gold : Colors.white.withValues(alpha: 0.25)),
+    ]);
+  }
+}
+
+/// Red notification dot with an optional count, overlaid on a child.
+class NotifyDot extends StatelessWidget {
+  final Widget child;
+  final int count;
+  const NotifyDot({super.key, required this.child, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(clipBehavior: Clip.none, children: [
+      child,
+      if (count > 0)
+        Positioned(
+          right: -2,
+          top: -2,
+          child: Container(
+            constraints: const BoxConstraints(minWidth: 20),
+            height: 20,
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFF3B3B),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white, width: 1.5),
+            ),
+            alignment: Alignment.center,
+            child: Text('$count',
+                style: const TextStyle(
+                    color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900)),
+          ),
+        ),
+    ]);
+  }
+}
+
+/// Small preview of a block skin: a little three-cell cluster.
+class SkinPreview extends StatelessWidget {
+  final SkinStyle style;
+  final double size;
+  const SkinPreview({super.key, required this.style, this.size = 64});
+
+  @override
+  Widget build(BuildContext context) =>
+      CustomPaint(size: Size.square(size), painter: _SkinPreviewPainter(style));
+}
+
+class _SkinPreviewPainter extends CustomPainter {
+  final SkinStyle style;
+  _SkinPreviewPainter(this.style);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final s = size.width * 0.2;
+    final c = size.center(Offset.zero);
+    const cells = [Hex(0, 0), Hex(1, 0), Hex(0, 1)];
+    const colors = [kBlockColors[0], kBlockColors[5], kBlockColors[2]];
+    var centroid = Offset.zero;
+    for (final h in cells) {
+      centroid += h.toPixel(s);
+    }
+    centroid = centroid / cells.length.toDouble();
+    for (var i = 0; i < cells.length; i++) {
+      drawBlock(canvas, c + cells[i].toPixel(s) - centroid, s, colors[i], style);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_SkinPreviewPainter old) => old.style != style;
 }

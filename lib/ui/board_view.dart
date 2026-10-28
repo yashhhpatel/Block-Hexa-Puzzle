@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import '../game/game_state.dart';
 import '../game/hex.dart';
 import '../game/level.dart';
+import '../meta/cosmetics.dart';
 import 'theme.dart';
 
 /// Where everything sits for a given play-area size.
@@ -117,9 +118,21 @@ class _Visual {
   _Visual(this.center, this.scale);
 }
 
+/// A short-lived spark thrown off when a block lands.
+class _Spark {
+  Offset pos;
+  Offset vel;
+  final Color color;
+  final double size;
+  double life = 1; // 1 -> 0
+  _Spark(this.pos, this.vel, this.color, this.size);
+}
+
 /// The playfield: board, tray and the block being dragged.
 class BoardView extends StatefulWidget {
   final GameState game;
+  final SkinStyle skin;
+  final BoardTheme theme;
   final VoidCallback onPick;
   final VoidCallback onPlace;
   final VoidCallback onFail;
@@ -127,6 +140,8 @@ class BoardView extends StatefulWidget {
   const BoardView({
     super.key,
     required this.game,
+    required this.skin,
+    required this.theme,
     required this.onPick,
     required this.onPlace,
     required this.onFail,
@@ -141,19 +156,25 @@ class BoardViewState extends State<BoardView>
   late final Ticker _ticker;
   BoardLayout? _layout;
   final List<_Visual?> _visuals = [];
+  final List<_Spark> _sparks = [];
+  final _rng = math.Random();
 
   int? _drag;
   Offset _dragGrab = Offset.zero; // centroid minus finger
   Offset _finger = Offset.zero;
   Hex? _preview;
   Duration _last = Duration.zero;
+  double _time = 0;
 
-  /// 0..1 shimmer sweep played when the board is completed.
-  double _winGlow = 0;
+  /// 0..1 progress of the celebration wave once the board is completed.
+  double _winT = 0;
   bool _celebrating = false;
 
   GameState get game => widget.game;
   Level get level => game.level;
+
+  /// "Almost there" glow on the last few empty cells.
+  bool get _almost => !game.isComplete && game.emptyCells <= 4;
 
   @override
   void initState() {
@@ -170,9 +191,10 @@ class BoardViewState extends State<BoardView>
       widget.game.addListener(_onGame);
       _layout = null;
       _visuals.clear();
+      _sparks.clear();
       _drag = null;
       _celebrating = false;
-      _winGlow = 0;
+      _winT = 0;
     }
   }
 
@@ -186,15 +208,35 @@ class BoardViewState extends State<BoardView>
   void _onGame() {
     if (!game.isComplete) {
       _celebrating = false;
-      _winGlow = 0;
+      _winT = 0;
     }
     if (!_ticker.isActive) _ticker.start();
   }
 
   void celebrate() {
     _celebrating = true;
-    _winGlow = 0;
+    _winT = 0;
+    // Confetti of sparks from every board cell.
+    final l = _layout;
+    if (l != null) {
+      for (final h in level.board) {
+        final occ = game.occupantAt(h);
+        final color = occ == null
+            ? Colors.white
+            : kBlockColors[level.pieces[occ].colorIndex % kBlockColors.length];
+        _burst(l.boardOrigin + h.toPixel(l.cell), color, 3, l.cell * 0.6);
+      }
+    }
     if (!_ticker.isActive) _ticker.start();
+  }
+
+  void _burst(Offset at, Color color, int n, double speed) {
+    for (var k = 0; k < n; k++) {
+      final a = _rng.nextDouble() * 2 * math.pi;
+      final v = speed * (2 + _rng.nextDouble() * 3);
+      _sparks.add(_Spark(at, Offset(math.cos(a), math.sin(a)) * v, color,
+          (_layout?.cell ?? 20) * (0.12 + _rng.nextDouble() * 0.12)));
+    }
   }
 
   Offset _targetCenter(int i) {
@@ -212,6 +254,7 @@ class BoardViewState extends State<BoardView>
         ? 1 / 60
         : ((now - _last).inMicroseconds / 1e6).clamp(0.0, 0.05);
     _last = now;
+    _time += dt;
     final layout = _layout;
     if (layout == null) return;
     var moving = false;
@@ -229,10 +272,18 @@ class BoardViewState extends State<BoardView>
         v.scale = ts;
       }
     }
-    if (_celebrating && _winGlow < 1) {
-      _winGlow = math.min(1, _winGlow + dt / 0.9);
+    for (final s in _sparks) {
+      s.pos += s.vel * dt;
+      s.vel = s.vel * math.pow(0.04, dt).toDouble() + Offset(0, 300 * dt);
+      s.life -= dt / 0.7;
+    }
+    _sparks.removeWhere((s) => s.life <= 0);
+    if (_sparks.isNotEmpty) moving = true;
+    if (_celebrating && _winT < 1) {
+      _winT = math.min(1, _winT + dt / 1.1);
       moving = true;
     }
+    if (_almost) moving = true;
     setState(() {});
     if (!moving && _drag == null) {
       _ticker.stop();
@@ -287,6 +338,7 @@ class BoardViewState extends State<BoardView>
     final l = _layout!;
     final v = _visuals[i]!;
     _finger = e.localPosition;
+    game.beginMove();
     if (game.isPlaced(i)) {
       _dragGrab = v.center - _finger;
       game.remove(i);
@@ -315,11 +367,18 @@ class BoardViewState extends State<BoardView>
     final anchor = _snapAnchor(i, _finger + _dragGrab);
     _preview = null;
     if (anchor != null && game.place(i, anchor)) {
+      final l = _layout!;
+      final color =
+          kBlockColors[level.pieces[i].colorIndex % kBlockColors.length];
+      for (final c in level.pieces[i].cellsAt(anchor)) {
+        _burst(l.boardOrigin + c.toPixel(l.cell), color, 2, l.cell * 0.35);
+      }
       widget.onPlace();
     } else {
       widget.onFail();
       setState(() {});
     }
+    game.endMove();
     if (!_ticker.isActive) _ticker.start();
   }
 
@@ -358,9 +417,13 @@ class BoardViewState extends State<BoardView>
             game: game,
             layout: _layout!,
             visuals: _visuals.cast<_Visual>(),
+            sparks: _sparks,
+            skin: widget.skin,
+            theme: widget.theme,
             drag: _drag,
             preview: _preview,
-            winGlow: _celebrating ? _winGlow : 0,
+            winT: _celebrating ? _winT : 0,
+            almostPulse: _almost ? (math.sin(_time * 5) + 1) / 2 : -1,
           ),
         ),
       );
@@ -372,20 +435,31 @@ class _BoardPainter extends CustomPainter {
   final GameState game;
   final BoardLayout layout;
   final List<_Visual> visuals;
+  final List<_Spark> sparks;
+  final SkinStyle skin;
+  final BoardTheme theme;
   final int? drag;
   final Hex? preview;
-  final double winGlow;
+  final double winT;
+  final double almostPulse; // <0 = off
 
   _BoardPainter({
     required this.game,
     required this.layout,
     required this.visuals,
+    required this.sparks,
+    required this.skin,
+    required this.theme,
     required this.drag,
     required this.preview,
-    required this.winGlow,
+    required this.winT,
+    required this.almostPulse,
   });
 
   Level get level => game.level;
+
+  /// Centre of the board in pixels; the win wave spreads out from here.
+  Offset get _boardCenter => layout.boardRect.center;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -403,6 +477,11 @@ class _BoardPainter extends CustomPainter {
     for (final i in order) {
       _paintPiece(canvas, i, lifted: i == drag);
     }
+    for (final s in sparks) {
+      canvas.drawPath(
+          hexPath(s.pos, s.size * (0.4 + 0.6 * s.life)),
+          Paint()..color = s.color.withValues(alpha: s.life.clamp(0.0, 1.0)));
+    }
   }
 
   void _paintTray(Canvas canvas) {
@@ -414,8 +493,8 @@ class _BoardPainter extends CustomPainter {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            AppColors.tray.withValues(alpha: 0.55),
-            AppColors.tray.withValues(alpha: 0.85),
+            theme.tray.withValues(alpha: 0.55),
+            theme.tray.withValues(alpha: 0.85),
           ],
         ).createShader(r),
     );
@@ -424,7 +503,7 @@ class _BoardPainter extends CustomPainter {
       r.topLeft.translate(r.width * 0.06, 0),
       r.topRight.translate(-r.width * 0.06, 0),
       Paint()
-        ..color = AppColors.boardLine.withValues(alpha: 0.7)
+        ..color = theme.line.withValues(alpha: 0.7)
         ..strokeWidth = 2
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2),
     );
@@ -446,16 +525,16 @@ class _BoardPainter extends CustomPainter {
 
   void _paintBoard(Canvas canvas) {
     final s = layout.cell;
-    final fill = Paint()..color = AppColors.boardCell.withValues(alpha: 0.85);
+    final fill = Paint()..color = theme.cell.withValues(alpha: 0.85);
     final glow = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = s * 0.16
-      ..color = AppColors.boardLine.withValues(alpha: 0.35)
+      ..color = theme.line.withValues(alpha: 0.35)
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.12);
     final line = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = math.max(1.2, s * 0.05)
-      ..color = AppColors.boardLine.withValues(alpha: 0.75);
+      ..color = theme.line.withValues(alpha: 0.75);
 
     final outline = Path();
     for (final h in level.board) {
@@ -465,6 +544,18 @@ class _BoardPainter extends CustomPainter {
     canvas.drawPath(outline, glow);
     canvas.drawPath(outline, fill);
     canvas.drawPath(outline, line);
+
+    // Almost there: the last few holes pulse to draw the eye.
+    if (almostPulse >= 0) {
+      final p = Paint()
+        ..color = theme.line.withValues(alpha: 0.12 + 0.18 * almostPulse)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.2);
+      for (final h in level.board) {
+        if (game.occupantAt(h) != null) continue;
+        canvas.drawPath(
+            hexPath(layout.boardOrigin + h.toPixel(s), s * 0.8), p);
+      }
+    }
 
     // Landing preview for the dragged block.
     if (drag != null && preview != null) {
@@ -493,20 +584,23 @@ class _BoardPainter extends CustomPainter {
             shadow);
       }
     }
+    final maxDist = layout.boardRect.longestSide * 0.6;
     for (final c in p.cells) {
       final center = origin + c.toPixel(v.scale);
-      drawGem(canvas, center, v.scale, color);
-      if (winGlow > 0 && game.isPlaced(i)) {
-        // A bright band sweeps down the finished board.
-        final band = layout.boardRect.top +
-            (layout.boardRect.height * 1.4) * winGlow -
-            layout.boardRect.height * 0.2;
-        final d = (center.dy - band).abs() / (layout.cell * 3);
-        final a = (1 - d).clamp(0.0, 1.0) * 0.55;
-        if (a > 0) {
-          canvas.drawPath(hexPath(center, v.scale * 0.95),
-              Paint()..color = Colors.white.withValues(alpha: a));
-        }
+      var size = v.scale;
+      var flash = 0.0;
+      if (winT > 0 && game.isPlaced(i)) {
+        // A wave ripples out from the middle: each cell pops and flashes.
+        final d = (center - _boardCenter).distance / maxDist;
+        final local = ((winT * 1.6 - d) / 0.35).clamp(0.0, 1.0);
+        final bump = math.sin(local * math.pi);
+        size *= 1 + 0.22 * bump;
+        flash = 0.6 * bump;
+      }
+      drawBlock(canvas, center, size, color, skin);
+      if (flash > 0) {
+        canvas.drawPath(hexPath(center, size * 0.95),
+            Paint()..color = Colors.white.withValues(alpha: flash));
       }
     }
     if (game.hinted.contains(i)) {
