@@ -439,7 +439,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           FilledButton.icon(
             style: FilledButton.styleFrom(
               backgroundColor: canPay ? AppColors.gold : Colors.white24,
-              foregroundColor: canPay ? const Color(0xFF3A2300) : Colors.white70,
+              foregroundColor: canPay
+                  ? const Color(0xFF3A2300)
+                  : Colors.white70,
             ),
             // Still tappable when short of coins, to explain why not.
             onPressed: () => Navigator.pop(context, _HintPay.coins),

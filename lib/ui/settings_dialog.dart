@@ -93,6 +93,95 @@ class _SettingsPanelState extends State<_SettingsPanel> {
     );
   }
 
+  Future<void> _rate() async {
+    s.sfx.play(Sound.button);
+    s.ads.skipNextAppOpen();
+    var ok = false;
+    try {
+      ok = await launchUrl(
+        Uri.parse('market://details?id=$kAndroidPackage'),
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {}
+    if (ok || !mounted) return;
+    await openExternal(
+      context,
+      s,
+      Uri.parse(
+        'https://play.google.com/store/apps/details?id=$kAndroidPackage',
+      ),
+    );
+  }
+
+  void _about() {
+    s.sfx.play(Sound.button);
+    showAboutDialog(
+      context: context,
+      applicationName: tr('app_title'),
+      applicationVersion: tr('version', {'v': kAppVersion}),
+      applicationIcon: const Icon(
+        Icons.hexagon_rounded,
+        color: AppColors.accent,
+        size: 44,
+      ),
+      applicationLegalese: kSupportEmail,
+    );
+  }
+
+  /// Two confirmations, since a reset cannot be undone.
+  Future<void> _reset() async {
+    s.sfx.play(Sound.button);
+    Future<bool> ask(String body) async =>
+        await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: const Color(0xFF15276A),
+            icon: const Icon(
+              Icons.warning_amber_rounded,
+              color: Color(0xFFFF7A6E),
+              size: 40,
+            ),
+            title: Text(
+              tr('reset_confirm_title'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            content: Text(
+              body,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white70, fontSize: 15),
+            ),
+            actionsAlignment: MainAxisAlignment.center,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(tr('cancel')),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFFE5483B),
+                ),
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(tr('reset_btn')),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!await ask(tr('reset_confirm_body')) || !mounted) return;
+    if (!await ask(tr('reset_confirm_final')) || !mounted) return;
+    await s.progress.resetProgress();
+    await s.reminders.reschedule();
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    Navigator.of(context).popUntil((r) => r.isFirst);
+    messenger.showSnackBar(SnackBar(content: Text(tr('reset_done'))));
+  }
+
   // mailto needs %20 for spaces, which Uri.queryParameters doesn't produce.
   static String _encodeQuery(Map<String, String> q) => q.entries
       .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
@@ -150,20 +239,24 @@ class _SettingsPanelState extends State<_SettingsPanel> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _toggle(
+                      _slider(
                         tr('music'),
                         Icons.music_note_rounded,
-                        p.musicOn,
+                        Icons.music_off_rounded,
+                        p.musicVolume,
                         (v) async {
-                          await p.setMusic(v);
+                          await p.setMusicVolume(v);
                           s.sfx.updateMusic();
                         },
                       ),
-                      _toggle(
+                      _slider(
                         tr('sound_effects'),
                         Icons.volume_up_rounded,
-                        p.soundOn,
-                        p.setSound,
+                        Icons.volume_off_rounded,
+                        p.soundVolume,
+                        p.setSoundVolume,
+                        // A short click so the new loudness can be heard.
+                        onDone: () => s.sfx.play(Sound.button),
                       ),
                       _toggle(
                         tr('vibration'),
@@ -176,6 +269,28 @@ class _SettingsPanelState extends State<_SettingsPanel> {
                         Icons.auto_awesome_rounded,
                         p.backgroundFx,
                         p.setBackgroundFx,
+                      ),
+                      _toggle(
+                        tr('reduce_motion'),
+                        Icons.motion_photos_off_rounded,
+                        p.reduceMotion,
+                        p.setReduceMotion,
+                      ),
+                      _toggle(
+                        tr('color_blind'),
+                        Icons.category_rounded,
+                        p.colorBlind,
+                        p.setColorBlind,
+                      ),
+                      _toggle(
+                        tr('daily_reminder'),
+                        Icons.notifications_active_rounded,
+                        p.remindersOn,
+                        (v) async {
+                          await p.setReminders(v);
+                          if (v) await s.reminders.requestPermission();
+                          await s.reminders.reschedule();
+                        },
                       ),
                       const SizedBox(height: 10),
                       _RemoveAdsTile(
@@ -215,6 +330,23 @@ class _SettingsPanelState extends State<_SettingsPanel> {
                             Uri.parse(kPrivacyPolicyUrl),
                           );
                         },
+                      ),
+                      _row(
+                        Icons.star_rate_rounded,
+                        tr('rate_us'),
+                        onTap: _rate,
+                      ),
+                      _row(
+                        Icons.info_outline_rounded,
+                        tr('about'),
+                        trailing: tr('version', {'v': kAppVersion}),
+                        onTap: _about,
+                      ),
+                      _row(
+                        Icons.restart_alt_rounded,
+                        tr('reset_progress'),
+                        danger: true,
+                        onTap: _reset,
                       ),
                       if (_adPrivacy)
                         _row(
@@ -273,10 +405,64 @@ class _SettingsPanelState extends State<_SettingsPanel> {
     );
   }
 
+  Widget _slider(
+    String label,
+    IconData icon,
+    IconData offIcon,
+    double value,
+    Future<void> Function(double) save, {
+    VoidCallback? onDone,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Icon(value == 0 ? offIcon : icon, color: Colors.white70),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 5,
+                    overlayShape: SliderComponentShape.noOverlay,
+                    activeTrackColor: AppColors.accent,
+                    inactiveTrackColor: Colors.white24,
+                    thumbColor: Colors.white,
+                  ),
+                  child: Slider(
+                    value: value,
+                    divisions: 10,
+                    semanticFormatterCallback: (v) => '${(v * 100).round()}%',
+                    onChanged: (v) async {
+                      await save(v);
+                      setState(() {});
+                    },
+                    onChangeEnd: (_) => onDone?.call(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _row(
     IconData icon,
     String label, {
     String? trailing,
+    bool danger = false,
     required VoidCallback onTap,
   }) {
     return Padding(
@@ -291,13 +477,17 @@ class _SettingsPanelState extends State<_SettingsPanel> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: Row(
               children: [
-                Icon(icon, color: AppColors.boardLine, size: 22),
+                Icon(
+                  icon,
+                  color: danger ? const Color(0xFFFF7A6E) : AppColors.boardLine,
+                  size: 22,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     label,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: danger ? const Color(0xFFFF9C93) : Colors.white,
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                     ),

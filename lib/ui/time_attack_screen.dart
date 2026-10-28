@@ -176,18 +176,19 @@ class _TimeAttackScreenState extends State<TimeAttackScreen>
                   Expanded(
                     child: switch (_phase) {
                       _Phase.intro => _intro(),
-                      _ => _game == null
-                          ? const SizedBox()
-                          : BoardView(
-                              key: _boardKey,
-                              game: _game!,
-                              skin: p.skin.style,
-                              theme: p.theme,
-                              patterns: p.colorBlind,
-                              onPick: () => sfx.play(Sound.pick),
-                              onPlace: () => sfx.play(Sound.place),
-                              onFail: () => sfx.play(Sound.fail),
-                            ),
+                      _ =>
+                        _game == null
+                            ? const SizedBox()
+                            : BoardView(
+                                key: _boardKey,
+                                game: _game!,
+                                skin: p.skin.style,
+                                theme: p.theme,
+                                patterns: p.colorBlind,
+                                onPick: () => sfx.play(Sound.pick),
+                                onPlace: () => sfx.play(Sound.place),
+                                onFail: () => sfx.play(Sound.fail),
+                              ),
                     },
                   ),
                   if (_phase == _Phase.playing) _bottomBar(),
@@ -258,7 +259,9 @@ class _TimeAttackScreenState extends State<TimeAttackScreen>
                         child: Transform.translate(
                           offset: Offset(0, -14 * v),
                           child: Text(
-                            tr('ta_bonus', {'n': TimeAttackScreen.bonusSeconds}),
+                            tr('ta_bonus', {
+                              'n': TimeAttackScreen.bonusSeconds,
+                            }),
                             style: const TextStyle(
                               color: Color(0xFF6CF0B8),
                               fontWeight: FontWeight.w900,
@@ -316,11 +319,19 @@ class _TimeAttackScreenState extends State<TimeAttackScreen>
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Color(0xFFB08CFF), Color(0xFF7A55F0), Color(0xFF4A2BB0)],
+                  colors: [
+                    Color(0xFFB08CFF),
+                    Color(0xFF7A55F0),
+                    Color(0xFF4A2BB0),
+                  ],
                 ),
                 shadows: [BoxShadow(color: Color(0x887A55F0), blurRadius: 30)],
               ),
-              child: const Icon(Icons.timer_rounded, color: Colors.white, size: 62),
+              child: const Icon(
+                Icons.timer_rounded,
+                color: Colors.white,
+                size: 62,
+              ),
             ),
             const SizedBox(height: 18),
             Text(
@@ -443,7 +454,10 @@ class _TimeAttackScreenState extends State<TimeAttackScreen>
               const SizedBox(height: 10),
               if (_newBest)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.gold.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(12),

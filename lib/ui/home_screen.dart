@@ -200,8 +200,7 @@ class _HomeScreenState extends State<HomeScreen>
                 width: 190,
                 color: const Color(0xFF7A55F0),
                 dark: const Color(0xFF4A2BB0),
-                onTap: () =>
-                    _open(TimeAttackScreen(services: widget.services)),
+                onTap: () => _open(TimeAttackScreen(services: widget.services)),
               ),
               const Spacer(flex: 2),
               Padding(

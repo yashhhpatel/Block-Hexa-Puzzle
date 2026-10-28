@@ -19,6 +19,9 @@ const String kPrivacyPolicyUrl =
     'https://yashhhpatel.github.io/Block-Hexa-Puzzle/privacy-policy.html';
 const String kAndroidPackage = 'com.yashpatel.block_hexa_puzzle';
 
+/// Shown on the About page; keep in step with `version:` in pubspec.yaml.
+const String kAppVersion = '1.0.0';
+
 /// Google's public test ad units. They always fill and never pay out.
 const bool kUseTestAds = true;
 const String kAppOpenAdUnit = 'ca-app-pub-3940256099942544/9257395921';
