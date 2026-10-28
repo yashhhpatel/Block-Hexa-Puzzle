@@ -66,7 +66,8 @@ class _Der {
 
   void skip(int tag) {
     _expect(tag);
-    pos += _length();
+    final len = _length(); // read first: it advances pos
+    pos += len;
   }
 
   BigInt integer() {
