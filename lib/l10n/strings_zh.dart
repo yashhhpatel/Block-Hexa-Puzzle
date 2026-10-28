@@ -257,4 +257,21 @@ const Map<String, String> stringsZh = {
   "st_quests": "已完成任务",
   "st_chests": "已开宝箱",
   "st_time_hm": "{h}小时{m}分钟",
+
+  // Chapters 6-9, win screen, daily redesign
+  "chapter_6": "疯狂",
+  "chapter_7": "噩梦",
+  "chapter_8": "传奇",
+  "chapter_9": "不可能",
+  "chapter_locked": "完成{name}即可解锁",
+  "home": "主页",
+  "double_btn": "看广告金币翻倍",
+  "double_done": "金币已翻倍！",
+  "double_unavailable": "暂时没有可观看的视频，请稍后再试。",
+  "double_incomplete": "视频未看完，因此金币没有翻倍。",
+  "daily_next_in": "{h}小时{m}分钟后更新谜题",
+  "daily_this_week": "本周",
+  "daily_milestones": "连续奖励",
+  "daily_blocks": "{n} 个方块 · {c} 格",
+  "days_n": "{n} 天",
 };

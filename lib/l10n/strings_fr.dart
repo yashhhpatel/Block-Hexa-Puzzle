@@ -276,4 +276,23 @@ const Map<String, String> stringsFr = {
   "st_quests": "Quêtes terminées",
   "st_chests": "Coffres ouverts",
   "st_time_hm": "{h} h {m} min",
+
+  // Chapters 6-9, win screen, daily redesign
+  "chapter_6": "Démentiel",
+  "chapter_7": "Cauchemar",
+  "chapter_8": "Légendaire",
+  "chapter_9": "Impossible",
+  "chapter_locked": "Terminez {name} pour débloquer",
+  "home": "Accueil",
+  "double_btn": "Pub : pièces ×2",
+  "double_done": "Pièces doublées !",
+  "double_unavailable":
+      "Aucune vidéo disponible pour le moment. Réessayez dans un instant.",
+  "double_incomplete":
+      "La vidéo n’a pas été regardée jusqu’au bout : les pièces ne sont pas doublées.",
+  "daily_next_in": "Prochain défi dans {h} h {m} min",
+  "daily_this_week": "Cette semaine",
+  "daily_milestones": "Bonus de série",
+  "daily_blocks": "{n} blocs · {c} cases",
+  "days_n": "{n} jours",
 };

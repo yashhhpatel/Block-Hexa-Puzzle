@@ -276,4 +276,23 @@ const Map<String, String> stringsDe = {
   "st_quests": "Erledigte Aufgaben",
   "st_chests": "Geöffnete Truhen",
   "st_time_hm": "{h} Std. {m} Min.",
+
+  // Chapters 6-9, win screen, daily redesign
+  "chapter_6": "Wahnsinn",
+  "chapter_7": "Albtraum",
+  "chapter_8": "Legendär",
+  "chapter_9": "Unmöglich",
+  "chapter_locked": "Schaffe {name}, um freizuschalten",
+  "home": "Start",
+  "double_btn": "Werbung ansehen: 2× Münzen",
+  "double_done": "Münzen verdoppelt!",
+  "double_unavailable":
+      "Gerade ist kein Video verfügbar. Bitte versuche es gleich noch einmal.",
+  "double_incomplete":
+      "Das Video wurde nicht zu Ende geschaut, daher wurden die Münzen nicht verdoppelt.",
+  "daily_next_in": "Nächstes Rätsel in {h} Std. {m} Min.",
+  "daily_this_week": "Diese Woche",
+  "daily_milestones": "Serienbelohnungen",
+  "daily_blocks": "{n} Blöcke · {c} Felder",
+  "days_n": "{n} Tage",
 };

@@ -275,4 +275,23 @@ const Map<String, String> stringsEs = {
   "st_quests": "Misiones completadas",
   "st_chests": "Cofres abiertos",
   "st_time_hm": "{h} h {m} min",
+
+  // Chapters 6-9, win screen, daily redesign
+  "chapter_6": "Locura",
+  "chapter_7": "Pesadilla",
+  "chapter_8": "Legendario",
+  "chapter_9": "Imposible",
+  "chapter_locked": "Completa {name} para desbloquear",
+  "home": "Inicio",
+  "double_btn": "Ver anuncio: monedas ×2",
+  "double_done": "¡Monedas duplicadas!",
+  "double_unavailable":
+      "No hay ningún vídeo disponible ahora. Inténtalo de nuevo en un momento.",
+  "double_incomplete":
+      "No terminaste el vídeo, así que las monedas no se duplicaron.",
+  "daily_next_in": "Próximo puzle en {h} h {m} min",
+  "daily_this_week": "Esta semana",
+  "daily_milestones": "Premios de racha",
+  "daily_blocks": "{n} bloques · {c} celdas",
+  "days_n": "{n} días",
 };

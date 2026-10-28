@@ -274,4 +274,23 @@ const Map<String, String> stringsHi = {
   "st_quests": "पूरे किए क्वेस्ट",
   "st_chests": "खोले गए संदूक",
   "st_time_hm": "{h}घं {m}मि",
+
+  // Chapters 6-9, win screen, daily redesign
+  "chapter_6": "पागलपन",
+  "chapter_7": "दुःस्वप्न",
+  "chapter_8": "महान",
+  "chapter_9": "असंभव",
+  "chapter_locked": "खोलने के लिए {name} पूरा करें",
+  "home": "होम",
+  "double_btn": "विज्ञापन देखें, सिक्के 2×",
+  "double_done": "सिक्के दोगुने हुए!",
+  "double_unavailable":
+      "अभी कोई वीडियो उपलब्ध नहीं है। कृपया थोड़ी देर बाद फिर कोशिश करें।",
+  "double_incomplete":
+      "वीडियो पूरा नहीं देखा गया, इसलिए सिक्के दोगुने नहीं हुए।",
+  "daily_next_in": "अगली पज़ल {h}घं {m}मि में",
+  "daily_this_week": "यह सप्ताह",
+  "daily_milestones": "स्ट्रीक इनाम",
+  "daily_blocks": "{n} ब्लॉक · {c} सेल",
+  "days_n": "{n} दिन",
 };

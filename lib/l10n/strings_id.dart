@@ -275,4 +275,23 @@ const Map<String, String> stringsId = {
   "st_quests": "Misi selesai",
   "st_chests": "Peti dibuka",
   "st_time_hm": "{h} j {m} m",
+
+  // Chapters 6-9, win screen, daily redesign
+  "chapter_6": "Gila",
+  "chapter_7": "Mimpi Buruk",
+  "chapter_8": "Legendaris",
+  "chapter_9": "Mustahil",
+  "chapter_locked": "Selesaikan {name} untuk membuka",
+  "home": "Beranda",
+  "double_btn": "Tonton iklan: koin 2×",
+  "double_done": "Koin digandakan!",
+  "double_unavailable":
+      "Belum ada video yang tersedia. Coba lagi sebentar lagi.",
+  "double_incomplete":
+      "Video tidak ditonton sampai selesai, jadi koin tidak digandakan.",
+  "daily_next_in": "Teka-teki berikutnya dalam {h} j {m} m",
+  "daily_this_week": "Minggu ini",
+  "daily_milestones": "Hadiah beruntun",
+  "daily_blocks": "{n} balok · {c} sel",
+  "days_n": "{n} hari",
 };

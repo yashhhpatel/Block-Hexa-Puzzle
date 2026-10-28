@@ -274,4 +274,23 @@ const Map<String, String> stringsPt = {
   "st_quests": "Missões concluídas",
   "st_chests": "Baús abertos",
   "st_time_hm": "{h} h {m} min",
+
+  // Chapters 6-9, win screen, daily redesign
+  "chapter_6": "Insano",
+  "chapter_7": "Pesadelo",
+  "chapter_8": "Lendário",
+  "chapter_9": "Impossível",
+  "chapter_locked": "Conclua {name} para desbloquear",
+  "home": "Início",
+  "double_btn": "Assista ao anúncio: moedas ×2",
+  "double_done": "Moedas dobradas!",
+  "double_unavailable":
+      "Nenhum vídeo disponível agora. Tente de novo em instantes.",
+  "double_incomplete":
+      "O vídeo não foi concluído, então as moedas não foram dobradas.",
+  "daily_next_in": "Próximo quebra-cabeça em {h} h {m} min",
+  "daily_this_week": "Esta semana",
+  "daily_milestones": "Prêmios de sequência",
+  "daily_blocks": "{n} blocos · {c} células",
+  "days_n": "{n} dias",
 };

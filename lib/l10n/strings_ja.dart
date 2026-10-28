@@ -258,4 +258,21 @@ const Map<String, String> stringsJa = {
   "st_quests": "達成したクエスト",
   "st_chests": "開けた宝箱",
   "st_time_hm": "{h}時間{m}分",
+
+  // Chapters 6-9, win screen, daily redesign
+  "chapter_6": "インセイン",
+  "chapter_7": "ナイトメア",
+  "chapter_8": "レジェンド",
+  "chapter_9": "インポッシブル",
+  "chapter_locked": "{name}をクリアすると解放",
+  "home": "ホーム",
+  "double_btn": "広告を見てコイン2倍",
+  "double_done": "コインが2倍になりました！",
+  "double_unavailable": "現在視聴できる動画がありません。少し待ってからお試しください。",
+  "double_incomplete": "動画を最後まで見なかったため、コインは2倍になりませんでした。",
+  "daily_next_in": "次のパズルまで {h}時間{m}分",
+  "daily_this_week": "今週",
+  "daily_milestones": "連続記録の報酬",
+  "daily_blocks": "ブロック {n} 個・{c} マス",
+  "days_n": "{n}日",
 };

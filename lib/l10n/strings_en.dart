@@ -285,4 +285,23 @@ const Map<String, String> stringsEn = {
   "st_quests": "Quests completed",
   "st_chests": "Chests opened",
   "st_time_hm": "{h}h {m}m",
+
+  // Chapters 6-9, win screen, daily redesign
+  "chapter_6": "Insane",
+  "chapter_7": "Nightmare",
+  "chapter_8": "Legendary",
+  "chapter_9": "Impossible",
+  "chapter_locked": "Finish {name} to unlock",
+  "home": "Home",
+  "double_btn": "Watch ad for 2× coins",
+  "double_done": "Coins doubled!",
+  "double_unavailable":
+      "No video is available right now. Please try again in a moment.",
+  "double_incomplete":
+      "The video wasn't finished, so the coins weren't doubled.",
+  "daily_next_in": "Next puzzle in {h}h {m}m",
+  "daily_this_week": "This week",
+  "daily_milestones": "Streak rewards",
+  "daily_blocks": "{n} blocks · {c} cells",
+  "days_n": "{n} days",
 };
