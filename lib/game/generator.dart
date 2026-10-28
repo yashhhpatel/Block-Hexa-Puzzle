@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'hex.dart';
 import 'level.dart';
+import 'solver.dart';
 
 /// Number of distinct block colours available to the renderer.
 const int kPaletteSize = 14;
@@ -57,22 +58,65 @@ enum BoardStyle { symmetric, blob, twin }
 /// Solvability is guaranteed by construction: the board is grown first, then
 /// cut into connected blocks, so the cut itself is a valid solution.
 class LevelGenerator {
-  static Level generate(int levelNumber) {
-    final rng = math.Random(_seedFor(levelNumber));
-    final diff = Difficulty.forLevel(levelNumber, rng);
+  static Level generate(int levelNumber) => _generate(
+      seed: _seedFor(levelNumber),
+      difficultyLevel: levelNumber,
+      number: levelNumber);
 
+  /// The Daily Puzzle for [day]: same for every player on that date, easier
+  /// early in the week and hardest on Sunday.
+  static Level generateDaily(DateTime day) {
+    final key = day.year * 10000 + day.month * 100 + day.day;
+    return _generate(
+      seed: _seedFor(key ^ 0x5DA11),
+      difficultyLevel: 18 + (day.weekday - 1) * 10,
+      number: 0,
+      dailyKey: key,
+    );
+  }
+
+  /// From level 15 on, boards are re-rolled (deterministically) until one has
+  /// a single solution, so harder levels can't be brute-forced by accident.
+  static const uniqueFromLevel = 15;
+  static const _uniqueCandidates = 6;
+  static const _uniqueNodeBudget = 12000;
+
+  static Level _generate({
+    required int seed,
+    required int difficultyLevel,
+    required int number,
+    int? dailyKey,
+  }) {
+    final rng = math.Random(seed);
+    final diff = Difficulty.forLevel(difficultyLevel, rng);
+    final wantUnique = difficultyLevel >= uniqueFromLevel;
+
+    Level? first;
+    for (var cand = 0; cand < (wantUnique ? _uniqueCandidates : 1); cand++) {
+      final level = _buildValid(rng, diff, number, dailyKey);
+      first ??= level;
+      if (!wantUnique) break;
+      final count = Solver(level.board, level.pieces, nodeLimit: _uniqueNodeBudget)
+          .countSolutions(limit: 2);
+      if (count == 1) return level;
+    }
+    return first!;
+  }
+
+  static Level _buildValid(
+      math.Random rng, Difficulty diff, int number, int? dailyKey) {
     for (var attempt = 0;; attempt++) {
       // Relax the target if a shape refuses to split nicely.
       final pieceCount = math.max(2, diff.pieceCount - attempt ~/ 40);
-      final level = _tryBuild(levelNumber, rng, diff, pieceCount);
+      final level = _tryBuild(number, dailyKey, rng, diff, pieceCount);
       if (level != null && level.verifySolution()) return level;
     }
   }
 
   static int _seedFor(int level) => (level * 2654435761 + 97) & 0x7fffffff;
 
-  static Level? _tryBuild(
-      int levelNumber, math.Random rng, Difficulty diff, int pieceCount) {
+  static Level? _tryBuild(int levelNumber, int? dailyKey, math.Random rng,
+      Difficulty diff, int pieceCount) {
     final avg = (diff.minPieceSize + diff.maxPieceSize) / 2;
     final targetCells = (pieceCount * avg).round();
 
@@ -127,7 +171,12 @@ class LevelGenerator {
       pieces.add(Piece(entries[i].$1.cells, colorOrder[i % kPaletteSize]));
       solution.add(entries[i].$2);
     }
-    return Level(number: levelNumber, board: board, pieces: pieces, solution: solution);
+    return Level(
+        number: levelNumber,
+        dailyKey: dailyKey,
+        board: board,
+        pieces: pieces,
+        solution: solution);
   }
 
   static BoardStyle _pickStyle(math.Random rng) {

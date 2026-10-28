@@ -55,7 +55,11 @@ class Piece {
 }
 
 class Level {
+  /// Level number in the main progression; 0 for a Daily Puzzle.
   final int number;
+
+  /// yyyymmdd of the Daily Puzzle this level belongs to, if any.
+  final int? dailyKey;
   final Set<Hex> board;
   final List<Piece> pieces;
 
@@ -64,10 +68,16 @@ class Level {
 
   Level({
     required this.number,
+    this.dailyKey,
     required this.board,
     required this.pieces,
     required this.solution,
   });
+
+  bool get isDaily => dailyKey != null;
+
+  /// Target time for the speed star, in seconds.
+  int get parSeconds => 15 + (board.length * 3.5).round();
 
   int get decoyCount => solution.where((s) => s == null).length;
   bool get hasDecoys => decoyCount > 0;
