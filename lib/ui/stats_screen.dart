@@ -36,54 +36,113 @@ class StatsScreen extends StatelessWidget {
       (
         tr('st_progress'),
         [
-          _Stat(Icons.flag_rounded, tr('st_levels_cleared'), p.stat(Stat.levelsCleared)),
-          _Stat(Icons.star_rounded, tr('st_total_stars'), p.totalStars,
-              color: AppColors.gold),
-          _Stat(Icons.auto_awesome_rounded, tr('st_three_star'),
-              p.stat(Stat.threeStarLevels)),
-          _Stat(Icons.emoji_events_rounded, tr('st_chapters'),
-              p.stat(Stat.chaptersCompleted)),
-          _Stat(Icons.workspace_premium_rounded, tr('st_achievements'), achDone,
-              suffix: '/$achTotal'),
+          _Stat(
+            Icons.flag_rounded,
+            tr('st_levels_cleared'),
+            p.stat(Stat.levelsCleared),
+          ),
+          _Stat(
+            Icons.star_rounded,
+            tr('st_total_stars'),
+            p.totalStars,
+            color: AppColors.gold,
+          ),
+          _Stat(
+            Icons.auto_awesome_rounded,
+            tr('st_three_star'),
+            p.stat(Stat.threeStarLevels),
+          ),
+          _Stat(
+            Icons.emoji_events_rounded,
+            tr('st_chapters'),
+            p.stat(Stat.chaptersCompleted),
+          ),
+          _Stat(
+            Icons.workspace_premium_rounded,
+            tr('st_achievements'),
+            achDone,
+            suffix: '/$achTotal',
+          ),
         ],
       ),
       (
         tr('st_daily'),
         [
-          _Stat(Icons.local_fire_department_rounded, tr('st_current_streak'),
-              p.streak, color: const Color(0xFFFF8A2B)),
-          _Stat(Icons.whatshot_rounded, tr('st_best_streak'),
-              p.stat(Stat.bestStreak), color: const Color(0xFFFF8A2B)),
-          _Stat(Icons.calendar_month_rounded, tr('st_daily_solved'),
-              p.stat(Stat.dailyPlayed)),
-          _Stat(Icons.wb_sunny_rounded, tr('st_daily_perfect'),
-              p.stat(Stat.dailyPerfect)),
+          _Stat(
+            Icons.local_fire_department_rounded,
+            tr('st_current_streak'),
+            p.streak,
+            color: const Color(0xFFFF8A2B),
+          ),
+          _Stat(
+            Icons.whatshot_rounded,
+            tr('st_best_streak'),
+            p.stat(Stat.bestStreak),
+            color: const Color(0xFFFF8A2B),
+          ),
+          _Stat(
+            Icons.calendar_month_rounded,
+            tr('st_daily_solved'),
+            p.stat(Stat.dailyPlayed),
+          ),
+          _Stat(
+            Icons.wb_sunny_rounded,
+            tr('st_daily_perfect'),
+            p.stat(Stat.dailyPerfect),
+          ),
         ],
       ),
       (
         tr('st_skill'),
         [
-          _Stat(Icons.timer_rounded, tr('st_avg_time'), null,
-              text: avg == null ? '–' : clock(avg)),
+          _Stat(
+            Icons.timer_rounded,
+            tr('st_avg_time'),
+            null,
+            text: avg == null ? '–' : clock(avg),
+          ),
           _Stat(Icons.bolt_rounded, tr('st_fast'), p.stat(Stat.fastClears)),
-          _Stat(Icons.psychology_rounded, tr('st_no_hint'),
-              p.stat(Stat.noHintClears)),
-          _Stat(Icons.lightbulb_rounded, tr('st_hints_used'),
-              p.stat(Stat.hintsUsed)),
+          _Stat(
+            Icons.psychology_rounded,
+            tr('st_no_hint'),
+            p.stat(Stat.noHintClears),
+          ),
+          _Stat(
+            Icons.lightbulb_rounded,
+            tr('st_hints_used'),
+            p.stat(Stat.hintsUsed),
+          ),
         ],
       ),
       (
         tr('st_activity'),
         [
-          _Stat(Icons.hourglass_bottom_rounded, tr('st_time_played'), null,
-              text: duration(p.stat(Stat.playSeconds))),
-          _Stat(Icons.event_available_rounded, tr('st_days_played'),
-              p.stat(Stat.loginDays)),
-          _Stat(Icons.hexagon_rounded, tr('st_blocks'), p.stat(Stat.blocksPlaced)),
-          _Stat(Icons.task_alt_rounded, tr('st_quests'),
-              p.stat(Stat.questsCompleted)),
-          _Stat(Icons.inventory_2_rounded, tr('st_chests'),
-              p.stat(Stat.chestsOpened)),
+          _Stat(
+            Icons.hourglass_bottom_rounded,
+            tr('st_time_played'),
+            null,
+            text: duration(p.stat(Stat.playSeconds)),
+          ),
+          _Stat(
+            Icons.event_available_rounded,
+            tr('st_days_played'),
+            p.stat(Stat.loginDays),
+          ),
+          _Stat(
+            Icons.hexagon_rounded,
+            tr('st_blocks'),
+            p.stat(Stat.blocksPlaced),
+          ),
+          _Stat(
+            Icons.task_alt_rounded,
+            tr('st_quests'),
+            p.stat(Stat.questsCompleted),
+          ),
+          _Stat(
+            Icons.inventory_2_rounded,
+            tr('st_chests'),
+            p.stat(Stat.chestsOpened),
+          ),
         ],
       ),
     ];
@@ -265,7 +324,10 @@ class _HeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chapter = Chapters.forLevel(progress.unlockedLevel);
-    final done = (progress.unlockedLevel - chapter.first).clamp(0, chapter.count);
+    final done = (progress.unlockedLevel - chapter.first).clamp(
+      0,
+      chapter.count,
+    );
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -273,7 +335,10 @@ class _HeroCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [chapter.color.withValues(alpha: 0.55), const Color(0xFF15276A)],
+          colors: [
+            chapter.color.withValues(alpha: 0.55),
+            const Color(0xFF15276A),
+          ],
         ),
         border: Border.all(color: chapter.color, width: 2),
       ),
