@@ -32,9 +32,11 @@ class Services {
     final billing = BillingService(progress);
     final ads = AdsService(billing: billing, sfx: sfx);
     // Audio, billing and ads start in the background so the first screen
-    // appears at once. Billing goes first so subscribers never see an ad.
+    // appears at once. They run side by side: subscribers are already known
+    // from the saved status, so no ad shows while billing is still checking.
     sfx.init();
-    billing.init().whenComplete(ads.init);
+    billing.init();
+    ads.init();
     return Services(progress, sfx, billing, ads);
   }
 }
