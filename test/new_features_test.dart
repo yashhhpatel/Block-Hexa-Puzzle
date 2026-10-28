@@ -40,8 +40,11 @@ void main() {
         expect(l.pageOf.toSet().length, l.pageCount, reason: 'level $n');
         // Every slot lies inside the tray of its own page.
         for (var i = 0; i < level.pieces.length; i++) {
-          expect(l.trayRect.contains(l.traySlots[i]), isTrue,
-              reason: 'level $n piece $i');
+          expect(
+            l.trayRect.contains(l.traySlots[i]),
+            isTrue,
+            reason: 'level $n piece $i',
+          );
         }
       }
     });
@@ -62,15 +65,19 @@ void main() {
       expect(early, lessThan(later), reason: 'chapter at $start');
     }
     // Endless chapters keep full strength.
-    expect(Difficulty.forLevel(801, math.Random(1)).pieceCount,
-        greaterThanOrEqualTo(16));
+    expect(
+      Difficulty.forLevel(801, math.Random(1)).pieceCount,
+      greaterThanOrEqualTo(16),
+    );
   });
 
   group('time attack', () {
     test('difficulty rises and caps', () {
       expect(TimeAttackScreen.difficultyFor(0), 6);
-      expect(TimeAttackScreen.difficultyFor(4),
-          greaterThan(TimeAttackScreen.difficultyFor(1)));
+      expect(
+        TimeAttackScreen.difficultyFor(4),
+        greaterThan(TimeAttackScreen.difficultyFor(1)),
+      );
       expect(TimeAttackScreen.difficultyFor(500), 140);
     });
 
@@ -78,12 +85,14 @@ void main() {
       final a = LevelGenerator.generateFree(1, 20);
       final b = LevelGenerator.generateFree(2, 20);
       expect(a.number, 0);
-      expect(Solver.solve(a), isNotNull);
-      expect(Solver.solve(b), isNotNull);
-      expect(a.pieces.length == b.pieces.length && a.board == b.board,
-          isFalse);
+      expect(Solver(a.board, a.pieces).solve(), isNotNull);
+      expect(Solver(b.board, b.pieces).solve(), isNotNull);
+      expect(
+        a.board.length == b.board.length && a.board.containsAll(b.board),
+        isFalse,
+      );
       // Same seed, same puzzle.
-      expect(LevelGenerator.generateFree(1, 20).board, a.board);
+      expect(LevelGenerator.generateFree(1, 20).board, equals(a.board));
     });
 
     test('best score only goes up', () async {
@@ -101,16 +110,18 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(360, 640));
       for (final lang in AppLang.values) {
         appLang.value = lang;
-        await tester.pumpWidget(MaterialApp(
-          locale: lang.locale,
-          supportedLocales: [for (final l in AppLang.values) l.locale],
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          home: TimeAttackScreen(services: services),
-        ));
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: lang.locale,
+            supportedLocales: [for (final l in AppLang.values) l.locale],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: TimeAttackScreen(services: services),
+          ),
+        );
         await tester.pump(const Duration(milliseconds: 100));
         expect(tester.takeException(), isNull, reason: 'intro ${lang.name}');
         await tester.tap(find.text(tr('ta_start')));
@@ -186,10 +197,14 @@ void main() {
   group('daily reminder plan', () {
     test('today is skipped once solved or past reminder time', () {
       final morning = DateTime(2026, 3, 10, 9);
-      expect(Reminders.plan(morning, solvedToday: false).first,
-          DateTime(2026, 3, 10));
-      expect(Reminders.plan(morning, solvedToday: true).first,
-          DateTime(2026, 3, 11));
+      expect(
+        Reminders.plan(morning, solvedToday: false).first,
+        DateTime(2026, 3, 10),
+      );
+      expect(
+        Reminders.plan(morning, solvedToday: true).first,
+        DateTime(2026, 3, 11),
+      );
       final evening = DateTime(2026, 3, 10, 20);
       final days = Reminders.plan(evening, solvedToday: false);
       expect(days.first, DateTime(2026, 3, 11));

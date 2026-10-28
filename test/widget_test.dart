@@ -45,42 +45,55 @@ void main() {
     expect(find.byIcon(Icons.lightbulb_rounded), findsOneWidget);
   });
 
-  testWidgets('choosing a language switches every visible screen and is saved',
-      (tester) async {
-    final services = await _services();
-    await tester.binding.setSurfaceSize(const Size(400, 860));
-    await tester.pumpWidget(HexaApp(services: services));
-    await tester.pump();
+  testWidgets(
+    'choosing a language switches every visible screen and is saved',
+    (tester) async {
+      final services = await _services();
+      await tester.binding.setSurfaceSize(const Size(400, 860));
+      await tester.pumpWidget(HexaApp(services: services));
+      await tester.pump();
 
-    // Settings shows all the new entries.
-    await tester.tap(find.byIcon(Icons.settings_rounded));
-    await _settle(tester);
-    for (final label in ['Statistics', 'Language', 'Remove Ads', 'How to play', 'Contact us', 'Privacy policy']) {
-      expect(find.text(label), findsOneWidget, reason: label);
-    }
+      // Settings shows all the new entries.
+      await tester.tap(find.byIcon(Icons.settings_rounded));
+      await _settle(tester);
+      for (final label in [
+        'Statistics',
+        'Language',
+        'Remove Ads',
+        'How to play',
+        'Contact us',
+        'Privacy policy',
+      ]) {
+        expect(find.text(label), findsOneWidget, reason: label);
+      }
 
-    await tester.tap(find.text('Language'));
-    await _settle(tester);
-    expect(find.text('Español'), findsOneWidget);
-    expect(find.text('日本語'), findsOneWidget);
+      await tester.ensureVisible(find.text('Language'));
+      await _settle(tester);
+      await tester.tap(find.text('Language'));
+      await _settle(tester);
+      expect(find.text('Español'), findsOneWidget);
+      expect(find.text('日本語'), findsOneWidget);
 
-    await tester.tap(find.text('Español'));
-    await _settle(tester);
-    expect(find.text('Idioma'), findsWidgets, reason: 'this screen switched');
-    expect(services.progress.languageCode, 'es');
+      await tester.tap(find.text('Español'));
+      await _settle(tester);
+      expect(find.text('Idioma'), findsWidgets, reason: 'this screen switched');
+      expect(services.progress.languageCode, 'es');
 
-    // Screens underneath switched too.
-    await tester.tap(find.byIcon(Icons.arrow_back_rounded));
-    await _settle(tester);
-    expect(find.text('Ajustes'), findsWidgets);
-    expect(find.text('Quitar anuncios'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.close_rounded));
-    await _settle(tester);
-    expect(find.text('Nivel 1'), findsWidgets);
-    expect(find.text('Tienda'), findsOneWidget);
-  });
+      // Screens underneath switched too.
+      await tester.tap(find.byIcon(Icons.arrow_back_rounded));
+      await _settle(tester);
+      expect(find.text('Ajustes'), findsWidgets);
+      expect(find.text('Quitar anuncios'), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.close_rounded));
+      await _settle(tester);
+      expect(find.text('Nivel 1'), findsWidgets);
+      expect(find.text('Tienda'), findsOneWidget);
+    },
+  );
 
-  testWidgets('remove ads page shows the monthly price and duration', (tester) async {
+  testWidgets('remove ads page shows the monthly price and duration', (
+    tester,
+  ) async {
     final services = await _services();
     await tester.binding.setSurfaceSize(const Size(400, 860));
     await tester.pumpWidget(HexaApp(services: services));
@@ -103,6 +116,8 @@ void main() {
     await tester.pumpWidget(HexaApp(services: services));
     await tester.pump();
     await tester.tap(find.byIcon(Icons.settings_rounded));
+    await _settle(tester);
+    await tester.ensureVisible(find.text('How to play'));
     await _settle(tester);
     await tester.tap(find.text('How to play'));
     await _settle(tester);
@@ -147,8 +162,9 @@ void main() {
     expect(find.text('Need another hint?'), findsNothing);
   });
 
-  testWidgets('reaching an achievement tier shows the unlock toast',
-      (tester) async {
+  testWidgets('reaching an achievement tier shows the unlock toast', (
+    tester,
+  ) async {
     final services = await _services();
     await tester.binding.setSurfaceSize(const Size(400, 860));
     await tester.pumpWidget(HexaApp(services: services));

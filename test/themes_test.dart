@@ -23,8 +23,13 @@ void main() {
     final themes = Cosmetics.themes;
     expect(themes.length, 10);
     expect(themes.map((t) => t.id).toSet().length, 10);
-    expect(themes.take(5).map((t) => t.id),
-        ['ocean', 'galaxy', 'forest', 'sunset', 'midnight']);
+    expect(themes.take(5).map((t) => t.id), [
+      'ocean',
+      'galaxy',
+      'forest',
+      'sunset',
+      'midnight',
+    ]);
     // Original themes keep their prices and star gates.
     expect(Cosmetics.theme('galaxy').price, 200);
     expect(Cosmetics.theme('midnight').starsRequired, 60);
@@ -42,11 +47,17 @@ void main() {
 
   test('board lines and every block colour stay readable on each theme', () {
     for (final t in Cosmetics.themes) {
-      expect(_contrast(t.line, t.cell), greaterThan(4.5),
-          reason: '${t.id}: board outline vs cells');
+      expect(
+        _contrast(t.line, t.cell),
+        greaterThan(4.5),
+        reason: '${t.id}: board outline vs cells',
+      );
       for (final c in kBlockColors) {
-        expect(_contrast(c, t.cell), greaterThan(2.5),
-            reason: '${t.id}: block $c vs cells');
+        expect(
+          _contrast(c, t.cell),
+          greaterThan(2.5),
+          reason: '${t.id}: block $c vs cells',
+        );
       }
     }
   });
@@ -82,7 +93,8 @@ void main() {
     expect(await p.unlock(lava), isFalse);
     final stars = <String, int>{for (var n = 1; n <= 40; n++) '$n': 3};
     SharedPreferences.setMockInitialValues({
-      'stars': '{${stars.entries.map((e) => '"${e.key}":${e.value}').join(',')}}',
+      'stars':
+          '{${stars.entries.map((e) => '"${e.key}":${e.value}').join(',')}}',
     });
     final p2 = await Progress.load();
     expect(p2.totalStars, 120);

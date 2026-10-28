@@ -6,7 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 Level _tinyLevel() {
   // A 4-cell board filled by two dominoes, plus one spare decoy single.
-  final board = {const Hex(0, 0), const Hex(0, 1), const Hex(1, 0), const Hex(1, 1)};
+  final board = {
+    const Hex(0, 0),
+    const Hex(0, 1),
+    const Hex(1, 0),
+    const Hex(1, 1),
+  };
   return Level(
     number: 99,
     board: board,
@@ -105,8 +110,11 @@ void main() {
     expect(g.freeHintAvailable, isFalse);
     g.reset();
     expect(g.freeHintAvailable, isFalse, reason: 'restart keeps it used');
-    expect(GameState(_tinyLevel()).freeHintAvailable, isTrue,
-        reason: 'a new level (or replay) starts with a free hint');
+    expect(
+      GameState(_tinyLevel()).freeHintAvailable,
+      isTrue,
+      reason: 'a new level (or replay) starts with a free hint',
+    );
   });
 
   test('resuming a saved board keeps the free hint used', () {

@@ -8,3 +8,11 @@
 -keep class androidx.work.impl.WorkDatabase_Impl { *; }
 -keep class androidx.work.** { *; }
 -dontwarn androidx.work.**
+
+# flutter_local_notifications stores scheduled reminders as JSON with Gson,
+# which reads the plugin's model classes and generic types by reflection.
+-keep class com.dexterous.flutterlocalnotifications.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class * extends com.google.gson.reflect.TypeToken
+-keep public class * implements java.lang.reflect.Type

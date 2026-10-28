@@ -15,7 +15,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 Level _level() => Level(
   number: 7,
   board: {const Hex(0, 0)},
-  pieces: [Piece([const Hex(0, 0)], 0)],
+  pieces: [
+    Piece([const Hex(0, 0)], 0),
+  ],
   solution: [const Hex(0, 0)],
 );
 
@@ -40,7 +42,10 @@ void main() {
 
   setUp(() async {
     appLang.value = AppLang.en;
-    SharedPreferences.setMockInitialValues({'sound': false, 'vibration': false});
+    SharedPreferences.setMockInitialValues({
+      'sound': false,
+      'vibration': false,
+    });
     sfx = Sfx(await Progress.load());
   });
 
@@ -89,16 +94,24 @@ void main() {
     await _settle(tester);
     expect(find.text('Coins doubled!'), findsOneWidget);
     expect(find.text('16'), findsOneWidget);
-    expect(find.text('Watch ad for 2× coins'), findsNothing,
-        reason: 'the offer is gone once claimed');
+    expect(
+      find.text('Watch ad for 2× coins'),
+      findsNothing,
+      reason: 'the offer is gone once claimed',
+    );
   });
 
-  testWidgets('a skipped or failed video leaves coins unchanged', (tester) async {
+  testWidgets('a skipped or failed video leaves coins unchanged', (
+    tester,
+  ) async {
     var calls = 0;
-    await pump(tester, onDouble: () async {
-      calls++;
-      return false;
-    });
+    await pump(
+      tester,
+      onDouble: () async {
+        calls++;
+        return false;
+      },
+    );
     await tester.tap(find.text('Watch ad for 2× coins'));
     await _settle(tester);
     expect(calls, 1);
@@ -111,10 +124,13 @@ void main() {
   testWidgets('taps during the video cannot claim twice', (tester) async {
     final video = Completer<bool>();
     var calls = 0;
-    await pump(tester, onDouble: () {
-      calls++;
-      return video.future;
-    });
+    await pump(
+      tester,
+      onDouble: () {
+        calls++;
+        return video.future;
+      },
+    );
     await tester.tap(find.text('Watch ad for 2× coins'));
     await tester.pump();
     // While the video runs the button shows a spinner; tapping it again

@@ -17,13 +17,18 @@ void main() {
   for (final lang in AppLang.values) {
     test('${lang.englishName} has every key with matching placeholders', () {
       final table = kStrings[lang]!;
-      final missing = stringsEn.keys.where((k) => !table.containsKey(k)).toList();
+      final missing = stringsEn.keys
+          .where((k) => !table.containsKey(k))
+          .toList();
       final extra = table.keys.where((k) => !stringsEn.containsKey(k)).toList();
       expect(missing, isEmpty, reason: 'missing in ${lang.name}');
       expect(extra, isEmpty, reason: 'unknown keys in ${lang.name}');
       for (final k in stringsEn.keys) {
-        expect(_params(table[k]!), _params(stringsEn[k]!),
-            reason: '${lang.name}.$k placeholders');
+        expect(
+          _params(table[k]!),
+          _params(stringsEn[k]!),
+          reason: '${lang.name}.$k placeholders',
+        );
         expect(table[k]!.trim(), isNotEmpty, reason: '${lang.name}.$k empty');
       }
     });

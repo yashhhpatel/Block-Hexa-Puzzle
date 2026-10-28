@@ -38,15 +38,15 @@ void main() {
   tearDown(() => appLang.value = AppLang.en);
 
   Widget app(Widget home) => MaterialApp(
-        locale: appLang.value.locale,
-        supportedLocales: [for (final l in AppLang.values) l.locale],
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        home: home,
-      );
+    locale: appLang.value.locale,
+    supportedLocales: [for (final l in AppLang.values) l.locale],
+    localizationsDelegates: const [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    home: home,
+  );
 
   for (final lang in AppLang.values) {
     testWidgets('all screens fit in ${lang.englishName}', (tester) async {
@@ -72,8 +72,12 @@ void main() {
         final err = tester.takeException();
         if (err != null) {
           final lines = err is FlutterError
-              ? err.toStringDeep().split('\n').where(
-                  (l) => l.contains('creator') || l.contains('overflowed'))
+              ? err
+                    .toStringDeep()
+                    .split('\n')
+                    .where(
+                      (l) => l.contains('creator') || l.contains('overflowed'),
+                    )
               : ['$err'];
           // ignore: avoid_print
           print('OVERFLOW ${e.key} ${lang.name}: ${lines.join(' | ')}');
@@ -82,21 +86,29 @@ void main() {
       }
 
       // Settings is a dialog over the home screen.
-      await tester.pumpWidget(app(Builder(
-        builder: (context) => Scaffold(
-          body: Center(
-            child: TextButton(
-              onPressed: () => showSettingsDialog(context, services),
-              child: const Text('open'),
+      await tester.pumpWidget(
+        app(
+          Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () => showSettingsDialog(context, services),
+                  child: const Text('open'),
+                ),
+              ),
             ),
           ),
         ),
-      )));
+      );
       await tester.tap(find.text('open'));
       for (var i = 0; i < 6; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }
-      expect(tester.takeException(), isNull, reason: 'settings in ${lang.name}');
+      expect(
+        tester.takeException(),
+        isNull,
+        reason: 'settings in ${lang.name}',
+      );
       expect(find.text(tr('language')), findsOneWidget);
       // Unmount so periodic timers stop before the test ends.
       await tester.pumpWidget(const SizedBox());

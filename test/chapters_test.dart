@@ -109,10 +109,16 @@ void main() {
           width: b.width * layout.trayCell,
           height: b.height * layout.trayCell,
         );
-        expect(layout.trayRect.inflate(1).contains(rect.topLeft), isTrue,
-            reason: 'level $n block $i');
-        expect(layout.trayRect.inflate(1).contains(rect.bottomRight), isTrue,
-            reason: 'level $n block $i');
+        expect(
+          layout.trayRect.inflate(1).contains(rect.topLeft),
+          isTrue,
+          reason: 'level $n block $i',
+        );
+        expect(
+          layout.trayRect.inflate(1).contains(rect.bottomRight),
+          isTrue,
+          reason: 'level $n block $i',
+        );
       }
     }
   });

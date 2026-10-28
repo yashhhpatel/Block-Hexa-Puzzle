@@ -9,11 +9,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Level _level(int n) => Level(
-      number: n,
-      board: {const Hex(0, 0)},
-      pieces: [Piece([const Hex(0, 0)], 0)],
-      solution: [const Hex(0, 0)],
-    );
+  number: n,
+  board: {const Hex(0, 0)},
+  pieces: [
+    Piece([const Hex(0, 0)], 0),
+  ],
+  solution: [const Hex(0, 0)],
+);
 
 void main() {
   late DateTime clock;
@@ -43,14 +45,24 @@ void main() {
       final start = p.coins;
       await p.recordLevelWin(_level(1), seconds: 999, hintsUsed: 1); // 1 star
       final afterFirst = p.coins;
-      expect(afterFirst - start,
-          Progress.firstClearReward + Progress.coinsPerNewStar);
+      expect(
+        afterFirst - start,
+        Progress.firstClearReward + Progress.coinsPerNewStar,
+      );
 
-      final same = await p.recordLevelWin(_level(1), seconds: 999, hintsUsed: 1);
+      final same = await p.recordLevelWin(
+        _level(1),
+        seconds: 999,
+        hintsUsed: 1,
+      );
       expect(same.coins, 0, reason: 'no improvement, no coins');
       expect(p.stat(Stat.levelsCleared), 1);
 
-      final better = await p.recordLevelWin(_level(1), seconds: 1, hintsUsed: 0);
+      final better = await p.recordLevelWin(
+        _level(1),
+        seconds: 1,
+        hintsUsed: 0,
+      );
       expect(better.coins, 2 * Progress.coinsPerNewStar);
       expect(better.newBest, isTrue);
       expect(p.totalStars, 3);
@@ -71,7 +83,11 @@ void main() {
       for (var n = 1; n < beginner.last; n++) {
         await p.recordLevelWin(_level(n), seconds: 1, hintsUsed: 0);
       }
-      final w = await p.recordLevelWin(_level(beginner.last), seconds: 1, hintsUsed: 0);
+      final w = await p.recordLevelWin(
+        _level(beginner.last),
+        seconds: 1,
+        hintsUsed: 0,
+      );
       expect(w.chapterCompleted?.name, 'Beginner');
       expect(p.stat(Stat.chaptersCompleted), 1);
     });
@@ -79,7 +95,10 @@ void main() {
 
   group('daily puzzle and streaks', () {
     Future<WinSummary> solveToday() => p.recordDailyWin(
-        LevelGenerator.generateDaily(clock), seconds: 30, hintsUsed: 0);
+      LevelGenerator.generateDaily(clock),
+      seconds: 30,
+      hintsUsed: 0,
+    );
 
     test('streak grows on consecutive days and resets after a gap', () async {
       expect((await solveToday()).dailyStreak, 1);
@@ -106,8 +125,11 @@ void main() {
 
     test('catching up an older day does not extend the streak', () async {
       final yesterday = clock.subtract(const Duration(days: 1));
-      final w = await p.recordDailyWin(LevelGenerator.generateDaily(yesterday),
-          seconds: 30, hintsUsed: 0);
+      final w = await p.recordDailyWin(
+        LevelGenerator.generateDaily(yesterday),
+        seconds: 30,
+        hintsUsed: 0,
+      );
       expect(w.dailyStreak, isNull);
       expect(p.streak, 0);
       expect(p.isDailySolved(dayKeyOf(yesterday)), isTrue);
@@ -125,32 +147,41 @@ void main() {
   });
 
   group('quests and achievements', () {
-    test('quests track progress, claim once, and roll over at midnight', () async {
-      final quests = p.todayQuests;
-      expect(quests.length, 3);
-      expect(quests.map((q) => q.def.stat).toSet().length, 3);
+    test(
+      'quests track progress, claim once, and roll over at midnight',
+      () async {
+        final quests = p.todayQuests;
+        expect(quests.length, 3);
+        expect(quests.map((q) => q.def.stat).toSet().length, 3);
 
-      // Satisfy every stat the pool can ask for.
-      for (var n = 1; n <= 9; n++) {
-        await p.recordLevelWin(_level(n), seconds: 1, hintsUsed: 0);
-      }
-      await p.recordBlocksPlaced(100);
-      await p.recordDailyWin(LevelGenerator.generateDaily(clock),
-          seconds: 1, hintsUsed: 0);
+        // Satisfy every stat the pool can ask for.
+        for (var n = 1; n <= 9; n++) {
+          await p.recordLevelWin(_level(n), seconds: 1, hintsUsed: 0);
+        }
+        await p.recordBlocksPlaced(100);
+        await p.recordDailyWin(
+          LevelGenerator.generateDaily(clock),
+          seconds: 1,
+          hintsUsed: 0,
+        );
 
-      for (final q in p.todayQuests) {
-        expect(q.claimable, isTrue, reason: q.def.id);
-        final before = p.coins;
-        expect(await p.claimQuest(q.def.id), q.def.reward);
-        expect(p.coins, before + q.def.reward);
-        expect(await p.claimQuest(q.def.id), 0, reason: 'no double claim');
-      }
-      expect(p.allQuestsBonusClaimable, isTrue);
-      expect(await p.claimQuest('all'), Quests.allDoneBonus);
+        for (final q in p.todayQuests) {
+          expect(q.claimable, isTrue, reason: q.def.id);
+          final before = p.coins;
+          expect(await p.claimQuest(q.def.id), q.def.reward);
+          expect(p.coins, before + q.def.reward);
+          expect(await p.claimQuest(q.def.id), 0, reason: 'no double claim');
+        }
+        expect(p.allQuestsBonusClaimable, isTrue);
+        expect(await p.claimQuest('all'), Quests.allDoneBonus);
 
-      clock = clock.add(const Duration(days: 1));
-      expect(p.todayQuests.every((q) => q.progress == 0 && !q.claimed), isTrue);
-    });
+        clock = clock.add(const Duration(days: 1));
+        expect(
+          p.todayQuests.every((q) => q.progress == 0 && !q.claimed),
+          isTrue,
+        );
+      },
+    );
 
     test('achievements unlock tier by tier', () async {
       for (var n = 1; n <= 10; n++) {
@@ -235,8 +266,11 @@ void main() {
       }
       expect(p.stat(Stat.chestsOpened), 1);
       // Perfect daily (no hints, under target time).
-      await p.recordDailyWin(LevelGenerator.generateDaily(clock),
-          seconds: 1, hintsUsed: 0);
+      await p.recordDailyWin(
+        LevelGenerator.generateDaily(clock),
+        seconds: 1,
+        hintsUsed: 0,
+      );
       expect(p.stat(Stat.dailyPerfect), 1);
       // Quests completed.
       final q = p.todayQuests.firstWhere((q) => q.claimable);
@@ -245,31 +279,45 @@ void main() {
     });
 
     test('a daily solved with hints is not a perfect daily', () async {
-      await p.recordDailyWin(LevelGenerator.generateDaily(clock),
-          seconds: 1, hintsUsed: 1);
+      await p.recordDailyWin(
+        LevelGenerator.generateDaily(clock),
+        seconds: 1,
+        hintsUsed: 1,
+      );
       expect(p.stat(Stat.dailyPerfect), 0);
     });
 
-    test('unlock events fire once per tier, as soon as it is reached', () async {
-      final events = <AchievementUnlock>[];
-      final sub = p.achievementUnlocks.listen(events.add);
-      for (var n = 1; n <= 10; n++) {
-        await p.recordLevelWin(_level(n), seconds: 1, hintsUsed: 0);
-      }
-      await Future<void>.delayed(Duration.zero);
-      final levels = events.where((e) => e.def.id == 'levels').toList();
-      expect(levels.length, 1, reason: 'tier 1 (10 levels) reached once');
-      expect(levels.single.target, 10);
-      expect(levels.single.reward, 20);
-      expect(events.any((e) => e.def.id == 'stars'), isTrue, reason: '30 stars');
-      expect(events.any((e) => e.def.id == 'chests'), isTrue, reason: 'first chest');
+    test(
+      'unlock events fire once per tier, as soon as it is reached',
+      () async {
+        final events = <AchievementUnlock>[];
+        final sub = p.achievementUnlocks.listen(events.add);
+        for (var n = 1; n <= 10; n++) {
+          await p.recordLevelWin(_level(n), seconds: 1, hintsUsed: 0);
+        }
+        await Future<void>.delayed(Duration.zero);
+        final levels = events.where((e) => e.def.id == 'levels').toList();
+        expect(levels.length, 1, reason: 'tier 1 (10 levels) reached once');
+        expect(levels.single.target, 10);
+        expect(levels.single.reward, 20);
+        expect(
+          events.any((e) => e.def.id == 'stars'),
+          isTrue,
+          reason: '30 stars',
+        );
+        expect(
+          events.any((e) => e.def.id == 'chests'),
+          isTrue,
+          reason: 'first chest',
+        );
 
-      events.clear();
-      await p.recordLevelWin(_level(11), seconds: 1, hintsUsed: 0);
-      await Future<void>.delayed(Duration.zero);
-      expect(events.where((e) => e.def.id == 'levels'), isEmpty);
-      await sub.cancel();
-    });
+        events.clear();
+        await p.recordLevelWin(_level(11), seconds: 1, hintsUsed: 0);
+        await Future<void>.delayed(Duration.zero);
+        expect(events.where((e) => e.def.id == 'levels'), isEmpty);
+        await sub.cancel();
+      },
+    );
 
     test('updating the game does not replay old unlocks', () async {
       SharedPreferences.setMockInitialValues({
@@ -280,11 +328,15 @@ void main() {
       final sub = upgraded.achievementUnlocks.listen(events.add);
       await upgraded.recordLevelWin(_level(1), seconds: 1, hintsUsed: 0);
       await Future<void>.delayed(Duration.zero);
-      expect(events.where((e) => e.def.id == 'levels'), isEmpty,
-          reason: '121 levels is still inside the already-seen tiers');
+      expect(
+        events.where((e) => e.def.id == 'levels'),
+        isEmpty,
+        reason: '121 levels is still inside the already-seen tiers',
+      );
       // Old rewards are still claimable as before.
-      final levels =
-          upgraded.achievements.firstWhere((a) => a.def.id == 'levels');
+      final levels = upgraded.achievements.firstWhere(
+        (a) => a.def.id == 'levels',
+      );
       expect(levels.claimable, isTrue);
       await sub.cancel();
     });
@@ -295,8 +347,11 @@ void main() {
       expect(p.averageClearSeconds, isNull);
       await p.recordLevelWin(_level(1), seconds: 30, hintsUsed: 0);
       await p.recordLevelWin(_level(2), seconds: 50, hintsUsed: 1);
-      await p.recordDailyWin(LevelGenerator.generateDaily(clock),
-          seconds: 40, hintsUsed: 0);
+      await p.recordDailyWin(
+        LevelGenerator.generateDaily(clock),
+        seconds: 40,
+        hintsUsed: 0,
+      );
       expect(p.averageClearSeconds, 40);
       await p.recordHint();
       await p.recordHint();
@@ -309,7 +364,10 @@ void main() {
     test('achievement tiers count claimed out of all', () async {
       final (done, total) = p.achievementTiers;
       expect(done, 0);
-      expect(total, Quests.achievements.fold<int>(0, (s, a) => s + a.tiers.length));
+      expect(
+        total,
+        Quests.achievements.fold<int>(0, (s, a) => s + a.tiers.length),
+      );
       for (var n = 1; n <= 10; n++) {
         await p.recordLevelWin(_level(n), seconds: 1, hintsUsed: 0);
       }
