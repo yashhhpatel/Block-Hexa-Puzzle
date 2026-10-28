@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:block_hexa_puzzle/l10n/l10n.dart';
 import 'package:block_hexa_puzzle/l10n/strings_en.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 /// Something the shop sells: free, bought with coins, or unlocked by stars.
 abstract class ShopItem {
   String get id;
@@ -14,14 +16,14 @@ class BlockSkin implements ShopItem {
   @override
   final String id;
   @override
-  final String name;
+  String get name => tr('skin_$id');
   @override
   final int price;
   @override
   final int starsRequired;
   final SkinStyle style;
 
-  const BlockSkin(this.id, this.name, this.style,
+  const BlockSkin(this.id, this.style,
       {this.price = 0, this.starsRequired = 0});
 }
 
@@ -29,7 +31,7 @@ class BoardTheme implements ShopItem {
   @override
   final String id;
   @override
-  final String name;
+  String get name => tr('theme_$id');
   @override
   final int price;
   @override
@@ -38,8 +40,7 @@ class BoardTheme implements ShopItem {
   final Color cell, line, tray;
 
   const BoardTheme(
-    this.id,
-    this.name, {
+    this.id, {
     required this.bgTop,
     required this.bgMid,
     required this.bgBottom,
@@ -53,22 +54,22 @@ class BoardTheme implements ShopItem {
 
 class Cosmetics {
   static const skins = <BlockSkin>[
-    BlockSkin('gem', 'Gem', SkinStyle.gem),
-    BlockSkin('flat', 'Matte', SkinStyle.flat, price: 150),
-    BlockSkin('candy', 'Candy', SkinStyle.candy, price: 300),
-    BlockSkin('crystal', 'Crystal', SkinStyle.crystal, starsRequired: 90),
-    BlockSkin('neon', 'Neon', SkinStyle.neon, price: 500),
+    BlockSkin('gem', SkinStyle.gem),
+    BlockSkin('flat', SkinStyle.flat, price: 150),
+    BlockSkin('candy', SkinStyle.candy, price: 300),
+    BlockSkin('crystal', SkinStyle.crystal, starsRequired: 90),
+    BlockSkin('neon', SkinStyle.neon, price: 500),
   ];
 
   static const themes = <BoardTheme>[
-    BoardTheme('ocean', 'Ocean',
+    BoardTheme('ocean',
         bgTop: Color(0xFF14286B),
         bgMid: Color(0xFF0C1C4D),
         bgBottom: Color(0xFF060E2B),
         cell: Color(0xFF071233),
         line: Color(0xFF5EC8FF),
         tray: Color(0xFF081638)),
-    BoardTheme('galaxy', 'Galaxy',
+    BoardTheme('galaxy',
         price: 200,
         bgTop: Color(0xFF3A1A78),
         bgMid: Color(0xFF221050),
@@ -76,7 +77,7 @@ class Cosmetics {
         cell: Color(0xFF150A33),
         line: Color(0xFFC08CFF),
         tray: Color(0xFF170A38)),
-    BoardTheme('forest', 'Forest',
+    BoardTheme('forest',
         price: 250,
         bgTop: Color(0xFF155A4A),
         bgMid: Color(0xFF0B3B33),
@@ -84,7 +85,7 @@ class Cosmetics {
         cell: Color(0xFF052520),
         line: Color(0xFF6CF0B8),
         tray: Color(0xFF062A24)),
-    BoardTheme('sunset', 'Sunset',
+    BoardTheme('sunset',
         price: 350,
         bgTop: Color(0xFF8A2E5A),
         bgMid: Color(0xFF4E1A48),
@@ -92,7 +93,7 @@ class Cosmetics {
         cell: Color(0xFF2A0C2A),
         line: Color(0xFFFFB070),
         tray: Color(0xFF2A0B2C)),
-    BoardTheme('midnight', 'Midnight',
+    BoardTheme('midnight',
         starsRequired: 60,
         bgTop: Color(0xFF2A2F3A),
         bgMid: Color(0xFF171A22),

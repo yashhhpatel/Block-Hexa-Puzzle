@@ -439,6 +439,31 @@ class Progress {
     await _prefs.setString(item is BlockSkin ? 'skin' : 'theme', item.id);
   }
 
+  // ---- language -----------------------------------------------------------
+
+  /// Saved language code, or null to follow the phone's language.
+  String? get languageCode => _prefs.getString('lang');
+  Future<void> setLanguageCode(String code) => _prefs.setString('lang', code);
+
+  // ---- ads & subscription -------------------------------------------------
+
+  /// Last known Remove Ads state, kept so it works offline.
+  bool get premiumCached => _prefs.getBool('premium') ?? false;
+
+  /// When Google Play last confirmed the subscription (ms since epoch).
+  int get premiumCheckedAt => _prefs.getInt('premiumChecked') ?? 0;
+
+  Future<void> setPremium(bool active, {bool confirmed = true}) async {
+    await _prefs.setBool('premium', active);
+    if (confirmed) {
+      await _prefs.setInt('premiumChecked', now().millisecondsSinceEpoch);
+    }
+  }
+
+  /// Completed levels since the last interstitial.
+  int get levelsSinceAd => _prefs.getInt('levelsSinceAd') ?? 0;
+  Future<void> setLevelsSinceAd(int n) => _prefs.setInt('levelsSinceAd', n);
+
   // ---- in-progress board --------------------------------------------------
 
   Map<String, dynamic>? get savedBoard {

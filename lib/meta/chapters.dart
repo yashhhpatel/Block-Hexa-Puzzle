@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
+
 /// A named group of consecutive levels. Chapters never run out: after the
 /// fixed ones come Grandmaster I, II, III… of 100 levels each.
 class Chapter {
   final int index;
-  final String name;
   final int first;
   final int count;
   final Color color;
 
-  const Chapter(this.index, this.name, this.first, this.count, this.color);
+  const Chapter(this.index, this.first, this.count, this.color);
+
+  /// Localized name, e.g. "Easy" or "Grandmaster III".
+  String get name => index < Chapters.fixedCount
+      ? tr('chapter_$index')
+      : tr('chapter_grand', {'n': Chapters.roman(index - Chapters.fixedCount + 1)});
 
   int get last => first + count - 1;
   bool contains(int level) => level >= first && level <= last;
@@ -22,14 +28,8 @@ class Chapter {
 }
 
 class Chapters {
-  static const _fixed = [
-    ('Beginner', 20),
-    ('Easy', 40),
-    ('Normal', 60),
-    ('Hard', 80),
-    ('Expert', 100),
-    ('Master', 100),
-  ];
+  static const _fixed = [20, 40, 60, 80, 100, 100];
+  static int get fixedCount => _fixed.length;
   static const _endlessSize = 100;
 
   static const _colors = [
@@ -43,20 +43,20 @@ class Chapters {
     Color(0xFFFF5A4E),
   ];
 
-  static int get _fixedLevels => _fixed.fold(0, (s, c) => s + c.$2);
+  static int get _fixedLevels => _fixed.fold(0, (s, c) => s + c);
 
   static Chapter at(int index) {
     final color = _colors[index % _colors.length];
     if (index < _fixed.length) {
       var first = 1;
       for (var i = 0; i < index; i++) {
-        first += _fixed[i].$2;
+        first += _fixed[i];
       }
-      return Chapter(index, _fixed[index].$1, first, _fixed[index].$2, color);
+      return Chapter(index, first, _fixed[index], color);
     }
     final k = index - _fixed.length;
-    return Chapter(index, 'Grandmaster ${_roman(k + 1)}',
-        _fixedLevels + 1 + k * _endlessSize, _endlessSize, color);
+    return Chapter(
+        index, _fixedLevels + 1 + k * _endlessSize, _endlessSize, color);
   }
 
   static Chapter forLevel(int level) {
@@ -69,7 +69,7 @@ class Chapters {
     }
   }
 
-  static String _roman(int n) {
+  static String roman(int n) {
     const vals = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
     const syms = ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I'];
     final b = StringBuffer();
