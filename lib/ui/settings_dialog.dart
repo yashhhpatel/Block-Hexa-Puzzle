@@ -27,17 +27,21 @@ Future<void> showSettingsDialog(BuildContext context, Services services) {
 }
 
 /// Opens an external link or email app; tells the player if nothing could.
-Future<void> openExternal(BuildContext context, Services services, Uri uri,
-    {String? failMessage}) async {
+Future<void> openExternal(
+  BuildContext context,
+  Services services,
+  Uri uri, {
+  String? failMessage,
+}) async {
   services.ads.skipNextAppOpen();
   var ok = false;
   try {
     ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
   } catch (_) {}
   if (!ok && context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(failMessage ?? tr('link_error'))),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(failMessage ?? tr('link_error'))));
   }
 }
 
@@ -75,12 +79,17 @@ class _SettingsPanelState extends State<_SettingsPanel> {
       path: kSupportEmail,
       query: _encodeQuery({
         'subject': tr('contact_subject'),
-        'body': '${tr('contact_body')}\n\n\n'
+        'body':
+            '${tr('contact_body')}\n\n\n'
             '— ${tr('app_title')} · ${appLang.value.englishName}',
       }),
     );
-    await openExternal(context, s, uri,
-        failMessage: tr('contact_no_email', {'email': kSupportEmail}));
+    await openExternal(
+      context,
+      s,
+      uri,
+      failMessage: tr('contact_no_email', {'email': kSupportEmail}),
+    );
   }
 
   // mailto needs %20 for spaces, which Uri.queryParameters doesn't produce.
@@ -108,93 +117,162 @@ class _SettingsPanelState extends State<_SettingsPanel> {
             border: Border.all(color: AppColors.boardLine, width: 2.5),
             boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 20)],
           ),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 8, 4),
-              child: Row(children: [
-                const SizedBox(width: 32),
-                Expanded(
-                  child: Center(
-                      child: FittedBox(child: OutlinedTitle(tr('settings'), size: 26))),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 8, 4),
+                child: Row(
+                  children: [
+                    const SizedBox(width: 32),
+                    Expanded(
+                      child: Center(
+                        child: FittedBox(
+                          child: OutlinedTitle(tr('settings'), size: 26),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: tr('close'),
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  tooltip: tr('close'),
-                  icon: const Icon(Icons.close_rounded, color: Colors.white),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ]),
-            ),
-            Flexible(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  _toggle(tr('music'), Icons.music_note_rounded, p.musicOn, (v) async {
-                    await p.setMusic(v);
-                    s.sfx.updateMusic();
-                  }),
-                  _toggle(tr('sound_effects'), Icons.volume_up_rounded, p.soundOn,
-                      p.setSound),
-                  _toggle(tr('vibration'), Icons.vibration_rounded, p.vibrationOn,
-                      p.setVibration),
-                  _toggle(tr('background_effect'), Icons.auto_awesome_rounded,
-                      p.backgroundFx, p.setBackgroundFx),
-                  const SizedBox(height: 10),
-                  _RemoveAdsTile(
-                    premium: s.billing.premium.value,
-                    onTap: () => _push(RemoveAdsScreen(services: s)),
-                  ),
-                  const SizedBox(height: 8),
-                  _row(Icons.translate_rounded, tr('language'),
-                      trailing: appLang.value.nativeName,
-                      onTap: () => _push(LanguagesScreen(services: s))),
-                  _row(Icons.school_rounded, tr('how_to_play'),
-                      onTap: () => _push(HowToPlayScreen(services: s))),
-                  _row(Icons.mail_rounded, tr('contact_us'), onTap: _contact),
-                  _row(Icons.privacy_tip_rounded, tr('privacy_policy'), onTap: () {
-                    s.sfx.play(Sound.button);
-                    openExternal(context, s, Uri.parse(kPrivacyPolicyUrl));
-                  }),
-                  if (_adPrivacy)
-                    _row(Icons.shield_rounded, tr('ad_privacy'), onTap: () {
-                      s.sfx.play(Sound.button);
-                      s.ads.showPrivacyOptions();
-                    }),
-                ]),
               ),
-            ),
-          ]),
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _toggle(
+                        tr('music'),
+                        Icons.music_note_rounded,
+                        p.musicOn,
+                        (v) async {
+                          await p.setMusic(v);
+                          s.sfx.updateMusic();
+                        },
+                      ),
+                      _toggle(
+                        tr('sound_effects'),
+                        Icons.volume_up_rounded,
+                        p.soundOn,
+                        p.setSound,
+                      ),
+                      _toggle(
+                        tr('vibration'),
+                        Icons.vibration_rounded,
+                        p.vibrationOn,
+                        p.setVibration,
+                      ),
+                      _toggle(
+                        tr('background_effect'),
+                        Icons.auto_awesome_rounded,
+                        p.backgroundFx,
+                        p.setBackgroundFx,
+                      ),
+                      const SizedBox(height: 10),
+                      _RemoveAdsTile(
+                        premium: s.billing.premium.value,
+                        onTap: () => _push(RemoveAdsScreen(services: s)),
+                      ),
+                      const SizedBox(height: 8),
+                      _row(
+                        Icons.translate_rounded,
+                        tr('language'),
+                        trailing: appLang.value.nativeName,
+                        onTap: () => _push(LanguagesScreen(services: s)),
+                      ),
+                      _row(
+                        Icons.school_rounded,
+                        tr('how_to_play'),
+                        onTap: () => _push(HowToPlayScreen(services: s)),
+                      ),
+                      _row(
+                        Icons.mail_rounded,
+                        tr('contact_us'),
+                        onTap: _contact,
+                      ),
+                      _row(
+                        Icons.privacy_tip_rounded,
+                        tr('privacy_policy'),
+                        onTap: () {
+                          s.sfx.play(Sound.button);
+                          openExternal(
+                            context,
+                            s,
+                            Uri.parse(kPrivacyPolicyUrl),
+                          );
+                        },
+                      ),
+                      if (_adPrivacy)
+                        _row(
+                          Icons.shield_rounded,
+                          tr('ad_privacy'),
+                          onTap: () {
+                            s.sfx.play(Sound.button);
+                            s.ads.showPrivacyOptions();
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _toggle(String label, IconData icon, bool value,
-      Future<void> Function(bool) save) {
+  Widget _toggle(
+    String label,
+    IconData icon,
+    bool value,
+    Future<void> Function(bool) save,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(children: [
-        Icon(icon, color: Colors.white70),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(label,
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white70),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
               style: const TextStyle(
-                  color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
-        ),
-        Switch(
-          value: value,
-          activeThumbColor: Colors.white,
-          activeTrackColor: AppColors.accent,
-          onChanged: (v) async {
-            await save(v);
-            s.sfx.play(Sound.button);
-            setState(() {});
-          },
-        ),
-      ]),
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          Switch(
+            value: value,
+            activeThumbColor: Colors.white,
+            activeTrackColor: AppColors.accent,
+            onChanged: (v) async {
+              await save(v);
+              s.sfx.play(Sound.button);
+              setState(() {});
+            },
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _row(IconData icon, String label, {String? trailing, required VoidCallback onTap}) {
+  Widget _row(
+    IconData icon,
+    String label, {
+    String? trailing,
+    required VoidCallback onTap,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Material(
@@ -205,22 +283,34 @@ class _SettingsPanelState extends State<_SettingsPanel> {
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            child: Row(children: [
-              Icon(icon, color: AppColors.boardLine, size: 22),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(label,
+            child: Row(
+              children: [
+                Icon(icon, color: AppColors.boardLine, size: 22),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    label,
                     style: const TextStyle(
-                        color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800)),
-              ),
-              if (trailing != null)
-                Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                  child: Text(trailing,
-                      style: const TextStyle(color: Colors.white60, fontSize: 13)),
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ),
-              const Icon(Icons.chevron_right_rounded, color: Colors.white54),
-            ]),
+                if (trailing != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Text(
+                      trailing,
+                      style: const TextStyle(
+                        color: Colors.white60,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                const Icon(Icons.chevron_right_rounded, color: Colors.white54),
+              ],
+            ),
           ),
         ),
       ),
@@ -248,17 +338,27 @@ class _RemoveAdsTile extends StatelessWidget {
           ),
           border: Border.all(color: Colors.white, width: 2),
         ),
-        child: Row(children: [
-          Icon(premium ? Icons.verified_rounded : Icons.block_rounded,
-              color: Colors.white, size: 26),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(premium ? tr('ra_active') : tr('remove_ads'),
+        child: Row(
+          children: [
+            Icon(
+              premium ? Icons.verified_rounded : Icons.block_rounded,
+              color: Colors.white,
+              size: 26,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                premium ? tr('ra_active') : tr('remove_ads'),
                 style: const TextStyle(
-                    color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900)),
-          ),
-          const Icon(Icons.chevron_right_rounded, color: Colors.white),
-        ]),
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: Colors.white),
+          ],
+        ),
       ),
     );
   }
