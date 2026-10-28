@@ -14,17 +14,44 @@ class Difficulty {
   final int maxPieceSize;
   final int decoys;
 
+  /// Spare blocks are near-copies of real ones (one cell moved), so they
+  /// look like they belong. Used by the chapters after Master.
+  final bool lookalikeDecoys;
+
   const Difficulty({
     required this.pieceCount,
     required this.minPieceSize,
     required this.maxPieceSize,
     required this.decoys,
+    this.lookalikeDecoys = false,
   });
+
+  /// Hard tier past the classic curve: 0 up to level 400 (Master), then
+  /// 1 Insane, 2 Nightmare, 3 Legendary, 4 Impossible and beyond.
+  static int hardTier(int level) =>
+      level <= 400 ? 0 : math.min(4, (level - 401) ~/ 100 + 1);
 
   /// Smoothly ramps from 3 small blocks at level 1 to 11-14 larger blocks,
   /// adding spare "decoy" blocks as levels get harder.
   factory Difficulty.forLevel(int level, math.Random rng) {
     final n = math.max(1, level);
+    final tier = hardTier(n);
+    if (tier > 0) {
+      // Separate branch: levels 1..400 must keep drawing exactly the same
+      // random numbers so existing levels never change.
+      return Difficulty(
+        pieceCount: 12 + tier + rng.nextInt(3), // 13-15 ... 16-18
+        minPieceSize: 3,
+        maxPieceSize: 7,
+        decoys: switch (tier) {
+          1 => 1 + (rng.nextDouble() < 0.6 ? 1 : 0),
+          2 => 2 + (rng.nextDouble() < 0.5 ? 1 : 0),
+          3 => 3,
+          _ => 3 + (rng.nextDouble() < 0.5 ? 1 : 0),
+        },
+        lookalikeDecoys: true,
+      );
+    }
     final base = 3 + math.sqrt(n - 1).floor();
     int count;
     if (base >= 14) {
@@ -93,7 +120,12 @@ class LevelGenerator {
     final wantUnique = difficultyLevel >= uniqueFromLevel;
 
     Level? first;
-    for (var cand = 0; cand < (wantUnique ? _uniqueCandidates : 1); cand++) {
+    // Past Nightmare the boards are too big to prove a single solution
+    // within budget, so fewer re-rolls keep generation quick on phones.
+    final candidates = !wantUnique
+        ? 1
+        : (difficultyLevel > 600 ? 3 : _uniqueCandidates);
+    for (var cand = 0; cand < candidates; cand++) {
       final level = _buildValid(rng, diff, number, dailyKey);
       first ??= level;
       if (!wantUnique) break;
@@ -177,6 +209,14 @@ class LevelGenerator {
       entries.add((piece, anchor));
     }
     for (var d = 0; d < diff.decoys; d++) {
+      if (diff.lookalikeDecoys) {
+        final model = regions[rng.nextInt(regions.length)];
+        final twin = _lookalike(rng, model);
+        if (twin != null) {
+          entries.add((Piece(twin.toList(), 0), null));
+          continue;
+        }
+      }
       final size =
           diff.minPieceSize +
           rng.nextInt(math.max(1, diff.maxPieceSize - diff.minPieceSize));
@@ -200,6 +240,40 @@ class LevelGenerator {
       pieces: pieces,
       solution: solution,
     );
+  }
+
+  /// A connected shape of the same size as [model] with one cell moved, so
+  /// it is easy to mistake for the real block. Null if none was found.
+  static Set<Hex>? _lookalike(math.Random rng, Set<Hex> model) {
+    if (model.length < 3) return null;
+    final key = Piece(model.toList(), 0).shapeKey;
+    final cells = model.toList();
+    for (var tries = 0; tries < 20; tries++) {
+      final removed = cells[rng.nextInt(cells.length)];
+      final rest = {...model}..remove(removed);
+      if (!_isConnected(rest)) continue;
+      final options = <Hex>{
+        for (final c in rest)
+          for (final n in c.neighbors)
+            if (!rest.contains(n) && n != removed) n,
+      }.toList();
+      if (options.isEmpty) continue;
+      final twin = {...rest, options[rng.nextInt(options.length)]};
+      if (Piece(twin.toList(), 0).shapeKey != key) return twin;
+    }
+    return null;
+  }
+
+  static bool _isConnected(Set<Hex> cells) {
+    if (cells.isEmpty) return false;
+    final seen = <Hex>{cells.first};
+    final stack = [cells.first];
+    while (stack.isNotEmpty) {
+      for (final n in stack.removeLast().neighbors) {
+        if (cells.contains(n) && seen.add(n)) stack.add(n);
+      }
+    }
+    return seen.length == cells.length;
   }
 
   static BoardStyle _pickStyle(math.Random rng) {
