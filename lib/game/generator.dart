@@ -39,16 +39,23 @@ class Difficulty {
     if (tier > 0) {
       // Separate branch: levels 1..400 must keep drawing exactly the same
       // random numbers so existing levels never change.
+      final pieces = 12 + tier + rng.nextInt(3); // 13-15 ... 16-18
+      final decoys = switch (tier) {
+        1 => 1 + (rng.nextDouble() < 0.6 ? 1 : 0),
+        2 => 2 + (rng.nextDouble() < 0.5 ? 1 : 0),
+        3 => 3,
+        _ => 3 + (rng.nextDouble() < 0.5 ? 1 : 0),
+      };
+      // Ease into each new hard chapter: its first 20 levels start up to
+      // two blocks and one decoy lighter, reaching full strength by 21.
+      // Endless Grandmaster chapters (801+) stay at full strength.
+      final pos = (n - 401) % 100;
+      final ease = n <= 800 && pos < 20 ? ((20 - pos) / 10).ceil() : 0;
       return Difficulty(
-        pieceCount: 12 + tier + rng.nextInt(3), // 13-15 ... 16-18
+        pieceCount: pieces - ease,
         minPieceSize: 3,
         maxPieceSize: 7,
-        decoys: switch (tier) {
-          1 => 1 + (rng.nextDouble() < 0.6 ? 1 : 0),
-          2 => 2 + (rng.nextDouble() < 0.5 ? 1 : 0),
-          3 => 3,
-          _ => 3 + (rng.nextDouble() < 0.5 ? 1 : 0),
-        },
+        decoys: math.max(1, decoys - (pos < 10 && n <= 800 ? 1 : 0)),
         lookalikeDecoys: true,
       );
     }

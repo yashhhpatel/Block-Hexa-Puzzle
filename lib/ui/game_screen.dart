@@ -109,13 +109,31 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   static Future<Level> _generateDaily(DateTime day) =>
       Isolate.run(() => LevelGenerator.generateDaily(day));
 
+  int? _prefetchNumber;
+  Future<Level>? _prefetched;
+
+  /// Starts building level [n] in the background so "Next" opens it
+  /// instantly, even for the big boards of the hardest chapters.
+  void _prefetchNext(int n) {
+    if (n < LevelGenerator.uniqueFromLevel || _prefetchNumber == n) return;
+    _prefetchNumber = n;
+    _prefetched = _generateLevel(n);
+  }
+
   Future<void> _loadLevel(int n, {bool restore = false}) async {
     final token = ++_loadToken;
     _detach();
-    // Small levels are instant; bigger ones are built off the UI thread.
-    final level = n < LevelGenerator.uniqueFromLevel
-        ? LevelGenerator.generate(n)
-        : await _generateLevel(n);
+    // Small levels are instant; bigger ones are built off the UI thread,
+    // usually already done in the background while the previous one was
+    // being played.
+    final Level level;
+    if (n < LevelGenerator.uniqueFromLevel) {
+      level = LevelGenerator.generate(n);
+    } else if (_prefetchNumber == n && _prefetched != null) {
+      level = await _prefetched!;
+    } else {
+      level = await _generateLevel(n);
+    }
     if (!mounted || token != _loadToken) return;
     final game = GameState(level);
     if (restore) {
@@ -124,6 +142,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     }
     progress.setCurrentLevel(n);
     _attach(game);
+    _prefetchNext(n + 1);
 
     if (n == 1 && !progress.tutorialSeen) {
       _tip = tr('tip_drag');
