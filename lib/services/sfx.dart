@@ -3,12 +3,14 @@ import 'package:flutter/services.dart';
 
 import 'progress.dart';
 
-enum Sound { pick, place, fail, button, hint, win }
+enum Sound { pick, place, fail, button, hint, win, star, coin, undo }
 
-/// Short sound effects and haptics, both switchable in Settings.
+/// Sound effects, background music and haptics, each switchable in Settings.
 class Sfx {
   final Progress progress;
   final Map<Sound, AudioPlayer> _players = {};
+  AudioPlayer? _music;
+  bool _appVisible = true;
 
   Sfx(this.progress);
 
@@ -24,6 +26,38 @@ class Sfx {
       }
       _players[s] = p;
     }
+    try {
+      final m = AudioPlayer(playerId: 'music');
+      await m.setReleaseMode(ReleaseMode.loop);
+      await m.setVolume(0.35);
+      await m.setSource(AssetSource('music/calm.wav'));
+      // Don't steal audio focus from the player's own music apps.
+      await m.setAudioContext(AudioContext(
+        android: const AudioContextAndroid(
+          audioFocus: AndroidAudioFocus.none,
+          usageType: AndroidUsageType.game,
+          contentType: AndroidContentType.music,
+        ),
+      ));
+      _music = m;
+    } catch (_) {}
+    updateMusic();
+  }
+
+  /// Starts or pauses music to match the setting and app visibility.
+  void updateMusic() {
+    final m = _music;
+    if (m == null) return;
+    if (progress.musicOn && _appVisible) {
+      m.resume().catchError((_) {});
+    } else {
+      m.pause().catchError((_) {});
+    }
+  }
+
+  void setAppVisible(bool visible) {
+    _appVisible = visible;
+    updateMusic();
   }
 
   void play(Sound s) {
@@ -41,6 +75,8 @@ class Sfx {
           HapticFeedback.mediumImpact();
         case Sound.win:
           HapticFeedback.heavyImpact();
+        case Sound.star:
+          HapticFeedback.selectionClick();
         default:
           break;
       }

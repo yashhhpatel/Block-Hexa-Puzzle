@@ -41,4 +41,7 @@ write("hint", seq([tone([659], 0.09, 0.4, decay=20), tone([988], 0.18, 0.4, deca
 notes = [523, 659, 784, 1046]
 win = seq([tone([f, f * 2], 0.14, 0.4, decay=10, shape="tri") for f in notes]) + tone([1046, 1318, 1568], 0.6, 0.45, decay=4)
 write("win", win)
+write("star", seq([tone([1175, 1760], 0.07, 0.35, decay=25), tone([1568, 2349], 0.25, 0.35, decay=12)]))
+write("coin", seq([tone([1318], 0.06, 0.35, decay=30, shape="tri"), tone([1976], 0.22, 0.35, decay=14, shape="tri")]))
+write("undo", tone([660, 990], 0.1, vol=0.3, decay=30, glide=-0.5))
 print("ok")
