@@ -25,6 +25,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   late GameState _game;
   final _boardKey = GlobalKey<BoardViewState>();
+  bool _won = false;
   bool _showWin = false;
   bool _rewarded = false;
   String? _tip;
@@ -54,6 +55,7 @@ class _GameScreenState extends State<GameScreen> {
     }
     game.addListener(_onChanged);
     _game = game;
+    _won = false;
     _showWin = false;
     progress.setCurrentLevel(n);
 
@@ -80,15 +82,15 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> _onWin() async {
-    if (_showWin) return;
-    _showWin = true;
+    if (_won) return;
+    _won = true;
     _tip = null;
     if (_game.level.number == 1) progress.setTutorialSeen();
     _rewarded = await progress.completeLevel(_game.level.number);
     _boardKey.currentState?.celebrate();
     sfx.play(Sound.win);
     await Future.delayed(const Duration(milliseconds: 900));
-    if (mounted) setState(() {});
+    if (mounted && _won) setState(() => _showWin = true);
   }
 
   void _next() {
