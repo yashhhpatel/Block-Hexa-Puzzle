@@ -311,10 +311,12 @@ const Map<String, String> stringsEn = {
   "theme_glacier": "Glacier",
   "theme_lava": "Lava",
   "theme_royal": "Royal",
-  "hint_more_body": "Your free hint for this level is used. Watch a short video or spend {n} coins for another.",
+  "hint_more_body":
+      "Your free hint for this level is used. Watch a short video or spend {n} coins for another.",
   "hint_use_coins": "Use {n} coins",
   "time_attack": "Time Attack",
-  "ta_desc": "Solve as many puzzles as you can in {m} minutes. Every solved puzzle adds {s} seconds, and each one is harder than the last.",
+  "ta_desc":
+      "Solve as many puzzles as you can in {m} minutes. Every solved puzzle adds {s} seconds, and each one is harder than the last.",
   "ta_time_up": "Time's up!",
   "ta_solved": "puzzles solved",
   "ta_best": "Best: {n}",
@@ -332,7 +334,8 @@ const Map<String, String> stringsEn = {
   "about": "About",
   "reset_progress": "Reset progress",
   "reset_confirm_title": "Reset progress?",
-  "reset_confirm_body": "All levels, stars, coins, streaks, quests, achievements, statistics and shop items will be erased. Settings and Remove Ads stay.",
+  "reset_confirm_body":
+      "All levels, stars, coins, streaks, quests, achievements, statistics and shop items will be erased. Settings and Remove Ads stay.",
   "reset_confirm_final": "This cannot be undone. Are you completely sure?",
   "reset_btn": "Reset",
   "reset_done": "Progress reset",

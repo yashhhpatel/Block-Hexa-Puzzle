@@ -300,10 +300,12 @@ const Map<String, String> stringsPt = {
   "theme_glacier": "Geleira",
   "theme_lava": "Lava",
   "theme_royal": "Real",
-  "hint_more_body": "Você já usou a dica grátis deste nível. Assista a um vídeo curto ou gaste {n} moedas para outra.",
+  "hint_more_body":
+      "Você já usou a dica grátis deste nível. Assista a um vídeo curto ou gaste {n} moedas para outra.",
   "hint_use_coins": "Usar {n} moedas",
   "time_attack": "Contra o Tempo",
-  "ta_desc": "Resolva o máximo de quebra-cabeças que puder em {m} minutos. Cada um resolvido adiciona {s} segundos, e cada um é mais difícil que o anterior.",
+  "ta_desc":
+      "Resolva o máximo de quebra-cabeças que puder em {m} minutos. Cada um resolvido adiciona {s} segundos, e cada um é mais difícil que o anterior.",
   "ta_time_up": "Acabou o tempo!",
   "ta_solved": "quebra-cabeças resolvidos",
   "ta_best": "Recorde: {n}",
@@ -321,7 +323,8 @@ const Map<String, String> stringsPt = {
   "about": "Sobre",
   "reset_progress": "Redefinir progresso",
   "reset_confirm_title": "Redefinir progresso?",
-  "reset_confirm_body": "Todos os níveis, estrelas, moedas, sequências, missões, conquistas, estatísticas e itens da loja serão apagados. Configurações e Remover anúncios continuam.",
+  "reset_confirm_body":
+      "Todos os níveis, estrelas, moedas, sequências, missões, conquistas, estatísticas e itens da loja serão apagados. Configurações e Remover anúncios continuam.",
   "reset_confirm_final": "Isso não pode ser desfeito. Tem certeza absoluta?",
   "reset_btn": "Redefinir",
   "reset_done": "Progresso redefinido",

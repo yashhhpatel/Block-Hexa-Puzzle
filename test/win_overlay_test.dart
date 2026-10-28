@@ -155,7 +155,7 @@ void main() {
       'bgfx': false,
       'sound': false,
       'loginLast': now.year * 10000 + now.month * 100 + now.day,
-      'unlocked': 450, // inside Insane
+      'unlocked': 750, // inside Insane (701-800)
     });
     final services = Services.offline(await Progress.load());
     await tester.binding.setSurfaceSize(const Size(400, 860));
@@ -173,6 +173,6 @@ void main() {
     await tester.scrollUntilVisible(find.text('Insane'), -300);
     await tester.tap(find.text('Insane'));
     await _settle(tester);
-    expect(find.text('450'), findsOneWidget, reason: 'next level in Insane');
+    expect(find.text('750'), findsOneWidget, reason: 'next level in Insane');
   });
 }

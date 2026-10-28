@@ -301,10 +301,12 @@ const Map<String, String> stringsEs = {
   "theme_glacier": "Glaciar",
   "theme_lava": "Lava",
   "theme_royal": "Real",
-  "hint_more_body": "Ya usaste la pista gratis de este nivel. Mira un video corto o gasta {n} monedas para otra.",
+  "hint_more_body":
+      "Ya usaste la pista gratis de este nivel. Mira un video corto o gasta {n} monedas para otra.",
   "hint_use_coins": "Usar {n} monedas",
   "time_attack": "Contrarreloj",
-  "ta_desc": "Resuelve todos los puzles que puedas en {m} minutos. Cada puzle resuelto suma {s} segundos, y cada uno es más difícil que el anterior.",
+  "ta_desc":
+      "Resuelve todos los puzles que puedas en {m} minutos. Cada puzle resuelto suma {s} segundos, y cada uno es más difícil que el anterior.",
   "ta_time_up": "¡Se acabó el tiempo!",
   "ta_solved": "puzles resueltos",
   "ta_best": "Récord: {n}",
@@ -322,7 +324,8 @@ const Map<String, String> stringsEs = {
   "about": "Acerca de",
   "reset_progress": "Reiniciar progreso",
   "reset_confirm_title": "¿Reiniciar progreso?",
-  "reset_confirm_body": "Se borrarán todos los niveles, estrellas, monedas, rachas, misiones, logros, estadísticas y artículos de la tienda. Los ajustes y Quitar anuncios se conservan.",
+  "reset_confirm_body":
+      "Se borrarán todos los niveles, estrellas, monedas, rachas, misiones, logros, estadísticas y artículos de la tienda. Los ajustes y Quitar anuncios se conservan.",
   "reset_confirm_final": "No se puede deshacer. ¿Estás completamente seguro?",
   "reset_btn": "Reiniciar",
   "reset_done": "Progreso reiniciado",

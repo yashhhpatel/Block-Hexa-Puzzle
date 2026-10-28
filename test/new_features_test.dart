@@ -28,7 +28,7 @@ void main() {
 
     test('busy levels page instead of shrinking blocks', () {
       const size = Size(360, 640);
-      for (final n in [650, 720, 900]) {
+      for (final n in [650, 900, 1100, 1300]) {
         final level = LevelGenerator.generate(n);
         final l = BoardLayout.compute(size, level);
         expect(l.pageOf.length, level.pieces.length);
@@ -59,14 +59,14 @@ void main() {
       return sum / levels.length;
     }
 
-    for (final start in [401, 501, 601, 701]) {
+    for (final start in Difficulty.hardStarts.take(6)) {
       final early = avgPieces(List.generate(10, (i) => start + i));
       final later = avgPieces(List.generate(10, (i) => start + 30 + i));
       expect(early, lessThan(later), reason: 'chapter at $start');
     }
     // Endless chapters keep full strength.
     expect(
-      Difficulty.forLevel(801, math.Random(1)).pieceCount,
+      Difficulty.forLevel(1201, math.Random(1)).pieceCount,
       greaterThanOrEqualTo(16),
     );
   });

@@ -303,7 +303,8 @@ const Map<String, String> stringsJa = {
   "about": "アプリについて",
   "reset_progress": "進行状況をリセット",
   "reset_confirm_title": "進行状況をリセットしますか？",
-  "reset_confirm_body": "すべてのレベル、星、コイン、連続記録、クエスト、実績、統計、ショップのアイテムが消去されます。設定と広告削除はそのまま残ります。",
+  "reset_confirm_body":
+      "すべてのレベル、星、コイン、連続記録、クエスト、実績、統計、ショップのアイテムが消去されます。設定と広告削除はそのまま残ります。",
   "reset_confirm_final": "この操作は元に戻せません。本当によろしいですか？",
   "reset_btn": "リセット",
   "reset_done": "進行状況をリセットしました",

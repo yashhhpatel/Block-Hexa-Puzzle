@@ -302,10 +302,12 @@ const Map<String, String> stringsFr = {
   "theme_glacier": "Glacier",
   "theme_lava": "Lave",
   "theme_royal": "Royal",
-  "hint_more_body": "L'indice gratuit de ce niveau est utilisé. Regardez une courte vidéo ou dépensez {n} pièces pour un autre.",
+  "hint_more_body":
+      "L'indice gratuit de ce niveau est utilisé. Regardez une courte vidéo ou dépensez {n} pièces pour un autre.",
   "hint_use_coins": "Utiliser {n} pièces",
   "time_attack": "Contre-la-montre",
-  "ta_desc": "Résolvez autant de puzzles que possible en {m} minutes. Chaque puzzle résolu ajoute {s} secondes, et chacun est plus difficile que le précédent.",
+  "ta_desc":
+      "Résolvez autant de puzzles que possible en {m} minutes. Chaque puzzle résolu ajoute {s} secondes, et chacun est plus difficile que le précédent.",
   "ta_time_up": "Temps écoulé !",
   "ta_solved": "puzzles résolus",
   "ta_best": "Record : {n}",
@@ -316,15 +318,18 @@ const Map<String, String> stringsFr = {
   "ta_end": "Terminer",
   "daily_reminder": "Rappel quotidien",
   "notif_title": "Votre Puzzle du jour vous attend",
-  "notif_body": "Gardez votre série : le puzzle du jour ne prend qu'une minute.",
+  "notif_body":
+      "Gardez votre série : le puzzle du jour ne prend qu'une minute.",
   "color_blind": "Formes pour daltoniens",
   "reduce_motion": "Réduire les animations",
   "rate_us": "Notez-nous",
   "about": "À propos",
   "reset_progress": "Réinitialiser la progression",
   "reset_confirm_title": "Réinitialiser la progression ?",
-  "reset_confirm_body": "Tous les niveaux, étoiles, pièces, séries, quêtes, succès, statistiques et objets de la boutique seront effacés. Les réglages et Supprimer les pubs sont conservés.",
-  "reset_confirm_final": "Cette action est irréversible. Êtes-vous vraiment sûr ?",
+  "reset_confirm_body":
+      "Tous les niveaux, étoiles, pièces, séries, quêtes, succès, statistiques et objets de la boutique seront effacés. Les réglages et Supprimer les pubs sont conservés.",
+  "reset_confirm_final":
+      "Cette action est irréversible. Êtes-vous vraiment sûr ?",
   "reset_btn": "Réinitialiser",
   "reset_done": "Progression réinitialisée",
   "version": "Version {v}",

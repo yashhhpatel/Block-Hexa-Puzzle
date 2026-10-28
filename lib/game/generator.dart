@@ -26,10 +26,20 @@ class Difficulty {
     this.lookalikeDecoys = false,
   });
 
-  /// Hard tier past the classic curve: 0 up to level 400 (Master), then
-  /// 1 Insane, 2 Nightmare, 3 Legendary, 4 Impossible and beyond.
-  static int hardTier(int level) =>
-      level <= 400 ? 0 : math.min(4, (level - 401) ~/ 100 + 1);
+  /// First level of each hard chapter past the classic curve: Expert,
+  /// Master, Insane, Nightmare, Legendary, Impossible and then the endless
+  /// Grandmaster chapters. Must match the ranges in meta/chapters.dart.
+  static const hardStarts = [401, 551, 701, 801, 901, 1001, 1201];
+
+  /// Hard tier: 0 up to level 400 (end of Hard), then 1 Expert, 2 Master,
+  /// 3 Insane, 4 Nightmare, 5 Legendary, 6 Impossible, 7 Grandmaster.
+  static int hardTier(int level) {
+    var t = 0;
+    while (t < hardStarts.length && level >= hardStarts[t]) {
+      t++;
+    }
+    return t;
+  }
 
   /// Smoothly ramps from 3 small blocks at level 1 to 11-14 larger blocks,
   /// adding spare "decoy" blocks as levels get harder.
@@ -39,23 +49,28 @@ class Difficulty {
     if (tier > 0) {
       // Separate branch: levels 1..400 must keep drawing exactly the same
       // random numbers so existing levels never change.
-      final pieces = 12 + tier + rng.nextInt(3); // 13-15 ... 16-18
+      // Expert 12-14 blocks ... Impossible and Grandmaster 17-19.
+      final pieces = 11 + (tier < 6 ? tier : 6) + rng.nextInt(3);
       final decoys = switch (tier) {
-        1 => 1 + (rng.nextDouble() < 0.6 ? 1 : 0),
-        2 => 2 + (rng.nextDouble() < 0.5 ? 1 : 0),
-        3 => 3,
-        _ => 3 + (rng.nextDouble() < 0.5 ? 1 : 0),
+        1 => 1 + (rng.nextDouble() < 0.4 ? 1 : 0),
+        2 => 1 + (rng.nextDouble() < 0.6 ? 1 : 0),
+        3 => 2 + (rng.nextDouble() < 0.5 ? 1 : 0),
+        4 => 3,
+        5 => 3 + (rng.nextDouble() < 0.5 ? 1 : 0),
+        6 => 4,
+        _ => 4 + (rng.nextDouble() < 0.3 ? 1 : 0),
       };
       // Ease into each new hard chapter: its first 20 levels start up to
       // two blocks and one decoy lighter, reaching full strength by 21.
-      // Endless Grandmaster chapters (801+) stay at full strength.
-      final pos = (n - 401) % 100;
-      final ease = n <= 800 && pos < 20 ? ((20 - pos) / 10).ceil() : 0;
+      // Endless Grandmaster chapters stay at full strength.
+      final endless = tier == hardStarts.length;
+      final pos = n - hardStarts[tier - 1];
+      final ease = !endless && pos < 20 ? ((20 - pos) / 10).ceil() : 0;
       return Difficulty(
         pieceCount: pieces - ease,
         minPieceSize: 3,
         maxPieceSize: 7,
-        decoys: math.max(1, decoys - (pos < 10 && n <= 800 ? 1 : 0)),
+        decoys: math.max(1, decoys - (!endless && pos < 10 ? 1 : 0)),
         lookalikeDecoys: true,
       );
     }

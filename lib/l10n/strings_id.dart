@@ -301,10 +301,12 @@ const Map<String, String> stringsId = {
   "theme_glacier": "Gletser",
   "theme_lava": "Lava",
   "theme_royal": "Kerajaan",
-  "hint_more_body": "Petunjuk gratis untuk level ini sudah dipakai. Tonton video singkat atau gunakan {n} koin untuk petunjuk lain.",
+  "hint_more_body":
+      "Petunjuk gratis untuk level ini sudah dipakai. Tonton video singkat atau gunakan {n} koin untuk petunjuk lain.",
   "hint_use_coins": "Pakai {n} koin",
   "time_attack": "Lawan Waktu",
-  "ta_desc": "Selesaikan teka-teki sebanyak mungkin dalam {m} menit. Setiap teka-teki yang selesai menambah {s} detik, dan masing-masing lebih sulit dari sebelumnya.",
+  "ta_desc":
+      "Selesaikan teka-teki sebanyak mungkin dalam {m} menit. Setiap teka-teki yang selesai menambah {s} detik, dan masing-masing lebih sulit dari sebelumnya.",
   "ta_time_up": "Waktu habis!",
   "ta_solved": "teka-teki selesai",
   "ta_best": "Terbaik: {n}",
@@ -322,7 +324,8 @@ const Map<String, String> stringsId = {
   "about": "Tentang",
   "reset_progress": "Atur ulang progres",
   "reset_confirm_title": "Atur ulang progres?",
-  "reset_confirm_body": "Semua level, bintang, koin, streak, misi, pencapaian, statistik, dan item toko akan dihapus. Pengaturan dan Hapus Iklan tetap ada.",
+  "reset_confirm_body":
+      "Semua level, bintang, koin, streak, misi, pencapaian, statistik, dan item toko akan dihapus. Pengaturan dan Hapus Iklan tetap ada.",
   "reset_confirm_final": "Ini tidak bisa dibatalkan. Kamu benar-benar yakin?",
   "reset_btn": "Atur ulang",
   "reset_done": "Progres diatur ulang",

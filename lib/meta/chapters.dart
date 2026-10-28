@@ -11,7 +11,7 @@ class ChapterStyle {
 }
 
 /// A named group of consecutive levels. Chapters never run out: after the
-/// fixed ones come Grandmaster I, II, III… of 100 levels each.
+/// fixed ones (levels 1-1200) come Grandmaster I, II, III… of 100 levels each.
 class Chapter {
   final int index;
   final int first;
@@ -44,19 +44,20 @@ class Chapter {
 }
 
 class Chapters {
-  // Level ranges of the original six chapters never move (players' stars
-  // and progress are stored per level number). New chapters go after them.
+  // Stars and progress are stored per level number, so moving a range only
+  // regroups levels. The hard chapters (Expert onwards) must start where
+  // LevelGenerator's Difficulty.hardStarts says.
   static const _fixed = [
-    20, // Beginner      1-20
-    40, // Easy         21-60
-    60, // Normal       61-120
-    80, // Hard        121-200
-    100, // Expert     201-300
-    100, // Master     301-400
-    100, // Insane     401-500
-    100, // Nightmare  501-600
-    100, // Legendary  601-700
-    100, // Impossible 701-800
+    20, // Beginner       1-20
+    80, // Easy          21-100
+    150, // Normal      101-250
+    150, // Hard        251-400
+    150, // Expert      401-550
+    150, // Master      551-700
+    100, // Insane      701-800
+    100, // Nightmare   801-900
+    100, // Legendary   901-1000
+    200, // Impossible 1001-1200
   ];
   static int get fixedCount => _fixed.length;
   static const _endlessSize = 100;

@@ -302,10 +302,12 @@ const Map<String, String> stringsDe = {
   "theme_glacier": "Gletscher",
   "theme_lava": "Lava",
   "theme_royal": "Königlich",
-  "hint_more_body": "Der Gratis-Tipp für dieses Level ist verbraucht. Sieh dir ein kurzes Video an oder gib {n} Münzen für einen weiteren aus.",
+  "hint_more_body":
+      "Der Gratis-Tipp für dieses Level ist verbraucht. Sieh dir ein kurzes Video an oder gib {n} Münzen für einen weiteren aus.",
   "hint_use_coins": "{n} Münzen nutzen",
   "time_attack": "Zeitrennen",
-  "ta_desc": "Löse in {m} Minuten so viele Rätsel wie möglich. Jedes gelöste Rätsel bringt {s} Sekunden, und jedes ist schwerer als das letzte.",
+  "ta_desc":
+      "Löse in {m} Minuten so viele Rätsel wie möglich. Jedes gelöste Rätsel bringt {s} Sekunden, und jedes ist schwerer als das letzte.",
   "ta_time_up": "Zeit abgelaufen!",
   "ta_solved": "Rätsel gelöst",
   "ta_best": "Bestwert: {n}",
@@ -323,8 +325,10 @@ const Map<String, String> stringsDe = {
   "about": "Über",
   "reset_progress": "Fortschritt zurücksetzen",
   "reset_confirm_title": "Fortschritt zurücksetzen?",
-  "reset_confirm_body": "Alle Level, Sterne, Münzen, Serien, Aufgaben, Erfolge, Statistiken und Shop-Artikel werden gelöscht. Einstellungen und Werbefrei bleiben erhalten.",
-  "reset_confirm_final": "Das kann nicht rückgängig gemacht werden. Bist du ganz sicher?",
+  "reset_confirm_body":
+      "Alle Level, Sterne, Münzen, Serien, Aufgaben, Erfolge, Statistiken und Shop-Artikel werden gelöscht. Einstellungen und Werbefrei bleiben erhalten.",
+  "reset_confirm_final":
+      "Das kann nicht rückgängig gemacht werden. Bist du ganz sicher?",
   "reset_btn": "Zurücksetzen",
   "reset_done": "Fortschritt zurückgesetzt",
   "version": "Version {v}",

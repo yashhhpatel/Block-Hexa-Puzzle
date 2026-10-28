@@ -25,18 +25,18 @@ void main() {
     expect(h, 953614956);
   });
 
-  test('original chapter ranges are unchanged; new chapters follow', () {
+  test('chapter ranges', () {
     final expected = {
       'Beginner': (1, 20),
-      'Easy': (21, 60),
-      'Normal': (61, 120),
-      'Hard': (121, 200),
-      'Expert': (201, 300),
-      'Master': (301, 400),
-      'Insane': (401, 500),
-      'Nightmare': (501, 600),
-      'Legendary': (601, 700),
-      'Impossible': (701, 800),
+      'Easy': (21, 100),
+      'Normal': (101, 250),
+      'Hard': (251, 400),
+      'Expert': (401, 550),
+      'Master': (551, 700),
+      'Insane': (701, 800),
+      'Nightmare': (801, 900),
+      'Legendary': (901, 1000),
+      'Impossible': (1001, 1200),
     };
     var i = 0;
     for (final e in expected.entries) {
@@ -45,8 +45,24 @@ void main() {
       expect((c.first, c.last), e.value, reason: e.key);
     }
     expect(Chapters.fixedCount, 10);
-    expect(Chapters.forLevel(801).name, 'Grandmaster I');
-    expect(Chapters.forLevel(1234).name, 'Grandmaster V');
+    expect(Chapters.forLevel(1200).name, 'Impossible');
+    expect(Chapters.forLevel(1201).name, 'Grandmaster I');
+    expect(Chapters.forLevel(1300).name, 'Grandmaster I');
+    expect(Chapters.forLevel(1634).name, 'Grandmaster V');
+  });
+
+  test('difficulty tiers start exactly at the hard chapters', () {
+    final hard = [for (var i = 4; i < Chapters.fixedCount; i++) Chapters.at(i)];
+    expect(Difficulty.hardStarts, [
+      ...hard.map((c) => c.first),
+      Chapters.at(Chapters.fixedCount).first,
+    ]);
+    expect(Difficulty.hardTier(400), 0);
+    for (var i = 0; i < hard.length; i++) {
+      expect(Difficulty.hardTier(hard[i].first), i + 1, reason: hard[i].name);
+      expect(Difficulty.hardTier(hard[i].last), i + 1, reason: hard[i].name);
+    }
+    expect(Difficulty.hardTier(5000), Difficulty.hardStarts.length);
   });
 
   test('every named chapter has its own emoji and colour', () {
@@ -73,19 +89,21 @@ void main() {
       return t / 15;
     }
 
-    final master = avgPieces(301);
-    final insane = avgPieces(401);
-    final nightmare = avgPieces(501);
-    final legendary = avgPieces(601);
-    final impossible = avgPieces(701);
-    expect(insane, greaterThan(master));
-    expect(nightmare, greaterThan(insane));
-    expect(legendary, greaterThan(nightmare));
-    expect(impossible, greaterThan(legendary));
+    // Past each chapter's 20-level warm-up.
+    final hard = avgPieces(321);
+    final steps = [
+      for (final start in Difficulty.hardStarts) avgPieces(start + 25),
+    ];
+    expect(steps.first, greaterThan(hard));
+    // Expert < Master < Insane < Nightmare < Legendary < Impossible; the
+    // endless Grandmaster chapters match Impossible's size with more decoys.
+    for (var i = 1; i < steps.length - 1; i++) {
+      expect(steps[i], greaterThan(steps[i - 1]), reason: 'tier ${i + 1}');
+    }
   });
 
   test('hard chapters use look-alike spare blocks', () {
-    for (final n in [450, 550, 650, 750]) {
+    for (final n in [450, 650, 750, 850, 950, 1100, 1300]) {
       final l = LevelGenerator.generate(n);
       expect(l.decoyCount, greaterThanOrEqualTo(1), reason: 'level $n');
       // An independent solver still finds a solution.
@@ -97,7 +115,7 @@ void main() {
     // Play area of a small 360x720 phone, between the header and the
     // control bar + banner.
     const area = Size(360, 520);
-    for (final n in [700, 750, 799, 800, 1000]) {
+    for (final n in [700, 800, 1000, 1150, 1200, 1250, 1500]) {
       final l = LevelGenerator.generate(n);
       final layout = BoardLayout.compute(area, l);
       expect(layout.cell, greaterThan(10), reason: 'level $n board cells');
