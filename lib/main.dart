@@ -103,10 +103,20 @@ class _HexaAppState extends State<HexaApp> with WidgetsBindingObserver {
         ),
       ),
       // Achievement unlocks pop up over every screen.
-      builder: (context, child) => AchievementToaster(
-        progress: widget.services.progress,
-        sfx: widget.services.sfx,
-        child: child!,
+      // The reduce-motion setting joins the system's own preference.
+      builder: (context, child) => ValueListenableBuilder<bool>(
+        valueListenable: widget.services.progress.motion,
+        builder: (context, calm, _) {
+          final mq = MediaQuery.of(context);
+          return MediaQuery(
+            data: mq.copyWith(disableAnimations: mq.disableAnimations || calm),
+            child: AchievementToaster(
+              progress: widget.services.progress,
+              sfx: widget.services.sfx,
+              child: child!,
+            ),
+          );
+        },
       ),
       home: HomeScreen(services: widget.services),
     );

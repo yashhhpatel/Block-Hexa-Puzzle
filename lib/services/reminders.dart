@@ -79,7 +79,10 @@ class Reminders {
       }
       if (!progress.remindersOn) return;
       final now = DateTime.now();
-      final days = plan(now, solvedToday: progress.isDailySolved(progress.today));
+      final days = plan(
+        now,
+        solvedToday: progress.isDailySolved(progress.today),
+      );
       const details = NotificationDetails(
         android: AndroidNotificationDetails(
           'daily_reminder',

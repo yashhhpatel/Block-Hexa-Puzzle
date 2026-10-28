@@ -29,17 +29,25 @@ class _GameBackgroundState extends State<GameBackground>
     duration: const Duration(seconds: 40),
   );
 
+  // Off when the setting or the system asks for less motion.
+  bool get _moving =>
+      widget.animate && !MediaQuery.of(context).disableAnimations;
+
+  void _sync() {
+    if (_moving && !_c.isAnimating) _c.repeat();
+    if (!_moving) _c.stop();
+  }
+
   @override
-  void initState() {
-    super.initState();
-    if (widget.animate) _c.repeat();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _sync();
   }
 
   @override
   void didUpdateWidget(GameBackground oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.animate && !_c.isAnimating) _c.repeat();
-    if (!widget.animate) _c.stop();
+    _sync();
   }
 
   @override
@@ -282,7 +290,17 @@ class _HexShimmerState extends State<HexShimmer>
   late final AnimationController _c = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 3200),
-  )..repeat();
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.of(context).disableAnimations) {
+      _c.stop();
+    } else if (!_c.isAnimating) {
+      _c.repeat();
+    }
+  }
 
   @override
   void dispose() {

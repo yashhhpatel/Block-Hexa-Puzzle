@@ -235,6 +235,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             seconds: seconds,
             hintsUsed: g.hintsUsed,
           );
+    if (g.level.isDaily) widget.services.reminders.afterDailySolved();
     if (!mounted || _game != g) return;
     _win = summary;
     if (summary.coins > 0) widget.services.ads.preloadRewarded();

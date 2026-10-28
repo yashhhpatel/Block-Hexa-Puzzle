@@ -2,6 +2,7 @@ import '../l10n/l10n.dart';
 import 'ads.dart';
 import 'billing.dart';
 import 'progress.dart';
+import 'reminders.dart';
 import 'sfx.dart';
 
 /// App-wide services, created once at startup and passed to screens.
@@ -10,8 +11,15 @@ class Services {
   final Sfx sfx;
   final BillingService billing;
   final AdsService ads;
+  final Reminders reminders;
 
-  Services(this.progress, this.sfx, this.billing, this.ads);
+  Services(
+    this.progress,
+    this.sfx,
+    this.billing,
+    this.ads, {
+    Reminders? reminders,
+  }) : reminders = reminders ?? Reminders(progress, enabled: false);
 
   /// Offline, ad-free services for tests and previews.
   factory Services.offline(Progress progress) {
@@ -37,6 +45,7 @@ class Services {
     sfx.init();
     billing.init();
     ads.init();
-    return Services(progress, sfx, billing, ads);
+    final reminders = Reminders(progress)..reschedule();
+    return Services(progress, sfx, billing, ads, reminders: reminders);
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../game/level.dart';
@@ -154,6 +155,7 @@ class Progress {
 
   /// Daily Puzzle streak reminder notification.
   bool get remindersOn => _prefs.getBool('reminders') ?? true;
+  bool get reminderAsked => _prefs.getBool('reminderAsked') ?? false;
   bool get vibrationOn => _prefs.getBool('vibration') ?? true;
   bool get backgroundFx => _prefs.getBool('bgfx') ?? true;
   bool get tutorialSeen => _prefs.getBool('tutorial') ?? false;
@@ -166,8 +168,15 @@ class Progress {
   Future<void> setMusicVolume(double v) =>
       _prefs.setDouble('musicVol', v.clamp(0.0, 1.0));
   Future<void> setColorBlind(bool v) => _prefs.setBool('colorBlind', v);
-  Future<void> setReduceMotion(bool v) => _prefs.setBool('reduceMotion', v);
+  Future<void> setReduceMotion(bool v) {
+    motion.value = v;
+    return _prefs.setBool('reduceMotion', v);
+  }
+
+  /// Live copy of [reduceMotion], so the app can switch without a restart.
+  late final ValueNotifier<bool> motion = ValueNotifier(reduceMotion);
   Future<void> setReminders(bool v) => _prefs.setBool('reminders', v);
+  Future<void> setReminderAsked() => _prefs.setBool('reminderAsked', true);
   Future<void> setVibration(bool v) => _prefs.setBool('vibration', v);
   Future<void> setBackgroundFx(bool v) => _prefs.setBool('bgfx', v);
   Future<void> setTutorialSeen() => _prefs.setBool('tutorial', true);
@@ -637,6 +646,7 @@ class Progress {
     'colorBlind',
     'reduceMotion',
     'reminders',
+    'reminderAsked',
     'premium',
     'premiumChecked',
   };
