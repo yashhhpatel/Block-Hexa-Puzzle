@@ -30,7 +30,10 @@ class BoardLayout {
   );
 
   factory BoardLayout.compute(Size size, Level level) {
-    final trayH = size.height * 0.34;
+    // Busy levels (Insane and beyond have up to ~22 blocks) get a taller
+    // tray so their blocks stay big enough to see and grab.
+    final n = level.pieces.length;
+    final trayH = size.height * (n <= 14 ? 0.34 : (n <= 18 ? 0.38 : 0.42));
     final boardRect = Rect.fromLTWH(0, 0, size.width, size.height - trayH);
     final trayRect = Rect.fromLTWH(0, size.height - trayH, size.width, trayH);
 
@@ -85,7 +88,7 @@ class BoardLayout {
     Rect area, {
     bool force = false,
   }) {
-    final gap = s * 0.9;
+    final gap = s * (pieces.length > 14 ? 0.6 : 0.9);
     final rows = <List<int>>[[]];
     final rowW = <double>[0];
     final rowH = <double>[0];

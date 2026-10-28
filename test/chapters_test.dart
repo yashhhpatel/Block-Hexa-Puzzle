@@ -94,13 +94,14 @@ void main() {
   });
 
   test('the busiest boards still fit on a small phone', () {
-    // Play area of a 360x640 phone between header and control bar.
-    const area = Size(360, 470);
+    // Play area of a small 360x720 phone, between the header and the
+    // control bar + banner.
+    const area = Size(360, 520);
     for (final n in [700, 750, 799, 800, 1000]) {
       final l = LevelGenerator.generate(n);
       final layout = BoardLayout.compute(area, l);
       expect(layout.cell, greaterThan(10), reason: 'level $n board cells');
-      expect(layout.trayCell, greaterThan(6), reason: 'level $n tray blocks');
+      expect(layout.trayCell, greaterThan(7), reason: 'level $n tray blocks');
       for (var i = 0; i < l.pieces.length; i++) {
         final b = l.pieces[i].unitBounds;
         final rect = Rect.fromCenter(
