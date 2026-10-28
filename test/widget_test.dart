@@ -19,6 +19,14 @@ Future<Services> _services() async {
   return Services.offline(await Progress.load());
 }
 
+/// The home screen animates forever, so wait a fixed time instead of
+/// pumpAndSettle.
+Future<void> _settle(WidgetTester tester) async {
+  for (var i = 0; i < 8; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+}
+
 void main() {
   setUp(() => appLang.value = AppLang.en);
 
@@ -46,28 +54,28 @@ void main() {
 
     // Settings shows all the new entries.
     await tester.tap(find.byIcon(Icons.settings_rounded));
-    await tester.pumpAndSettle();
+    await _settle(tester);
     for (final label in ['Language', 'Remove Ads', 'How to play', 'Contact us', 'Privacy policy']) {
       expect(find.text(label), findsOneWidget, reason: label);
     }
 
     await tester.tap(find.text('Language'));
-    await tester.pumpAndSettle();
+    await _settle(tester);
     expect(find.text('Español'), findsOneWidget);
     expect(find.text('日本語'), findsOneWidget);
 
     await tester.tap(find.text('Español'));
-    await tester.pumpAndSettle();
+    await _settle(tester);
     expect(find.text('Idioma'), findsWidgets, reason: 'this screen switched');
     expect(services.progress.languageCode, 'es');
 
     // Screens underneath switched too.
     await tester.tap(find.byIcon(Icons.arrow_back_rounded));
-    await tester.pumpAndSettle();
+    await _settle(tester);
     expect(find.text('Ajustes'), findsWidgets);
     expect(find.text('Quitar anuncios'), findsOneWidget);
     await tester.tap(find.byIcon(Icons.close_rounded));
-    await tester.pumpAndSettle();
+    await _settle(tester);
     expect(find.text('Nivel 1'), findsWidgets);
     expect(find.text('Tienda'), findsOneWidget);
   });
@@ -78,13 +86,14 @@ void main() {
     await tester.pumpWidget(HexaApp(services: services));
     await tester.pump();
     await tester.tap(find.byIcon(Icons.settings_rounded));
-    await tester.pumpAndSettle();
+    await _settle(tester);
     await tester.tap(find.text('Remove Ads'));
-    await tester.pumpAndSettle();
+    await _settle(tester);
     expect(find.text('₹299'), findsOneWidget);
     expect(find.text('/ month'), findsOneWidget);
     expect(find.textContaining('1 month'), findsOneWidget);
     expect(find.textContaining('Subscribe for ₹299'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Restore purchases'), 200);
     expect(find.text('Restore purchases'), findsOneWidget);
   });
 
@@ -94,13 +103,13 @@ void main() {
     await tester.pumpWidget(HexaApp(services: services));
     await tester.pump();
     await tester.tap(find.byIcon(Icons.settings_rounded));
-    await tester.pumpAndSettle();
+    await _settle(tester);
     await tester.tap(find.text('How to play'));
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('Drag the blocks'), findsOneWidget);
     for (var i = 0; i < 5; i++) {
       await tester.tap(find.text('Next'));
-      await tester.pump(const Duration(milliseconds: 600));
+      await _settle(tester);
     }
     expect(find.text('Come back daily'), findsOneWidget);
     expect(find.text("Let's play!"), findsOneWidget);

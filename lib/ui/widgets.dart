@@ -308,23 +308,28 @@ class PillButton extends StatelessWidget {
           ],
         ),
         alignment: Alignment.center,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, color: Colors.white, size: 22),
-              const SizedBox(width: 6),
-            ],
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 19,
-                fontWeight: FontWeight.w900,
-                fontStyle: FontStyle.italic,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        // Labels vary a lot by language: shrink rather than overflow.
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, color: Colors.white, size: 22),
+                const SizedBox(width: 6),
+              ],
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 19,
+                  fontWeight: FontWeight.w900,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
