@@ -143,7 +143,7 @@ class StatsScreen extends StatelessWidget {
                         physics: const NeverScrollableScrollPhysics(),
                         mainAxisSpacing: 10,
                         crossAxisSpacing: 10,
-                        childAspectRatio: 1.55,
+                        childAspectRatio: 1.35,
                         children: [for (final s in stats) _StatTile(stat: s)],
                       ),
                     ],
@@ -221,15 +221,17 @@ class _StatTile extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            stat.label,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              height: 1.15,
+          Flexible(
+            child: Text(
+              stat.label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+                height: 1.15,
+              ),
             ),
           ),
         ],

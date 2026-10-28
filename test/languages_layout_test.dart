@@ -11,6 +11,7 @@ import 'package:block_hexa_puzzle/ui/quests_screen.dart';
 import 'package:block_hexa_puzzle/ui/remove_ads_screen.dart';
 import 'package:block_hexa_puzzle/ui/settings_dialog.dart';
 import 'package:block_hexa_puzzle/ui/shop_screen.dart';
+import 'package:block_hexa_puzzle/ui/stats_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,6 +61,7 @@ void main() {
         'remove ads': RemoveAdsScreen(services: services),
         'how to play': HowToPlayScreen(services: services),
         'languages': LanguagesScreen(services: services),
+        'statistics': StatsScreen(services: services),
         'game': GameScreen(services: services, level: 3),
       };
       for (final e in screens.entries) {

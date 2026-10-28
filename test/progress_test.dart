@@ -289,4 +289,32 @@ void main() {
       await sub.cancel();
     });
   });
+
+  group('statistics', () {
+    test('clear times, hints and play time are tracked', () async {
+      expect(p.averageClearSeconds, isNull);
+      await p.recordLevelWin(_level(1), seconds: 30, hintsUsed: 0);
+      await p.recordLevelWin(_level(2), seconds: 50, hintsUsed: 1);
+      await p.recordDailyWin(LevelGenerator.generateDaily(clock),
+          seconds: 40, hintsUsed: 0);
+      expect(p.averageClearSeconds, 40);
+      await p.recordHint();
+      await p.recordHint();
+      expect(p.stat(Stat.hintsUsed), 2);
+      await p.recordPlayTime(95);
+      await p.recordPlayTime(5);
+      expect(p.stat(Stat.playSeconds), 100);
+    });
+
+    test('achievement tiers count claimed out of all', () async {
+      final (done, total) = p.achievementTiers;
+      expect(done, 0);
+      expect(total, Quests.achievements.fold<int>(0, (s, a) => s + a.tiers.length));
+      for (var n = 1; n <= 10; n++) {
+        await p.recordLevelWin(_level(n), seconds: 1, hintsUsed: 0);
+      }
+      await p.claimAchievement('levels');
+      expect(p.achievementTiers.$1, 1);
+    });
+  });
 }

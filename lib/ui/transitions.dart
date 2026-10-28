@@ -8,6 +8,14 @@ import 'package:flutter/material.dart';
 class HexPageTransitionsBuilder extends PageTransitionsBuilder {
   const HexPageTransitionsBuilder();
 
+  // Short, so screens are interactive almost immediately (taps are ignored
+  // while a route is still animating in).
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 280);
+
+  @override
+  Duration get reverseTransitionDuration => const Duration(milliseconds: 240);
+
   @override
   Widget buildTransitions<T>(
     PageRoute<T> route,

@@ -55,7 +55,7 @@ void main() {
     // Settings shows all the new entries.
     await tester.tap(find.byIcon(Icons.settings_rounded));
     await _settle(tester);
-    for (final label in ['Language', 'Remove Ads', 'How to play', 'Contact us', 'Privacy policy']) {
+    for (final label in ['Statistics', 'Language', 'Remove Ads', 'How to play', 'Contact us', 'Privacy policy']) {
       expect(find.text(label), findsOneWidget, reason: label);
     }
 
@@ -105,7 +105,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.settings_rounded));
     await _settle(tester);
     await tester.tap(find.text('How to play'));
-    await tester.pump(const Duration(milliseconds: 500));
+    await _settle(tester);
     expect(find.text('Drag the blocks'), findsOneWidget);
     for (var i = 0; i < 5; i++) {
       await tester.tap(find.text('Next'));

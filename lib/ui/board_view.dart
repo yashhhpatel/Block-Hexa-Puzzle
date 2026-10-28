@@ -462,20 +462,24 @@ class BoardViewState extends State<BoardView>
           onPointerMove: _onMove,
           onPointerUp: _onUp,
           onPointerCancel: _onUp,
-          child: CustomPaint(
-            size: constraints.biggest,
-            painter: _BoardPainter(
-              game: game,
-              layout: _layout!,
-              visuals: _visuals.cast<_Visual>(),
-              sparks: _sparks,
-              skin: widget.skin,
-              theme: widget.theme,
-              drag: _drag,
-              preview: _preview,
-              winT: _celebrating ? _winT : 0,
-              intro: _intro,
-              almostPulse: _almost ? (math.sin(_time * 5) + 1) / 2 : -1,
+          // Keep rising/returning blocks inside the playfield so they never
+          // show through the control bar below it.
+          child: ClipRect(
+            child: CustomPaint(
+              size: constraints.biggest,
+              painter: _BoardPainter(
+                game: game,
+                layout: _layout!,
+                visuals: _visuals.cast<_Visual>(),
+                sparks: _sparks,
+                skin: widget.skin,
+                theme: widget.theme,
+                drag: _drag,
+                preview: _preview,
+                winT: _celebrating ? _winT : 0,
+                intro: _intro,
+                almostPulse: _almost ? (math.sin(_time * 5) + 1) / 2 : -1,
+              ),
             ),
           ),
         );
