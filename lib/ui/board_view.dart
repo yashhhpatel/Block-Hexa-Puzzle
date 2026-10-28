@@ -163,10 +163,10 @@ class BoardViewState extends State<BoardView>
   }
 
   @override
-  void didUpdateWidget(BoardView old) {
-    super.didUpdateWidget(old);
-    if (old.game != widget.game) {
-      old.game.removeListener(_onGame);
+  void didUpdateWidget(BoardView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.game != widget.game) {
+      oldWidget.game.removeListener(_onGame);
       widget.game.addListener(_onGame);
       _layout = null;
       _visuals.clear();
