@@ -39,8 +39,6 @@ const Map<String, String> stringsFr = {
   "daily_title": "Défi du {date}",
   "tip_drag": "Faites glisser les blocs pour remplir le plateau.",
   "tip_tricky": "Niveau piège !\nVous n’aurez pas besoin de tous les blocs.",
-  "hint_no_coins":
-      "Pas assez de pièces. Terminez des niveaux et des quêtes pour en gagner plus !",
 
   "cheer_0": "Génial !",
   "cheer_1": "Brillant !",
@@ -180,8 +178,6 @@ const Map<String, String> stringsFr = {
   "htp_4_body":
       "Une étoile pour la réussite, une sans indice et une pour avoir battu le temps cible.",
   "htp_5_title": "Niveaux pièges",
-  "htp_5_body":
-      "Certains niveaux contiennent des blocs en trop. Bloqué ? Un indice place un bloc pour 25 pièces.",
   "htp_6_title": "Revenez chaque jour",
   "htp_6_body":
       "Résolvez le défi du jour pour prolonger votre série, terminez des quêtes et récupérez votre récompense.",
@@ -219,4 +215,38 @@ const Map<String, String> stringsFr = {
   "ra_verify_failed":
       "Impossible de vérifier cet achat. Veuillez nous contacter.",
   "ra_success": "Merci ! Les pubs sont maintenant supprimées.",
+
+  // Hints, achievements
+  "cancel": "Annuler",
+  "hint_free": "GRATUIT",
+  "hint_watch_title": "Besoin d’un autre indice ?",
+  "hint_watch_body":
+      "Vous avez utilisé l’indice gratuit de ce niveau. Regardez une courte vidéo pour obtenir 1 indice de plus.",
+  "hint_watch_btn": "Regarder la vidéo",
+  "hint_ad_unavailable":
+      "Aucune vidéo disponible pour le moment. Réessayez dans un instant.",
+  "hint_ad_incomplete":
+      "La vidéo n’a pas été regardée jusqu’au bout : aucun indice accordé.",
+  "ach_unlocked": "Succès débloqué !",
+  "ach_levels": "Grimpeur",
+  "ach_stars": "Collectionneur d’étoiles",
+  "ach_streak": "En feu",
+  "ach_daily": "Fidèle du défi",
+  "ach_nohint": "Pure logique",
+  "ach_perfect": "Perfectionniste",
+  "ach_blocks": "Maître bâtisseur",
+  "ach_chapters": "Champion des chapitres",
+  "ach_speed": "Sprinteur",
+  "ach_quests": "Héros des quêtes",
+  "ach_loyal": "Joueur fidèle",
+  "ach_chests": "Chasseur de trésors",
+  "ach_collector": "Collectionneur",
+  "ach_dailystar": "Étoile du jour",
+  "a_quests": "Terminez {n} quêtes du jour",
+  "a_login": "Récupérez la récompense du jour {n} jours",
+  "a_chests": "Ouvrez {n} coffres de récompense",
+  "a_items": "Débloquez {n} articles de la boutique",
+  "a_daily_perfect": "Obtenez 3 étoiles sur {n} défis du jour",
+  "htp_5_body":
+      "Certains niveaux contiennent des blocs en trop. Bloqué ? Chaque niveau offre 1 indice gratuit, et chaque courte vidéo regardée en donne 1 de plus.",
 };

@@ -44,7 +44,6 @@ const Map<String, String> stringsEn = {
   'daily_title': 'Daily {date}',
   'tip_drag': 'Drag the blocks to fill up the board.',
   'tip_tricky': "Tricky level!\nYou won't need all of the blocks.",
-  'hint_no_coins': 'Not enough coins. Clear levels and quests to earn more!',
 
   // Win screen
   'cheer_0': 'Awesome!',
@@ -190,8 +189,6 @@ const Map<String, String> stringsEn = {
   'htp_4_body':
       'One star for clearing, one for using no hints, and one for beating the target time.',
   'htp_5_title': 'Tricky levels',
-  'htp_5_body':
-      'Some levels include spare blocks you won’t need. Stuck? A hint places one block for 25 coins.',
   'htp_6_title': 'Come back daily',
   'htp_6_body':
       'Solve the Daily Puzzle to grow your streak, finish quests and claim your login reward.',
@@ -228,4 +225,37 @@ const Map<String, String> stringsEn = {
   'ra_expired': 'Your Remove Ads subscription has ended, so ads are back on.',
   'ra_verify_failed': "We couldn't verify this purchase. Please contact us.",
   'ra_success': 'Thank you! Ads are now removed.',
+
+  // Hints, achievements
+  "cancel": "Cancel",
+  "hint_free": "FREE",
+  "hint_watch_title": "Need another hint?",
+  "hint_watch_body":
+      "You've used this level's free hint. Watch a short video to get 1 more hint.",
+  "hint_watch_btn": "Watch video",
+  "hint_ad_unavailable":
+      "No video is available right now. Please try again in a moment.",
+  "hint_ad_incomplete": "The video wasn't finished, so no hint was given.",
+  "ach_unlocked": "Achievement unlocked!",
+  "ach_levels": "Level Climber",
+  "ach_stars": "Star Collector",
+  "ach_streak": "On Fire",
+  "ach_daily": "Daily Devotee",
+  "ach_nohint": "Pure Logic",
+  "ach_perfect": "Perfectionist",
+  "ach_blocks": "Master Builder",
+  "ach_chapters": "Chapter Champion",
+  "ach_speed": "Speed Runner",
+  "ach_quests": "Quest Hero",
+  "ach_loyal": "Loyal Player",
+  "ach_chests": "Treasure Hunter",
+  "ach_collector": "Collector",
+  "ach_dailystar": "Daily Star",
+  "a_quests": "Complete {n} daily quests",
+  "a_login": "Claim the daily reward on {n} days",
+  "a_chests": "Open {n} reward chests",
+  "a_items": "Unlock {n} shop items",
+  "a_daily_perfect": "Get 3 stars on {n} Daily Puzzles",
+  "htp_5_body":
+      "Some levels include spare blocks you won’t need. Stuck? Every level gives you 1 free hint, and each short video you watch gives 1 more.",
 };

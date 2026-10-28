@@ -40,8 +40,6 @@ const Map<String, String> stringsDe = {
   "daily_title": "Täglich {date}",
   "tip_drag": "Zieh die Blöcke, um das Spielfeld zu füllen.",
   "tip_tricky": "Knifflig!\nDu brauchst nicht alle Blöcke.",
-  "hint_no_coins":
-      "Nicht genug Münzen. Schließe Level und Aufgaben ab, um mehr zu verdienen!",
 
   "cheer_0": "Super!",
   "cheer_1": "Brillant!",
@@ -180,8 +178,6 @@ const Map<String, String> stringsDe = {
   "htp_4_body":
       "Ein Stern fürs Schaffen, einer ohne Tipps und einer fürs Schlagen der Zielzeit.",
   "htp_5_title": "Knifflige Level",
-  "htp_5_body":
-      "Manche Level enthalten Blöcke, die du nicht brauchst. Festgefahren? Ein Tipp legt für 25 Münzen einen Block.",
   "htp_6_title": "Jeden Tag wiederkommen",
   "htp_6_body":
       "Löse das Tagesrätsel für deine Serie, erledige Aufgaben und hol dir deine tägliche Belohnung.",
@@ -219,4 +215,38 @@ const Map<String, String> stringsDe = {
   "ra_verify_failed":
       "Dieser Kauf konnte nicht bestätigt werden. Bitte kontaktiere uns.",
   "ra_success": "Danke! Die Werbung ist jetzt entfernt.",
+
+  // Hints, achievements
+  "cancel": "Abbrechen",
+  "hint_free": "GRATIS",
+  "hint_watch_title": "Noch einen Tipp?",
+  "hint_watch_body":
+      "Du hast den Gratis-Tipp dieses Levels schon genutzt. Sieh dir ein kurzes Video an, um 1 weiteren Tipp zu bekommen.",
+  "hint_watch_btn": "Video ansehen",
+  "hint_ad_unavailable":
+      "Gerade ist kein Video verfügbar. Bitte versuche es gleich noch einmal.",
+  "hint_ad_incomplete":
+      "Das Video wurde nicht zu Ende geschaut, daher gibt es keinen Tipp.",
+  "ach_unlocked": "Erfolg freigeschaltet!",
+  "ach_levels": "Gipfelstürmer",
+  "ach_stars": "Sternensammler",
+  "ach_streak": "Feuer und Flamme",
+  "ach_daily": "Tagesheld",
+  "ach_nohint": "Reine Logik",
+  "ach_perfect": "Perfektionist",
+  "ach_blocks": "Baumeister",
+  "ach_chapters": "Kapitel-Champion",
+  "ach_speed": "Sprinter",
+  "ach_quests": "Aufgabenheld",
+  "ach_loyal": "Treuer Spieler",
+  "ach_chests": "Schatzsucher",
+  "ach_collector": "Sammler",
+  "ach_dailystar": "Tagesstern",
+  "a_quests": "Schließe {n} Tagesaufgaben ab",
+  "a_login": "Hol dir an {n} Tagen die Tagesbelohnung",
+  "a_chests": "Öffne {n} Belohnungstruhen",
+  "a_items": "Schalte {n} Shop-Artikel frei",
+  "a_daily_perfect": "Hol 3 Sterne in {n} Tagesrätseln",
+  "htp_5_body":
+      "Manche Level enthalten Blöcke, die du nicht brauchst. Festgefahren? Jedes Level gibt dir 1 Gratis-Tipp, und jedes kurze Video bringt 1 weiteren.",
 };

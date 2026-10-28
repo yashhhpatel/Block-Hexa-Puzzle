@@ -39,8 +39,6 @@ const Map<String, String> stringsId = {
   "daily_title": "Harian {date}",
   "tip_drag": "Seret balok untuk mengisi papan.",
   "tip_tricky": "Level jebakan!\nKamu tidak butuh semua balok.",
-  "hint_no_coins":
-      "Koin tidak cukup. Selesaikan level dan misi untuk mendapat lebih banyak!",
 
   "cheer_0": "Keren!",
   "cheer_1": "Cemerlang!",
@@ -179,8 +177,6 @@ const Map<String, String> stringsId = {
   "htp_4_body":
       "Satu bintang karena selesai, satu tanpa petunjuk, dan satu karena mengalahkan waktu target.",
   "htp_5_title": "Level jebakan",
-  "htp_5_body":
-      "Beberapa level punya balok cadangan yang tidak dibutuhkan. Buntu? Petunjuk meletakkan satu balok seharga 25 koin.",
   "htp_6_title": "Kembali setiap hari",
   "htp_6_body":
       "Selesaikan teka-teki harian untuk menambah beruntun, selesaikan misi, dan ambil hadiah harianmu.",
@@ -218,4 +214,38 @@ const Map<String, String> stringsId = {
   "ra_verify_failed":
       "Pembelian ini tidak dapat diverifikasi. Silakan hubungi kami.",
   "ra_success": "Terima kasih! Iklan sudah dihapus.",
+
+  // Hints, achievements
+  "cancel": "Batal",
+  "hint_free": "GRATIS",
+  "hint_watch_title": "Butuh petunjuk lagi?",
+  "hint_watch_body":
+      "Petunjuk gratis level ini sudah dipakai. Tonton video singkat untuk mendapat 1 petunjuk lagi.",
+  "hint_watch_btn": "Tonton video",
+  "hint_ad_unavailable":
+      "Belum ada video yang tersedia. Coba lagi sebentar lagi.",
+  "hint_ad_incomplete":
+      "Video tidak ditonton sampai selesai, jadi petunjuk tidak diberikan.",
+  "ach_unlocked": "Pencapaian terbuka!",
+  "ach_levels": "Pendaki Level",
+  "ach_stars": "Kolektor Bintang",
+  "ach_streak": "Membara",
+  "ach_daily": "Setia Harian",
+  "ach_nohint": "Logika Murni",
+  "ach_perfect": "Perfeksionis",
+  "ach_blocks": "Pembangun Ulung",
+  "ach_chapters": "Juara Bab",
+  "ach_speed": "Pelari Cepat",
+  "ach_quests": "Pahlawan Misi",
+  "ach_loyal": "Pemain Setia",
+  "ach_chests": "Pemburu Harta",
+  "ach_collector": "Kolektor",
+  "ach_dailystar": "Bintang Harian",
+  "a_quests": "Selesaikan {n} misi harian",
+  "a_login": "Ambil hadiah harian selama {n} hari",
+  "a_chests": "Buka {n} peti hadiah",
+  "a_items": "Buka {n} item toko",
+  "a_daily_perfect": "Dapatkan 3 bintang di {n} teka-teki harian",
+  "htp_5_body":
+      "Beberapa level punya balok cadangan yang tidak dibutuhkan. Buntu? Setiap level memberi 1 petunjuk gratis, dan setiap video singkat yang ditonton memberi 1 lagi.",
 };

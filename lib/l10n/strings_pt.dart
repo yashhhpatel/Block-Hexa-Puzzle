@@ -39,8 +39,6 @@ const Map<String, String> stringsPt = {
   "daily_title": "Diário {date}",
   "tip_drag": "Arraste os blocos para preencher o tabuleiro.",
   "tip_tricky": "Nível traiçoeiro!\nVocê não vai precisar de todos os blocos.",
-  "hint_no_coins":
-      "Moedas insuficientes. Passe de níveis e missões para ganhar mais!",
 
   "cheer_0": "Incrível!",
   "cheer_1": "Brilhante!",
@@ -179,8 +177,6 @@ const Map<String, String> stringsPt = {
   "htp_4_body":
       "Uma estrela por concluir, uma por não usar dicas e uma por bater o tempo-alvo.",
   "htp_5_title": "Níveis traiçoeiros",
-  "htp_5_body":
-      "Alguns níveis têm blocos extras que você não vai usar. Travou? Uma dica coloca um bloco por 25 moedas.",
   "htp_6_title": "Volte todo dia",
   "htp_6_body":
       "Resolva o quebra-cabeça diário para aumentar sua sequência, conclua missões e pegue sua recompensa diária.",
@@ -217,4 +213,38 @@ const Map<String, String> stringsPt = {
       "Sua assinatura para remover anúncios terminou, então os anúncios voltaram.",
   "ra_verify_failed": "Não foi possível verificar esta compra. Fale conosco.",
   "ra_success": "Obrigado! Os anúncios foram removidos.",
+
+  // Hints, achievements
+  "cancel": "Cancelar",
+  "hint_free": "GRÁTIS",
+  "hint_watch_title": "Precisa de outra dica?",
+  "hint_watch_body":
+      "Você já usou a dica grátis deste nível. Assista a um vídeo curto para ganhar mais 1 dica.",
+  "hint_watch_btn": "Assistir vídeo",
+  "hint_ad_unavailable":
+      "Nenhum vídeo disponível agora. Tente de novo em instantes.",
+  "hint_ad_incomplete":
+      "O vídeo não foi concluído, então nenhuma dica foi dada.",
+  "ach_unlocked": "Conquista desbloqueada!",
+  "ach_levels": "Escalador",
+  "ach_stars": "Colecionador de estrelas",
+  "ach_streak": "Pegando fogo",
+  "ach_daily": "Fiel diário",
+  "ach_nohint": "Lógica pura",
+  "ach_perfect": "Perfeccionista",
+  "ach_blocks": "Mestre construtor",
+  "ach_chapters": "Campeão de capítulos",
+  "ach_speed": "Velocista",
+  "ach_quests": "Herói das missões",
+  "ach_loyal": "Jogador fiel",
+  "ach_chests": "Caçador de tesouros",
+  "ach_collector": "Colecionador",
+  "ach_dailystar": "Estrela diária",
+  "a_quests": "Conclua {n} missões diárias",
+  "a_login": "Pegue a recompensa diária em {n} dias",
+  "a_chests": "Abra {n} baús de recompensa",
+  "a_items": "Desbloqueie {n} itens da loja",
+  "a_daily_perfect": "Ganhe 3 estrelas em {n} quebra-cabeças diários",
+  "htp_5_body":
+      "Alguns níveis têm blocos extras que você não vai usar. Travou? Cada nível dá 1 dica grátis, e cada vídeo curto que você assiste dá mais 1.",
 };

@@ -39,8 +39,6 @@ const Map<String, String> stringsEs = {
   "daily_title": "Diario {date}",
   "tip_drag": "Arrastra los bloques para llenar el tablero.",
   "tip_tricky": "¡Nivel engañoso!\nNo necesitarás todos los bloques.",
-  "hint_no_coins":
-      "No tienes monedas suficientes. ¡Supera niveles y misiones para ganar más!",
 
   "cheer_0": "¡Increíble!",
   "cheer_1": "¡Brillante!",
@@ -180,8 +178,6 @@ const Map<String, String> stringsEs = {
   "htp_4_body":
       "Una estrella por superarlo, otra por no usar pistas y otra por batir el tiempo objetivo.",
   "htp_5_title": "Niveles engañosos",
-  "htp_5_body":
-      "Algunos niveles tienen bloques de sobra que no necesitarás. ¿Atascado? Una pista coloca un bloque por 25 monedas.",
   "htp_6_title": "Vuelve cada día",
   "htp_6_body":
       "Resuelve el puzle diario para aumentar tu racha, completa misiones y reclama tu premio diario.",
@@ -218,4 +214,38 @@ const Map<String, String> stringsEs = {
       "Tu suscripción para quitar anuncios ha terminado, así que los anuncios vuelven.",
   "ra_verify_failed": "No pudimos verificar esta compra. Contáctanos.",
   "ra_success": "¡Gracias! Ya no verás anuncios.",
+
+  // Hints, achievements
+  "cancel": "Cancelar",
+  "hint_free": "GRATIS",
+  "hint_watch_title": "¿Necesitas otra pista?",
+  "hint_watch_body":
+      "Ya usaste la pista gratis de este nivel. Mira un vídeo corto para conseguir 1 pista más.",
+  "hint_watch_btn": "Ver vídeo",
+  "hint_ad_unavailable":
+      "No hay ningún vídeo disponible ahora. Inténtalo de nuevo en un momento.",
+  "hint_ad_incomplete":
+      "No terminaste el vídeo, así que no recibiste la pista.",
+  "ach_unlocked": "¡Logro desbloqueado!",
+  "ach_levels": "Escalador",
+  "ach_stars": "Coleccionista de estrellas",
+  "ach_streak": "En racha",
+  "ach_daily": "Fiel diario",
+  "ach_nohint": "Lógica pura",
+  "ach_perfect": "Perfeccionista",
+  "ach_blocks": "Gran constructor",
+  "ach_chapters": "Campeón de capítulos",
+  "ach_speed": "Velocista",
+  "ach_quests": "Héroe de misiones",
+  "ach_loyal": "Jugador fiel",
+  "ach_chests": "Cazatesoros",
+  "ach_collector": "Coleccionista",
+  "ach_dailystar": "Estrella diaria",
+  "a_quests": "Completa {n} misiones diarias",
+  "a_login": "Reclama el premio diario {n} días",
+  "a_chests": "Abre {n} cofres de premio",
+  "a_items": "Desbloquea {n} artículos de la tienda",
+  "a_daily_perfect": "Consigue 3 estrellas en {n} puzles diarios",
+  "htp_5_body":
+      "Algunos niveles tienen bloques de sobra que no necesitarás. ¿Atascado? Cada nivel te da 1 pista gratis, y cada vídeo corto que veas te da 1 más.",
 };
