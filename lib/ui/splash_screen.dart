@@ -8,9 +8,9 @@ import 'home_screen.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
-/// Loading screen shown on every cold start. It waits for the ads SDK and a
-/// launch interstitial, shows the ad, then finishes the bar over a few
-/// seconds before the home screen appears.
+/// Loading screen shown on every cold start. It waits for the ads SDK and
+/// the app-open ad, shows the ad, then finishes the bar over a few seconds
+/// before the home screen appears.
 class SplashScreen extends StatefulWidget {
   final Services services;
   const SplashScreen({super.key, required this.services});
@@ -58,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
       : _waitValue;
 
   Future<void> _run() async {
-    final shown = await widget.services.ads.showInterstitialOnLaunch();
+    final shown = await widget.services.ads.showAppOpenOnLaunch();
     if (!mounted) return;
     _wait.stop();
     setState(() {

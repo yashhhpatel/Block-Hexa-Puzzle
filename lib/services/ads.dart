@@ -38,6 +38,7 @@ class AdsService {
   bool _fullScreenShowing = false;
   DateTime _lastFullScreenEnd = DateTime.fromMillisecondsSinceEpoch(0);
   bool _skipNextAppOpen = false;
+  bool _launching = false;
   StreamSubscription<AppState>? _appState;
   final Completer<void> _initDone = Completer();
 
@@ -62,15 +63,15 @@ class AdsService {
         // Stagger loads: several ads loading at once is heavy work on the
         // main thread for the ads SDK, especially on slower phones. The
         // rewarded video loads on demand (once a level's free hint is used).
-        // The interstitial goes first: the loading screen shows it on launch.
-        // The app-open ad is only needed later, when the player comes back.
+        // The app-open ad goes first: the loading screen shows it on launch.
         if (!billing.premium.value) {
-          _loadInterstitial();
-          Future.delayed(const Duration(seconds: 6), _loadAppOpen);
+          _loadAppOpen();
+          Future.delayed(const Duration(seconds: 4), _loadInterstitial);
         }
         AppStateEventNotifier.startListening();
         _appState = AppStateEventNotifier.appStateStream.listen((s) {
-          if (s == AppState.foreground) showAppOpenIfAvailable();
+          // The loading screen shows the launch ad itself.
+          if (s == AppState.foreground && !_launching) showAppOpenIfAvailable();
         });
       }
     } catch (_) {
@@ -160,26 +161,55 @@ class AdsService {
       _appOpen != null &&
       DateTime.now().difference(_appOpenLoadedAt!) < const Duration(hours: 4);
 
-  Future<void> showAppOpenIfAvailable({bool onLaunch = false}) async {
+  /// Cold start: waits for consent and SDK start-up, then up to [wait] for
+  /// the app-open ad (AdMob's format for launch screens) to load, and shows
+  /// it. Returns true if one was shown.
+  Future<bool> showAppOpenOnLaunch({
+    Duration wait = const Duration(seconds: 6),
+  }) async {
+    if (!enabled) return false;
+    _launching = true;
+    try {
+      await _initDone.future.timeout(
+        const Duration(seconds: 12),
+        onTimeout: () {},
+      );
+      final deadline = DateTime.now().add(wait);
+      while (_adsAllowed &&
+          !_appOpenFresh &&
+          DateTime.now().isBefore(deadline)) {
+        if (!_appOpenLoading) _loadAppOpen();
+        await Future.delayed(const Duration(milliseconds: 150));
+      }
+      return await showAppOpenIfAvailable(onLaunch: true);
+    } finally {
+      _launching = false;
+    }
+  }
+
+  /// Returns true if an app-open ad was shown.
+  Future<bool> showAppOpenIfAvailable({bool onLaunch = false}) async {
     if (_skipNextAppOpen && !onLaunch) {
       _skipNextAppOpen = false;
-      return;
+      return false;
     }
-    if (!_adsAllowed || _fullScreenShowing) return;
+    if (!_adsAllowed || _fullScreenShowing) return false;
     if (DateTime.now().difference(_lastFullScreenEnd) <
         const Duration(seconds: 30)) {
-      return;
+      return false;
     }
     if (!_appOpenFresh) {
       _appOpen?.dispose();
       _appOpen = null;
       _loadAppOpen();
-      return;
+      return false;
     }
+    var shown = false;
     final ad = _appOpen!;
     _appOpen = null;
     await _showFullScreen((onEnd) {
       ad.fullScreenContentCallback = FullScreenContentCallback(
+        onAdShowedFullScreenContent: (_) => shown = true,
         onAdDismissedFullScreenContent: (a) {
           a.dispose();
           onEnd();
@@ -193,6 +223,7 @@ class AdsService {
       ad.show();
     });
     _loadAppOpen();
+    return shown;
   }
 
   // ---- interstitial -------------------------------------------------------
@@ -214,27 +245,6 @@ class AdsService {
   }
 
   bool get interstitialReady => _adsAllowed && _interstitial != null;
-
-  /// Cold start: waits for consent and SDK start-up, then up to [wait] for
-  /// an interstitial to load, and shows it. Returns true if one was shown.
-  /// It replaces the launch app-open ad, so only one ad greets the player.
-  Future<bool> showInterstitialOnLaunch({
-    Duration wait = const Duration(seconds: 6),
-  }) async {
-    if (!enabled) return false;
-    await _initDone.future.timeout(
-      const Duration(seconds: 12),
-      onTimeout: () {},
-    );
-    final deadline = DateTime.now().add(wait);
-    while (_adsAllowed &&
-        _interstitial == null &&
-        DateTime.now().isBefore(deadline)) {
-      _loadInterstitial();
-      await Future.delayed(const Duration(milliseconds: 150));
-    }
-    return showInterstitial();
-  }
 
   /// Shows a preloaded interstitial. Returns true if one was shown; always
   /// completes once the player is back in the game.
