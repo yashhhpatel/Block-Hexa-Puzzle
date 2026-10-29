@@ -19,7 +19,7 @@ const Map<String, String> stringsEn = {
   'use': 'Use',
   'in_use': 'In use',
   'claim': 'CLAIM',
-  'loading': 'Loading…',
+  'loading': 'Loading...',
   'link_error': "Couldn't open the link. Please try again later.",
 
   // Home

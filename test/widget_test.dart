@@ -33,7 +33,7 @@ void main() {
   testWidgets('home opens level 1 and shows the board', (tester) async {
     final services = await _services();
     await tester.binding.setSurfaceSize(const Size(400, 860));
-    await tester.pumpWidget(HexaApp(services: services));
+    await tester.pumpWidget(HexaApp(services: services, showSplash: false));
     await tester.pump();
     expect(find.text('Level 1'), findsWidgets);
 
@@ -50,7 +50,7 @@ void main() {
     (tester) async {
       final services = await _services();
       await tester.binding.setSurfaceSize(const Size(400, 860));
-      await tester.pumpWidget(HexaApp(services: services));
+      await tester.pumpWidget(HexaApp(services: services, showSplash: false));
       await tester.pump();
 
       // Settings shows all the new entries.
@@ -96,7 +96,7 @@ void main() {
   ) async {
     final services = await _services();
     await tester.binding.setSurfaceSize(const Size(400, 860));
-    await tester.pumpWidget(HexaApp(services: services));
+    await tester.pumpWidget(HexaApp(services: services, showSplash: false));
     await tester.pump();
     await tester.tap(find.byIcon(Icons.settings_rounded));
     await _settle(tester);
@@ -113,7 +113,7 @@ void main() {
   testWidgets('how to play walks through all six steps', (tester) async {
     final services = await _services();
     await tester.binding.setSurfaceSize(const Size(400, 860));
-    await tester.pumpWidget(HexaApp(services: services));
+    await tester.pumpWidget(HexaApp(services: services, showSplash: false));
     await tester.pump();
     await tester.tap(find.byIcon(Icons.settings_rounded));
     await _settle(tester);
@@ -133,7 +133,7 @@ void main() {
   testWidgets('hints: first is free, then a video is required', (tester) async {
     final services = await _services();
     await tester.binding.setSurfaceSize(const Size(400, 860));
-    await tester.pumpWidget(HexaApp(services: services));
+    await tester.pumpWidget(HexaApp(services: services, showSplash: false));
     await tester.pump();
     await tester.tap(find.byIcon(Icons.play_arrow_rounded));
     await _settle(tester);
@@ -167,7 +167,7 @@ void main() {
   ) async {
     final services = await _services();
     await tester.binding.setSurfaceSize(const Size(400, 860));
-    await tester.pumpWidget(HexaApp(services: services));
+    await tester.pumpWidget(HexaApp(services: services, showSplash: false));
     await tester.pump();
     await tester.runAsync(() => services.progress.recordBlocksPlaced(100));
     await _settle(tester);

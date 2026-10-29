@@ -53,9 +53,7 @@ class _HomeScreenState extends State<HomeScreen>
     });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      // Cold-start app-open ad first, then the daily login reward.
-      await widget.services.ads.showAppOpenOnLaunch();
-      if (!mounted) return;
+      // The launch ad was shown by the loading screen; now the daily reward.
       await maybeShowLoginBonus(context, widget.services);
       if (mounted) setState(() {});
     });

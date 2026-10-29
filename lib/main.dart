@@ -7,6 +7,7 @@ import 'l10n/l10n.dart';
 import 'services/services.dart';
 import 'ui/achievement_toast.dart';
 import 'ui/home_screen.dart';
+import 'ui/splash_screen.dart';
 import 'ui/theme.dart';
 import 'ui/transitions.dart';
 
@@ -34,7 +35,10 @@ Future<void> main() async {
 
 class HexaApp extends StatefulWidget {
   final Services services;
-  const HexaApp({super.key, required this.services});
+
+  /// Start on the loading screen (launch ad) rather than straight at home.
+  final bool showSplash;
+  const HexaApp({super.key, required this.services, this.showSplash = true});
 
   @override
   State<HexaApp> createState() => _HexaAppState();
@@ -124,7 +128,9 @@ class _HexaAppState extends State<HexaApp> with WidgetsBindingObserver {
           );
         },
       ),
-      home: HomeScreen(services: widget.services),
+      home: widget.showSplash
+          ? SplashScreen(services: widget.services)
+          : HomeScreen(services: widget.services),
     );
   }
 }
